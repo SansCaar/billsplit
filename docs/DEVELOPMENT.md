@@ -8,8 +8,8 @@ packages/assign-ui   the one-item-at-a-time assignment screen (shared by extensi
 apps/web             Next.js app: groups, invites, expenses, settlements, activity (MongoDB)
 apps/extension       Chrome extension (MV3): "Split this order" on walmart.com order pages
 e2e                  Playwright: extension + web app end to end
-tools                real-Chrome harness (AppleScript) + fixture anonymizer
-proof                test evidence (screenshots, reports). proof/raw is git-ignored (real order data)
+tools                extension installer, fixture anonymizer, demo-video scripts
+proof                test screenshots. Real order data stays in proof/raw, which is git-ignored
 ```
 
 ## Run locally
@@ -32,17 +32,9 @@ Sign-in: locally there is a dev sign-in (name + email) at `/signin?dev=1`. For G
 Publish: bump `version` in `apps/extension/public/manifest.json`, then `git tag ext-v<version> && git push origin ext-v<version>`.
 The GitHub Action builds the extension and attaches `billsplit-extension-<version>.zip` to a release.
 
-Install or update (macOS + Chrome):
-
-```sh
-# while the repo is private (needs `gh auth login` with access to the repo)
-curl -fsSL -H "Authorization: Bearer $(gh auth token)" https://raw.githubusercontent.com/SansCaar/billsplit/main/tools/install-extension.sh | zsh
-# once the repo is public
-curl -fsSL https://raw.githubusercontent.com/SansCaar/billsplit/main/tools/install-extension.sh | zsh
-```
-
-It downloads the latest release into `~/Bill Split Extension`. The first time, load that folder in Chrome yourself
-(`chrome://extensions` → Developer mode → Load unpacked). To update, run the command again and click ↻ on the extension.
+Users install it with `tools/install-extension.sh` (the one-liner in the README). It downloads the latest release into
+`~/Bill Split Extension`; the first time, they load that folder in Chrome themselves. To test an unreleased build, pass
+a zip: `tools/install-extension.sh --zip billsplit-extension-x.y.z.zip`.
 
 ## Deploy (Vercel)
 
@@ -79,6 +71,13 @@ cd e2e && DEMO=1 npx playwright test demo-video  # records each tab into .demo-c
 ```
 
 Captions are drawn on the page by the spec (`say(...)` calls in `e2e/demo-video.spec.ts`), so edit the text there.
+
+## Test fixtures from real orders
+
+`packages/core/test/fixtures/walmart` holds anonymized Walmart orders: only parser-relevant fields, fake order numbers,
+no names, addresses or card details. To add one, save the order's `__NEXT_DATA__` JSON into `proof/raw` (git-ignored),
+map it to a fixture name in `proof/raw/fixture-map.json`, and run `node tools/make-fixtures.mjs` from the repo root.
+Never commit anything from `proof/raw`.
 
 ## Tests
 

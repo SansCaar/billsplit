@@ -7,7 +7,7 @@
 # extensions from outside the Web Store, so the first time you load that folder yourself
 # ("Load unpacked"); after that, rerun this script and click reload on the extension in Chrome.
 #
-# While the repo is private, set GITHUB_TOKEN (or be logged in with `gh`).
+# Set GITHUB_TOKEN (or be logged in with `gh`) to avoid GitHub's anonymous rate limit; not required.
 # Run it as a file to pick a release (install-extension.sh ext-v0.2.0) or a local zip (--zip file.zip).
 set -euo pipefail
 
@@ -30,7 +30,7 @@ else
   if [[ -n "${1:-}" ]]; then URL="https://api.github.com/repos/$REPO/releases/tags/$1"
   else URL="https://api.github.com/repos/$REPO/releases/latest"; fi
   gh_api "$URL" -o "$TMP/release.json" || {
-    echo "✗ Couldn't find the release on GitHub. If the repo is private, set GITHUB_TOKEN or run 'gh auth login'."
+    echo "✗ Couldn't reach the release on GitHub. Check your connection and try again."
     exit 1
   }
   TAG=$(json tag_name "$TMP/release.json")

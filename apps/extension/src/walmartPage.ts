@@ -1,4 +1,4 @@
-// Runs inside walmart.com pages. Shared by the content script and the real-Chrome test harness.
+// Runs inside walmart.com pages: reads and cross-checks the order for the content script.
 import { extractOrderJsonFromHtml, parseWalmartOrder } from "@billsplit/core/walmart";
 import type { ParsedOrder } from "@billsplit/core";
 

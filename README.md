@@ -16,12 +16,6 @@ Only the person splitting Walmart orders needs it (Chrome on a Mac). Everyone el
    curl -fsSL https://raw.githubusercontent.com/SansCaar/billsplit/main/tools/install-extension.sh | zsh
    ```
 
-   While the repo is private, sign in with the [GitHub CLI](https://cli.github.com) and use:
-
-   ```sh
-   curl -fsSL -H "Authorization: Bearer $(gh auth token)" https://raw.githubusercontent.com/SansCaar/billsplit/main/tools/install-extension.sh | zsh
-   ```
-
 2. Press **Enter** when asked. Chrome opens on `chrome://extensions`, next to a Finder window showing the **Bill Split Extension** folder.
 3. Turn on **Developer mode** (top right), then drag the folder onto the page.
 
