@@ -38,8 +38,26 @@ _Avoid_: Rounding error, penny
 How much a Member is owed (positive) or owes (negative) within a Group.
 
 **Activity**:
-A recorded change to an Expense: who changed what, when, and from what to what.
-_Avoid_: History, log entry
+A recorded change to anything in a Group (an Expense, a Settlement, a Member or the Group itself): who changed what, when, from what to what, and which Members it concerns.
+_Avoid_: History, log entry, event
+
+**Involved Member**:
+A Member an Activity concerns: for an Expense, its Payer and everyone with a share before or after the change; for a Settlement, the two Members in it; for a change to the Group or its Members, everyone in the Group.
+_Avoid_: Affected member, participant
+
+## Notifications
+
+**Notification**:
+A message sent to a person's devices about an Activity or a Nudge; tapping it opens the place in the app it is about.
+_Avoid_: Alert, push (that is the delivery, not the thing)
+
+**Notification Level**:
+How much Activity a person is notified about: All Activity, or only Activity they are Involved in. Each person has a default, and may set a different level for any Group.
+_Avoid_: Notification setting, subscription
+
+**Nudge**:
+A playful Notification asking a Member to make a payment that Settle up shows they owe the sender, for that amount. It is not an Activity.
+_Avoid_: Reminder, poke, request
 
 ## Walmart orders
 
