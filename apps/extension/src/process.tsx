@@ -9,7 +9,9 @@ interface MeGroup { id: string; name: string; me?: string; defaults: { splitRule
 interface Me { user: { name: string }; groups: MeGroup[] }
 interface Preview { exists: boolean; expenseId?: string; payerId?: string; rules?: SplitRules; assignments?: Assignments; changes?: { type: string; text: string }[] }
 
-const DEFAULT_APP = "http://localhost:3000";
+declare const __APP_URL__: string;
+/** Set at build time: the hosted app by default, `pnpm build:local` for localhost. */
+const DEFAULT_APP = __APP_URL__;
 
 async function getAppUrl(): Promise<string> {
   const { appUrl } = await chrome.storage.sync.get("appUrl");

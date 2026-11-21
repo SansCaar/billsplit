@@ -10,3 +10,5 @@ tools/dist
 next-env.d.ts
 *.tsbuildinfo
 proof/real-chrome/*.png
+.vercel
+.env*

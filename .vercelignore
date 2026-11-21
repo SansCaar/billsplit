@@ -1,0 +1,14 @@
+node_modules
+**/node_modules
+.next
+**/.next
+.data
+**/.data
+proof
+e2e
+tools
+test-results
+apps/extension/dist
+.env*
+**/.env*
+*.tsbuildinfo
