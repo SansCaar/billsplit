@@ -334,3 +334,7 @@ h1 { overflow-wrap: anywhere; }
 @media (pointer: coarse) { .filter-bar a { min-height: 40px; } .ledger-details > summary { min-height: 40px; } }
 .impact-label { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); align-self: center; margin-right: 2px; }
 @media (max-width: 759px) { .tabs { gap: 18px; margin-left: -18px; margin-right: -18px; padding: 0 18px; scroll-padding: 0 18px; } }
+.impact { min-width: 0; }
+.impact-chip { max-width: 100%; min-width: 0; }
+.impact-chip .bs-avatar, .impact-chip b { flex: none; }
+.impact-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

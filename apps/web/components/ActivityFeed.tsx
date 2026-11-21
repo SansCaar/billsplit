@@ -92,7 +92,7 @@ export function ActivityFeed({
         {shown.map(([id, v]) => (
           <span key={id} className={`impact-chip ${v > 0 ? "up" : "down"}`} title={`${who(id, true)}: balance ${v > 0 ? "up" : "down"} ${fmtMoney(Math.abs(v))}`}>
             <Avatar name={member(id)?.name ?? "?"} index={colour(id)} size={18} />
-            {who(id, true)} <b>{v > 0 ? "+" : "−"}{fmtMoney(Math.abs(v))}</b>
+            <span className="impact-name">{who(id, true)}</span> <b>{v > 0 ? "+" : "−"}{fmtMoney(Math.abs(v))}</b>
           </span>
         ))}
         {list.length > shown.length && <span className="impact-more">+{list.length - shown.length} more</span>}
