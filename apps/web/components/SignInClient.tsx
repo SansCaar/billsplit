@@ -18,7 +18,7 @@ export function SignInClient({ google, dev, callbackUrl }: { google: boolean; de
           <form onSubmit={(e) => { e.preventDefault(); signIn("dev", { name, email, callbackUrl }); }}>
             <label className="field">Name<input value={name} onChange={(e) => setName(e.target.value)} name="name" required autoComplete="name" /></label>
             <label className="field">Email<input value={email} onChange={(e) => setEmail(e.target.value)} name="email" type="email" required autoComplete="email" /></label>
-            <button className="btn block" type="submit">Dev sign in</button>
+            <button className="btn secondary block" type="submit">Dev sign in</button>
           </form>
         </>
       )}

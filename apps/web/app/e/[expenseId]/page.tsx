@@ -26,46 +26,48 @@ export default async function ExpensePage({ params }: { params: Promise<{ expens
 
   return (
     <main className="page">
-      <Link href={`/g/${g._id}`} className="back">← {g.name}</Link>
-      <section className={`exp-head hide-when-editing ${e.deleted ? "deleted" : ""}`}>
-        <div className={`icon-tile ${e.kind === "walmart" ? "walmart" : ""}`}>{e.kind === "walmart" ? "🛒" : "🧾"}</div>
-        <h1 data-testid="expense-title" className="row-title" style={{ fontSize: 20 }}>{displayTitle(e)}</h1>
-        <div className="amount" data-testid="expense-amount">{fmtMoney(e.amount)}</div>
-        <div className="chips">
-          <span className="chip">{dayLabel(e.date)}</span>
-          <span className="chip">{name(e.payerId)} paid</span>
-          {e.walmart && <span className="chip">order {shortOrder(e.walmart.orderNumber)}</span>}
-          {e.walmart?.card?.last4 && <span className="chip">•••• {e.walmart.card.last4}</span>}
-          {e.walmart && snapshots.length > 1 && <span className="chip">processed {snapshots.length}×</span>}
-          {e.deleted && <span className="chip" style={{ color: "var(--neg)" }}>deleted</span>}
+      <div className="crumb"><Link href="/">Your groups</Link><span>/</span><Link href={`/g/${g._id}?tab=expenses`}>{g.name}</Link><span>/</span></div>
+      <header className={`page-head hide-when-editing ${e.deleted ? "deleted" : ""}`}>
+        <div>
+          <span className="eyebrow">{e.kind === "walmart" ? "Walmart order" : "Expense"}{e.deleted ? " · deleted" : ""}</span>
+          <h1 data-testid="expense-title" style={{ marginTop: 8 }}>{displayTitle(e)}</h1>
+          <div className="exp-meta">
+            <span>{dayLabel(e.date)}</span>
+            <span>{name(e.payerId)} paid</span>
+            {e.walmart && <span>Order {shortOrder(e.walmart.orderNumber)}</span>}
+            {e.walmart?.card?.last4 && <span>{e.walmart.card.brand} •••• {e.walmart.card.last4}</span>}
+            {e.walmart && snapshots.length > 1 && <span>Processed {snapshots.length}×</span>}
+          </div>
         </div>
-      </section>
+        <div className="exp-amount" data-testid="expense-amount">{fmtMoney(e.amount)}</div>
+      </header>
 
-      {myShare > 0 && !e.deleted && (
-        <div className="your-share hide-when-editing" data-testid="your-share">
-          <div><div className="small mute">Your share</div><div className="amt">{fmtMoney(myShare)}</div></div>
-          {e.payerId !== me.id ? <span className="small mute">you owe {memberName(g, e.payerId)}</span> : <span className="small mute">you paid</span>}
-        </div>
-      )}
-
-      <section className="card flush hide-when-editing">
-        <h2>Who owes what</h2>
-        <ul className="list" data-testid="shares">
-          {shares.map(([mid, c]) => (
-            <li key={mid} className="bal-row">
-              <Avatar name={memberName(g, mid)} index={memberIndex(g, mid)} size={32} />
-              <span className="grow row-title">{memberName(g, mid)}{mid === me.id ? " (you)" : ""}</span>
-              <span className="amt" data-testid={`share-${memberName(g, mid)}`}>{fmtMoney(c)}</span>
-            </li>
-          ))}
-        </ul>
-        {e.unassignedRemainder !== 0 && <p className="note" style={{ padding: "0 16px 8px" }}>{fmtMoney(e.unassignedRemainder)} left over from rounding — not added to anyone.</p>}
-      </section>
+      <div className="two-col hide-when-editing" style={{ marginBottom: 18 }}>
+        <section className="me-card" style={{ margin: 0 }} data-testid="your-share">
+          <div>
+            <span className="eyebrow">Your share</span>
+            <div className="figure">{fmtMoney(myShare)}</div>
+            <div className="line">{myShare === 0 ? "You're not part of this one." : e.payerId === me.id ? "You paid for this." : `You owe ${memberName(g, e.payerId)} for this.`}</div>
+          </div>
+        </section>
+        <section className="card list-card" style={{ margin: 0 }}>
+          <div className="card-head"><h2>Who owes what</h2>{e.unassignedRemainder !== 0 && <span className="note">{fmtMoney(e.unassignedRemainder)} rounding left over</span>}</div>
+          <ul className="list" data-testid="shares">
+            {shares.map(([mid, c]) => (
+              <li key={mid} className="li" style={{ minHeight: 52, padding: "10px 20px" }}>
+                <Avatar name={memberName(g, mid)} index={memberIndex(g, mid)} size={30} />
+                <span className="grow">{memberName(g, mid)}{mid === me.id ? " (you)" : ""}</span>
+                <span className="amt" data-testid={`share-${memberName(g, mid)}`}>{fmtMoney(c)}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
 
       <ExpenseClient expense={e} group={g} meId={me.id} />
 
-      <section className="card flush hide-when-editing">
-        <h2>Activity</h2>
+      <section className="card list-card hide-when-editing">
+        <div className="card-head"><h2>Activity</h2><span className="note">Every change to this expense</span></div>
         <ActivityFeed items={activity} group={g} />
       </section>
     </main>

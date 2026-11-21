@@ -18,6 +18,7 @@ export type FlowAction =
   | { type: "method"; method: SplitMethod }
   | { type: "patchShare"; memberId: MemberId; patch: { parts?: number; amount?: number } }
   | { type: "next" }
+  | { type: "skip" }
   | { type: "back" }
   | { type: "jump"; key: string };
 
@@ -76,6 +77,8 @@ export function flowReducer(items: Item[]) {
         return item ? set({ ...cur, shares: cur.shares.map((x) => (x.memberId === a.memberId ? { ...x, ...a.patch } : x)) }) : s;
       case "next":
         return canAdvance(items, s) ? { ...s, step: s.step + 1, lastSplit: cur } : s;
+      case "skip":
+        return s.step < items.length ? { ...s, step: s.step + 1 } : s;
       case "back":
         return { ...s, step: Math.max(0, Math.min(s.step, items.length) - 1) };
       case "jump": {

@@ -8,7 +8,7 @@ export const GET = route(async ({ db, actor }) => {
     groups: groups.map((g) => ({
       id: g._id, name: g.name, defaults: g.defaults,
       me: g.members.find((m) => m.userId === actor.userId)?.id,
-      members: g.members.filter((m) => !m.leftAt).map((m) => ({ id: m.id, name: m.name })),
+      members: g.members.map((m, i) => ({ id: m.id, name: m.name, colorIndex: i, left: !!m.leftAt })).filter((m) => !m.left).map(({ left: _l, ...m }) => m),
     })),
   };
 });

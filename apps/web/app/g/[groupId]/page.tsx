@@ -6,86 +6,94 @@ import { getDb } from "@/lib/db";
 import { currentActor } from "@/lib/session";
 import { groupSummary } from "@/lib/services";
 import { plain } from "@/lib/plain";
-import { balanceText, memberIndex, memberName } from "@/lib/format";
+import { memberIndex, memberName } from "@/lib/format";
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { ExpenseList } from "@/components/ExpenseList";
 import { SettleUp } from "@/components/SettleUp";
 import { GroupSettings } from "@/components/GroupSettings";
 
 export const dynamic = "force-dynamic";
-const TABS = [["expenses", "Expenses"], ["balances", "Balances"], ["activity", "Activity"], ["group", "Group"]] as const;
 
 export default async function GroupPage({ params, searchParams }: { params: Promise<{ groupId: string }>; searchParams: Promise<{ tab?: string }> }) {
   const { groupId } = await params;
-  const tab = (await searchParams).tab ?? "expenses";
+  const tab = (await searchParams).tab ?? "balances";
   const actor = await currentActor();
   if (!actor) redirect(`/signin?callbackUrl=/g/${groupId}`);
   const s = plain(await groupSummary(await getDb(), actor, groupId));
   const g = s.group;
   const members = g.members.filter((m) => !m.leftAt);
+  const live = s.expenses.filter((e) => !e.deleted);
   const myBal = s.balances[s.me.id] ?? 0;
   const mine = s.suggestions.filter((x) => x.fromId === s.me.id || x.toId === s.me.id);
+  const allSettled = members.every((m) => (s.balances[m.id] ?? 0) === 0);
+  const tabs = [
+    ["balances", "Balances", null],
+    ["expenses", "Expenses", live.length || null],
+    ["activity", "Activity", null],
+    ["settings", "Settings", null],
+  ] as const;
 
   return (
     <main className="page">
-      <Link href="/" className="back">← Groups</Link>
-      <section className="card hero" data-testid="hero">
-        <div className="row between">
-          <h1 data-testid="group-name" style={{ fontSize: 20 }}>{g.name}</h1>
-          <span className="avatars">{members.slice(0, 5).map((m) => <Avatar key={m.id} name={m.name} index={memberIndex(g, m.id)} size={26} />)}</span>
+      <div className="crumb"><Link href="/">Your groups</Link><span>/</span></div>
+      <header className="page-head">
+        <div>
+          <h1 data-testid="group-name">{g.name}</h1>
+          <p className="sub">{members.length} housemate{members.length === 1 ? "" : "s"} · {live.length} expense{live.length === 1 ? "" : "s"}</p>
         </div>
-        <div style={{ marginTop: 14 }}>
-          <div className="label">{myBal > 0 ? "You're owed" : myBal < 0 ? "You owe" : "You're all settled up"}</div>
-          {myBal !== 0 && <div className="big" data-testid="my-balance">{fmtMoney(Math.abs(myBal))}</div>}
-          <div className="sub">
-            {mine.length ? mine.map((x) => (x.fromId === s.me.id ? `you → ${memberName(g, x.toId)} ${fmtMoney(x.amount)}` : `${memberName(g, x.fromId)} → you ${fmtMoney(x.amount)}`)).join(" · ") : `${members.length} members · ${s.expenses.filter((e) => !e.deleted).length} expenses`}
+        <div className="actions">
+          <Link className="btn secondary" href={`/g/${groupId}?tab=balances#repay`}>Record repayment</Link>
+          <Link className="btn primary" href={`/g/${groupId}/new`}>Add expense</Link>
+        </div>
+      </header>
+
+      <section className="me-card" data-testid="my-summary">
+        <div>
+          <span className="eyebrow">Your balance</span>
+          <div className={`figure ${myBal > 0 ? "pos" : myBal < 0 ? "neg" : ""}`} data-testid="my-balance">{myBal === 0 ? "Settled up" : fmtMoney(Math.abs(myBal))}</div>
+          <div className="line">
+            {myBal > 0 ? "is owed to you" : myBal < 0 ? "you owe the group" : "Nothing to pay or collect right now."}
+            {mine.length > 0 && <> · {mine.map((x) => (x.fromId === s.me.id ? `you → ${memberName(g, x.toId)} ${fmtMoney(x.amount)}` : `${memberName(g, x.fromId)} → you ${fmtMoney(x.amount)}`)).join(" · ")}</>}
           </div>
-        </div>
-        <div className="row" style={{ marginTop: 14 }}>
-          <Link className="btn white" href={`/g/${groupId}/new`}>+ Add expense</Link>
-          <Link className="btn" href={`/g/${groupId}?tab=balances`}>Settle up</Link>
         </div>
       </section>
 
       <nav className="tabs" aria-label="Group sections">
-        {TABS.map(([k, label]) => <Link key={k} href={`/g/${groupId}?tab=${k}`} className={tab === k ? "on" : ""} aria-current={tab === k ? "page" : undefined} scroll={false}>{label}</Link>)}
+        {tabs.map(([k, label, n]) => (
+          <Link key={k} href={`/g/${groupId}?tab=${k}`} className={tab === k ? "on" : ""} aria-current={tab === k ? "page" : undefined} scroll={false}>
+            {label}{n ? <span className="count">{n}</span> : null}
+          </Link>
+        ))}
       </nav>
-
-      {tab === "expenses" && <ExpenseList group={g} meId={s.me.id} expenses={s.expenses} settlements={s.settlements} />}
 
       {tab === "balances" && (
         <>
-          <section className="card flush" data-testid="balances">
-            <h2>Balances</h2>
-            <ul className="list">
-              {members.map((m) => {
-                const b = s.balances[m.id] ?? 0;
-                const t = balanceText(b);
-                return (
-                  <li key={m.id} className="bal-row">
-                    <Avatar name={m.name} index={memberIndex(g, m.id)} size={36} />
-                    <div className="grow">
-                      <div className="row-title">{m.id === s.me.id ? `${m.name} (you)` : m.name}</div>
-                      {!m.userId && <div className="row-sub">hasn't joined yet</div>}
-                    </div>
-                    <div>
-                      <div className={`k ${t.cls}`}>{t.label}</div>
-                      {b !== 0 && <div className={`amt ${t.cls}`} data-testid={`balance-${m.name}`}>{fmtMoney(Math.abs(b))}</div>}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-          <SettleUp groupId={groupId} members={members.map((m) => ({ id: m.id, name: m.name, index: memberIndex(g, m.id) }))} suggestions={s.suggestions} meId={s.me.id} />
+          <div className="section-head">
+            <div><span className="eyebrow">{allSettled ? "All settled, all visible" : "Who owes whom"}</span><h2>Group balances</h2></div>
+            <span className="aside">Positive amounts are owed to that person.</span>
+          </div>
+          <div className="bal-grid" data-testid="balances">
+            {members.map((m) => {
+              const b = s.balances[m.id] ?? 0;
+              return (
+                <div key={m.id} className={`bal-card ${m.id === s.me.id ? "me" : ""}`}>
+                  <div className="who"><Avatar name={m.name} index={memberIndex(g, m.id)} size={36} /><span className="ellipsis">{m.name}</span></div>
+                  <div className={`figure ${b > 0 ? "pos" : b < 0 ? "neg" : ""}`} data-testid={`balance-${m.name}`}>{fmtMoney(Math.abs(b))}</div>
+                  <div className="cap">{b > 0 ? "is owed" : b < 0 ? "owes the group" : "settled up"}{m.id === s.me.id ? " · you" : m.userId ? "" : " · hasn't joined"}</div>
+                </div>
+              );
+            })}
+          </div>
+          <SettleUp groupId={groupId} members={members.map((m) => ({ id: m.id, name: m.name }))} suggestions={s.suggestions} meId={s.me.id}
+            settlements={s.settlements.map((x) => ({ id: x._id, fromId: x.fromId, toId: x.toId, amount: x.amount, date: String(x.date), deleted: x.deleted }))} />
         </>
       )}
 
-      {tab === "activity" && <section className="card flush"><h2>Activity</h2><ActivityFeed items={s.activity} group={g} linkExpenses /></section>}
+      {tab === "expenses" && <ExpenseList group={g} meId={s.me.id} expenses={s.expenses} settlements={s.settlements} />}
 
-      {tab === "group" && <GroupSettings group={g} isCreator={g.createdBy === actor.userId} meId={s.me.id} />}
+      {tab === "activity" && <section className="card list-card"><div className="card-head"><h2>Activity</h2><span className="note">Every change, by everyone</span></div><ActivityFeed items={s.activity} group={g} linkExpenses /></section>}
 
-      {tab === "expenses" && <Link href={`/g/${groupId}/new`} className="fab" aria-label="Add expense">＋ Expense</Link>}
+      {tab === "settings" && <GroupSettings group={g} isCreator={g.createdBy === actor.userId} meId={s.me.id} />}
     </main>
   );
 }

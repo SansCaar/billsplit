@@ -12,14 +12,14 @@ export default async function Join({ params }: { params: Promise<{ token: string
     const p = await previewInvite(await getDb(), token);
     return (
       <main className="center"><div className="auth">
-        <div className="brand-mark">🏠</div>
-        <h1>Join {p.name}</h1>
-        <p className="mute" style={{ margin: "8px 0 22px" }}>You've been invited to split expenses together.</p>
-        <div className="card" style={{ textAlign: "left" }}><JoinClient token={token} placeholders={p.placeholders} groupId={p.groupId} /></div>
+        <div className="brand-mark">b</div><span className="eyebrow">Invitation</span>
+        <h1 style={{ marginTop: 8 }}>Join {p.name}</h1>
+        <p className="muted" style={{ margin: "10px 0 24px" }}>You've been invited to split expenses together.</p>
+        <div className="card"><JoinClient token={token} placeholders={p.placeholders} groupId={p.groupId} /></div>
       </div></main>
     );
   } catch (e) {
-    if (e instanceof ServiceError) return <main className="center"><div className="auth"><div className="brand-mark">🔒</div><h1>Invite not valid</h1><p className="mute">{e.message}</p></div></main>;
+    if (e instanceof ServiceError) return <main className="center"><div className="auth"><div className="brand-mark">b</div><h1>Invite not valid</h1><p className="muted">{e.message}</p></div></main>;
     throw e;
   }
 }
