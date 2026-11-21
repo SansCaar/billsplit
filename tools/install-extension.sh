@@ -3,7 +3,7 @@
 #
 #   curl -fsSL https://raw.githubusercontent.com/SansCaar/billsplit/main/tools/install-extension.sh | zsh
 #
-# Downloads the latest release into ~/.billsplit/extension. Chrome doesn't let scripts install
+# Downloads the latest release into ~/Bill Split Extension. Chrome doesn't let scripts install
 # extensions from outside the Web Store, so the first time you load that folder yourself
 # ("Load unpacked"); after that, rerun this script and click reload on the extension in Chrome.
 #
@@ -12,7 +12,7 @@
 set -euo pipefail
 
 REPO="SansCaar/billsplit"
-EXT="$HOME/.billsplit/extension"
+EXT="$HOME/Bill Split Extension"
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 
@@ -75,7 +75,7 @@ else
   echo
   echo "  One-time setup in Chrome:"
   echo "    1. Turn on Developer mode (top right of chrome://extensions)"
-  echo "    2. Drag the 'extension' folder from the Finder window onto the page"
+  echo "    2. Drag the 'Bill Split Extension' folder from the Finder window onto the page"
   echo "       (or click Load unpacked, press ⌘⇧G and paste the path; it's on your clipboard)"
   echo
   echo "  To update later, run this command again."

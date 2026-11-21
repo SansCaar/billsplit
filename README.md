@@ -42,7 +42,7 @@ curl -fsSL -H "Authorization: Bearer $(gh auth token)" https://raw.githubusercon
 curl -fsSL https://raw.githubusercontent.com/SansCaar/billsplit/main/tools/install-extension.sh | zsh
 ```
 
-It downloads the latest release into `~/.billsplit/extension`. The first time, load that folder in Chrome yourself
+It downloads the latest release into `~/Bill Split Extension`. The first time, load that folder in Chrome yourself
 (`chrome://extensions` → Developer mode → Load unpacked). To update, run the command again and click ↻ on the extension.
 
 ## Deploy (Vercel)
