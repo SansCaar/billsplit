@@ -1,18 +1,18 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { fmtMoney } from "@billsplit/core";
 import { Avatar } from "@billsplit/assign-ui";
 import { getDb } from "@/lib/db";
 import { currentActor } from "@/lib/session";
 import { groupSummary, listGroups } from "@/lib/services";
 import { CreateGroupForm } from "@/components/CreateGroupForm";
+import { Landing } from "@/components/landing/Landing";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home({ searchParams }: { searchParams: Promise<{ new?: string }> }) {
   const { new: wantNew } = await searchParams;
   const actor = await currentActor();
-  if (!actor) redirect("/signin");
+  if (!actor) return <Landing />;
   const db = await getDb();
   const groups = await listGroups(db, actor);
   const summaries = await Promise.all(groups.map((g) => groupSummary(db, actor, g._id)));
