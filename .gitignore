@@ -13,3 +13,4 @@ proof/real-chrome/*.png
 .vercel
 .env*
 proof/ui-audit
+.install-clips
