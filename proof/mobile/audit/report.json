@@ -1,64 +1,60 @@
 {
  "320/home": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
-  "tinyText": [
-   "span.bs-avatar \"S\" 10px",
-   "span.bs-avatar \"A\" 10px",
-   "span.bs-avatar \"N\" 10px",
-   "span.bs-avatar \"P\" 10px"
-  ],
+  "tinyText": [],
   "docWidth": 320,
   "vw": 320,
   "overlap": null
  },
  "320/group-balances": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
-  "tinyText": [],
+  "tinyText": [
+   "span.count \"4\" 10px",
+   "span.count \"2\" 10px",
+   "span.bs-avatar \"C\" 10px",
+   "span.bs-avatar \"P\" 10px",
+   "span.bs-avatar \"N\" 10px",
+   "span.bs-avatar \"A\" 10px"
+  ],
   "docWidth": 320,
   "vw": 320,
   "overlap": null
  },
  "320/group-settle": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
-  "tinyText": [],
+  "tinyText": [
+   "span.count \"4\" 10px",
+   "span.count \"2\" 10px"
+  ],
   "docWidth": 320,
   "vw": 320,
   "overlap": null
  },
  "320/group-settle-other": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
-  "tinyText": [],
+  "tinyText": [
+   "span.count \"4\" 10px",
+   "span.count \"2\" 10px"
+  ],
   "docWidth": 320,
   "vw": 320,
   "overlap": null
  },
  "320/group-settle-record": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
+   "span.count \"4\" 10px",
+   "span.count \"2\" 10px",
    "span.bs-avatar \"S\" 10px",
    "span.bs-avatar \"A\" 10px",
    "span.bs-avatar \"N\" 10px",
@@ -71,29 +67,24 @@
  },
  "320/group-expenses": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
-  "tinyText": [],
+  "tinyText": [
+   "span.count \"4\" 10px",
+   "span.count \"2\" 10px"
+  ],
   "docWidth": 320,
   "vw": 320,
   "overlap": null
  },
  "320/group-activity": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
-   "span.bs-avatar \"S\" 10px",
-   "span.bs-avatar \"N\" 10px",
-   "span.bs-avatar \"A\" 10px",
-   "span.bs-avatar \"P\" 10px",
-   "span.bs-avatar \"C\" 10px"
+   "span.count \"4\" 10px",
+   "span.count \"2\" 10px",
+   "span.bs-avatar 10px"
   ],
   "docWidth": 320,
   "vw": 320,
@@ -101,21 +92,19 @@
  },
  "320/group-settings": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
-  "tinyText": [],
+  "tinyText": [
+   "span.count \"4\" 10px",
+   "span.count \"2\" 10px"
+  ],
   "docWidth": 320,
   "vw": 320,
   "overlap": null
  },
  "320/new-expense": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 320,
@@ -124,9 +113,7 @@
  },
  "320/new-expense-parts": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 320,
@@ -135,9 +122,7 @@
  },
  "320/new-expense-amount": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 320,
@@ -146,16 +131,15 @@
  },
  "320/walmart-expense": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
    "span.bs-avatar \"S\" 10px",
    "span.bs-avatar \"A\" 10px",
    "span.bs-avatar \"N\" 10px",
    "span.bs-avatar \"P\" 10px",
-   "span.bs-avatar \"C\" 10px"
+   "span.bs-avatar \"C\" 10px",
+   "span.bs-avatar 10px"
   ],
   "docWidth": 320,
   "vw": 320,
@@ -163,9 +147,7 @@
  },
  "320/fix-review": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
    "span.bs-avatar \"S\" 10px",
@@ -181,7 +163,6 @@
  "320/fix-card": {
   "overflow": [],
   "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
    "button \"Clear\" 40x40"
   ],
   "zoomInputs": [],
@@ -193,7 +174,6 @@
  "320/fix-card-amount": {
   "overflow": [],
   "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
    "button \"Clear\" 40x40"
   ],
   "zoomInputs": [],
@@ -204,14 +184,10 @@
  },
  "320/manual-expense": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
-   "span.bs-avatar \"S\" 10px",
-   "span.bs-avatar \"A\" 10px",
-   "span.bs-avatar \"N\" 10px"
+   "span.bs-avatar 10px"
   ],
   "docWidth": 320,
   "vw": 320,
@@ -219,9 +195,7 @@
  },
  "320/manual-edit": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 320,
@@ -230,9 +204,7 @@
  },
  "320/join": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 320,
@@ -241,80 +213,69 @@
  },
  "320/account-menu": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
-  "tinyText": [
-   "span.bs-avatar \"S\" 10px",
-   "span.bs-avatar \"A\" 10px",
-   "span.bs-avatar \"N\" 10px",
-   "span.bs-avatar \"P\" 10px"
-  ],
+  "tinyText": [],
   "docWidth": 320,
   "vw": 320,
   "overlap": null
  },
  "360/home": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
-  "tinyText": [
-   "span.bs-avatar \"S\" 10px",
-   "span.bs-avatar \"A\" 10px",
-   "span.bs-avatar \"N\" 10px",
-   "span.bs-avatar \"P\" 10px"
-  ],
+  "tinyText": [],
   "docWidth": 360,
   "vw": 360,
   "overlap": null
  },
  "360/group-balances": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
-  "tinyText": [],
+  "tinyText": [
+   "span.count \"4\" 10px",
+   "span.count \"2\" 10px",
+   "span.bs-avatar \"C\" 10px",
+   "span.bs-avatar \"P\" 10px",
+   "span.bs-avatar \"N\" 10px",
+   "span.bs-avatar \"A\" 10px"
+  ],
   "docWidth": 360,
   "vw": 360,
   "overlap": null
  },
  "360/group-settle": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
-  "tinyText": [],
+  "tinyText": [
+   "span.count \"4\" 10px",
+   "span.count \"2\" 10px"
+  ],
   "docWidth": 360,
   "vw": 360,
   "overlap": null
  },
  "360/group-settle-other": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
-  "tinyText": [],
+  "tinyText": [
+   "span.count \"4\" 10px",
+   "span.count \"2\" 10px"
+  ],
   "docWidth": 360,
   "vw": 360,
   "overlap": null
  },
  "360/group-settle-record": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
+   "span.count \"4\" 10px",
+   "span.count \"2\" 10px",
    "span.bs-avatar \"S\" 10px",
    "span.bs-avatar \"A\" 10px",
    "span.bs-avatar \"N\" 10px",
@@ -327,12 +288,12 @@
  },
  "360/group-expenses": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
-  "tinyText": [],
+  "tinyText": [
+   "span.count \"4\" 10px",
+   "span.count \"2\" 10px"
+  ],
   "docWidth": 360,
   "vw": 360,
   "overlap": null
@@ -340,17 +301,13 @@
  "360/group-activity": {
   "overflow": [],
   "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
    "a.ledger-subject \"Walmart order #…0007\" 171x20"
   ],
   "zoomInputs": [],
   "tinyText": [
-   "span.bs-avatar \"S\" 10px",
-   "span.bs-avatar \"N\" 10px",
-   "span.bs-avatar \"A\" 10px",
-   "span.bs-avatar \"P\" 10px",
-   "span.bs-avatar \"C\" 10px"
+   "span.count \"4\" 10px",
+   "span.count \"2\" 10px",
+   "span.bs-avatar 10px"
   ],
   "docWidth": 360,
   "vw": 360,
@@ -358,23 +315,19 @@
  },
  "360/group-settings": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
-  "tinyText": [],
+  "tinyText": [
+   "span.count \"4\" 10px",
+   "span.count \"2\" 10px"
+  ],
   "docWidth": 360,
   "vw": 360,
   "overlap": null
  },
  "360/new-expense": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 360,
@@ -383,11 +336,7 @@
  },
  "360/new-expense-parts": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 360,
@@ -396,11 +345,7 @@
  },
  "360/new-expense-amount": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 360,
@@ -409,18 +354,15 @@
  },
  "360/walmart-expense": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
    "span.bs-avatar \"S\" 10px",
    "span.bs-avatar \"A\" 10px",
    "span.bs-avatar \"N\" 10px",
    "span.bs-avatar \"P\" 10px",
-   "span.bs-avatar \"C\" 10px"
+   "span.bs-avatar \"C\" 10px",
+   "span.bs-avatar 10px"
   ],
   "docWidth": 360,
   "vw": 360,
@@ -428,11 +370,7 @@
  },
  "360/fix-review": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
    "span.bs-avatar \"S\" 10px",
@@ -448,9 +386,6 @@
  "360/fix-card": {
   "overflow": [],
   "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38",
    "button \"Clear\" 40x40"
   ],
   "zoomInputs": [],
@@ -462,9 +397,6 @@
  "360/fix-card-amount": {
   "overflow": [],
   "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38",
    "button \"Clear\" 40x40"
   ],
   "zoomInputs": [],
@@ -475,16 +407,10 @@
  },
  "360/manual-expense": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
-   "span.bs-avatar \"S\" 10px",
-   "span.bs-avatar \"A\" 10px",
-   "span.bs-avatar \"N\" 10px"
+   "span.bs-avatar 10px"
   ],
   "docWidth": 360,
   "vw": 360,
@@ -492,11 +418,7 @@
  },
  "360/manual-edit": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 360,
@@ -505,9 +427,7 @@
  },
  "360/join": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 360,
@@ -516,54 +436,39 @@
  },
  "360/account-menu": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
-  "tinyText": [
-   "span.bs-avatar \"S\" 10px",
-   "span.bs-avatar \"A\" 10px",
-   "span.bs-avatar \"N\" 10px",
-   "span.bs-avatar \"P\" 10px"
-  ],
+  "tinyText": [],
   "docWidth": 360,
   "vw": 360,
   "overlap": null
  },
  "390/home": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
-  "zoomInputs": [],
-  "tinyText": [
-   "span.bs-avatar \"S\" 10px",
-   "span.bs-avatar \"A\" 10px",
-   "span.bs-avatar \"N\" 10px",
-   "span.bs-avatar \"P\" 10px"
-  ],
-  "docWidth": 390,
-  "vw": 390,
-  "overlap": null
- },
- "390/group-balances": {
-  "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 390,
   "vw": 390,
   "overlap": null
  },
+ "390/group-balances": {
+  "overflow": [],
+  "smallTargets": [],
+  "zoomInputs": [],
+  "tinyText": [
+   "span.bs-avatar \"C\" 10px",
+   "span.bs-avatar \"P\" 10px",
+   "span.bs-avatar \"N\" 10px",
+   "span.bs-avatar \"A\" 10px"
+  ],
+  "docWidth": 390,
+  "vw": 390,
+  "overlap": null
+ },
  "390/group-settle": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 390,
@@ -572,10 +477,7 @@
  },
  "390/group-settle-other": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 390,
@@ -584,10 +486,7 @@
  },
  "390/group-settle-record": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
    "span.bs-avatar \"S\" 10px",
@@ -602,10 +501,7 @@
  },
  "390/group-expenses": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 390,
@@ -615,17 +511,11 @@
  "390/group-activity": {
   "overflow": [],
   "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
    "a.ledger-subject \"Walmart order #…0007\" 171x20"
   ],
   "zoomInputs": [],
   "tinyText": [
-   "span.bs-avatar \"S\" 10px",
-   "span.bs-avatar \"N\" 10px",
-   "span.bs-avatar \"A\" 10px",
-   "span.bs-avatar \"P\" 10px",
-   "span.bs-avatar \"C\" 10px"
+   "span.bs-avatar 10px"
   ],
   "docWidth": 390,
   "vw": 390,
@@ -633,10 +523,7 @@
  },
  "390/group-settings": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 390,
@@ -645,11 +532,7 @@
  },
  "390/new-expense": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 390,
@@ -658,11 +541,7 @@
  },
  "390/new-expense-parts": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 390,
@@ -671,11 +550,7 @@
  },
  "390/new-expense-amount": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 390,
@@ -684,18 +559,15 @@
  },
  "390/walmart-expense": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
    "span.bs-avatar \"S\" 10px",
    "span.bs-avatar \"A\" 10px",
    "span.bs-avatar \"N\" 10px",
    "span.bs-avatar \"P\" 10px",
-   "span.bs-avatar \"C\" 10px"
+   "span.bs-avatar \"C\" 10px",
+   "span.bs-avatar 10px"
   ],
   "docWidth": 390,
   "vw": 390,
@@ -703,11 +575,7 @@
  },
  "390/fix-review": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
    "span.bs-avatar \"S\" 10px",
@@ -723,9 +591,6 @@
  "390/fix-card": {
   "overflow": [],
   "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38",
    "button \"Clear\" 40x40"
   ],
   "zoomInputs": [],
@@ -737,9 +602,6 @@
  "390/fix-card-amount": {
   "overflow": [],
   "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38",
    "button \"Clear\" 40x40"
   ],
   "zoomInputs": [],
@@ -750,16 +612,10 @@
  },
  "390/manual-expense": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
-   "span.bs-avatar \"S\" 10px",
-   "span.bs-avatar \"A\" 10px",
-   "span.bs-avatar \"N\" 10px"
+   "span.bs-avatar 10px"
   ],
   "docWidth": 390,
   "vw": 390,
@@ -767,11 +623,7 @@
  },
  "390/manual-edit": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 390,
@@ -780,9 +632,7 @@
  },
  "390/join": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 390,
@@ -791,54 +641,39 @@
  },
  "390/account-menu": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
-  "tinyText": [
-   "span.bs-avatar \"S\" 10px",
-   "span.bs-avatar \"A\" 10px",
-   "span.bs-avatar \"N\" 10px",
-   "span.bs-avatar \"P\" 10px"
-  ],
+  "tinyText": [],
   "docWidth": 390,
   "vw": 390,
   "overlap": null
  },
  "430/home": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
-  "zoomInputs": [],
-  "tinyText": [
-   "span.bs-avatar \"S\" 10px",
-   "span.bs-avatar \"A\" 10px",
-   "span.bs-avatar \"N\" 10px",
-   "span.bs-avatar \"P\" 10px"
-  ],
-  "docWidth": 430,
-  "vw": 430,
-  "overlap": null
- },
- "430/group-balances": {
-  "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 430,
   "vw": 430,
   "overlap": null
  },
+ "430/group-balances": {
+  "overflow": [],
+  "smallTargets": [],
+  "zoomInputs": [],
+  "tinyText": [
+   "span.bs-avatar \"C\" 10px",
+   "span.bs-avatar \"P\" 10px",
+   "span.bs-avatar \"N\" 10px",
+   "span.bs-avatar \"A\" 10px"
+  ],
+  "docWidth": 430,
+  "vw": 430,
+  "overlap": null
+ },
  "430/group-settle": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 430,
@@ -847,10 +682,7 @@
  },
  "430/group-settle-other": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 430,
@@ -859,10 +691,7 @@
  },
  "430/group-settle-record": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
    "span.bs-avatar \"S\" 10px",
@@ -877,10 +706,7 @@
  },
  "430/group-expenses": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 430,
@@ -890,17 +716,11 @@
  "430/group-activity": {
   "overflow": [],
   "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
    "a.ledger-subject \"Walmart order #…0007\" 171x20"
   ],
   "zoomInputs": [],
   "tinyText": [
-   "span.bs-avatar \"S\" 10px",
-   "span.bs-avatar \"N\" 10px",
-   "span.bs-avatar \"A\" 10px",
-   "span.bs-avatar \"P\" 10px",
-   "span.bs-avatar \"C\" 10px"
+   "span.bs-avatar 10px"
   ],
   "docWidth": 430,
   "vw": 430,
@@ -908,10 +728,7 @@
  },
  "430/group-settings": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 430,
@@ -920,11 +737,7 @@
  },
  "430/new-expense": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 430,
@@ -933,11 +746,7 @@
  },
  "430/new-expense-parts": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 430,
@@ -946,11 +755,7 @@
  },
  "430/new-expense-amount": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 430,
@@ -959,18 +764,15 @@
  },
  "430/walmart-expense": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
    "span.bs-avatar \"S\" 10px",
    "span.bs-avatar \"A\" 10px",
    "span.bs-avatar \"N\" 10px",
    "span.bs-avatar \"P\" 10px",
-   "span.bs-avatar \"C\" 10px"
+   "span.bs-avatar \"C\" 10px",
+   "span.bs-avatar 10px"
   ],
   "docWidth": 430,
   "vw": 430,
@@ -978,11 +780,7 @@
  },
  "430/fix-review": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
    "span.bs-avatar \"S\" 10px",
@@ -998,9 +796,6 @@
  "430/fix-card": {
   "overflow": [],
   "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38",
    "button \"Clear\" 40x40"
   ],
   "zoomInputs": [],
@@ -1012,9 +807,6 @@
  "430/fix-card-amount": {
   "overflow": [],
   "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38",
    "button \"Clear\" 40x40"
   ],
   "zoomInputs": [],
@@ -1025,16 +817,10 @@
  },
  "430/manual-expense": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
-   "span.bs-avatar \"S\" 10px",
-   "span.bs-avatar \"A\" 10px",
-   "span.bs-avatar \"N\" 10px"
+   "span.bs-avatar 10px"
   ],
   "docWidth": 430,
   "vw": 430,
@@ -1042,11 +828,7 @@
  },
  "430/manual-edit": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 430,
@@ -1055,9 +837,7 @@
  },
  "430/join": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 430,
@@ -1066,25 +846,16 @@
  },
  "430/account-menu": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
-  "tinyText": [
-   "span.bs-avatar \"S\" 10px",
-   "span.bs-avatar \"A\" 10px",
-   "span.bs-avatar \"N\" 10px",
-   "span.bs-avatar \"P\" 10px"
-  ],
+  "tinyText": [],
   "docWidth": 430,
   "vw": 430,
   "overlap": null
  },
  "landscape/home": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
    "span.bs-avatar \"S\" 10px",
@@ -1098,22 +869,21 @@
  },
  "landscape/group-balances": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
-  "tinyText": [],
+  "tinyText": [
+   "span.bs-avatar \"C\" 10px",
+   "span.bs-avatar \"P\" 10px",
+   "span.bs-avatar \"N\" 10px",
+   "span.bs-avatar \"A\" 10px"
+  ],
   "docWidth": 844,
   "vw": 844,
   "overlap": null
  },
  "landscape/group-settle": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 844,
@@ -1122,10 +892,7 @@
  },
  "landscape/group-settle-other": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 844,
@@ -1134,10 +901,7 @@
  },
  "landscape/group-settle-record": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
    "span.bs-avatar \"S\" 10px",
@@ -1152,10 +916,7 @@
  },
  "landscape/group-expenses": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 844,
@@ -1165,18 +926,12 @@
  "landscape/group-activity": {
   "overflow": [],
   "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
    "a.ledger-subject \"Electricity and internet for t\" 365x20",
    "a.ledger-subject \"Walmart order #…0007\" 171x20"
   ],
   "zoomInputs": [],
   "tinyText": [
-   "span.bs-avatar \"S\" 10px",
-   "span.bs-avatar \"N\" 10px",
-   "span.bs-avatar \"A\" 10px",
-   "span.bs-avatar \"P\" 10px",
-   "span.bs-avatar \"C\" 10px"
+   "span.bs-avatar 10px"
   ],
   "docWidth": 844,
   "vw": 844,
@@ -1184,10 +939,7 @@
  },
  "landscape/group-settings": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 844,
@@ -1196,11 +948,7 @@
  },
  "landscape/new-expense": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 844,
@@ -1209,11 +957,7 @@
  },
  "landscape/new-expense-parts": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 844,
@@ -1222,11 +966,7 @@
  },
  "landscape/new-expense-amount": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 844,
@@ -1235,18 +975,15 @@
  },
  "landscape/walmart-expense": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
    "span.bs-avatar \"S\" 10px",
    "span.bs-avatar \"A\" 10px",
    "span.bs-avatar \"N\" 10px",
    "span.bs-avatar \"P\" 10px",
-   "span.bs-avatar \"C\" 10px"
+   "span.bs-avatar \"C\" 10px",
+   "span.bs-avatar 10px"
   ],
   "docWidth": 844,
   "vw": 844,
@@ -1254,11 +991,7 @@
  },
  "landscape/fix-review": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
    "span.bs-avatar \"S\" 10px",
@@ -1274,9 +1007,6 @@
  "landscape/fix-card": {
   "overflow": [],
   "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38",
    "button \"Clear\" 40x40"
   ],
   "zoomInputs": [],
@@ -1288,9 +1018,6 @@
  "landscape/fix-card-amount": {
   "overflow": [],
   "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38",
    "button \"Clear\" 40x40"
   ],
   "zoomInputs": [],
@@ -1301,16 +1028,10 @@
  },
  "landscape/manual-expense": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
-   "span.bs-avatar \"S\" 10px",
-   "span.bs-avatar \"A\" 10px",
-   "span.bs-avatar \"N\" 10px"
+   "span.bs-avatar 10px"
   ],
   "docWidth": 844,
   "vw": 844,
@@ -1318,11 +1039,7 @@
  },
  "landscape/manual-edit": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36",
-   "a \"Your groups\" 66x38",
-   "a \"Apartment 4B with a fairly lon\" 205x38"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 844,
@@ -1331,9 +1048,7 @@
  },
  "landscape/join": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [],
   "docWidth": 844,
@@ -1342,9 +1057,7 @@
  },
  "landscape/account-menu": {
   "overflow": [],
-  "smallTargets": [
-   "a.brand \"b Bill Split\" 80x36"
-  ],
+  "smallTargets": [],
   "zoomInputs": [],
   "tinyText": [
    "span.bs-avatar \"S\" 10px",

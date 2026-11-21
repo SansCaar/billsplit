@@ -12,7 +12,7 @@ const run = Date.now().toString(36);
 const api = (page: Page, p: string, method = "GET", body?: unknown) =>
   page.evaluate(async ([p, m, b]) => { const r = await fetch(p as string, { method: m as string, headers: { "content-type": "application/json" }, body: b ? JSON.stringify(b) : undefined }); return r.json(); }, [p, method, body] as const);
 async function signIn(page: Page, name: string, email: string) {
-  await page.goto(`${APP}/signin`); await page.fill('input[name="name"]', name); await page.fill('input[name="email"]', email); await page.click("text=Dev sign in"); await page.waitForURL(`${APP}/`);
+  await page.goto(`${APP}/signin?dev=1`); await page.fill('input[name="name"]', name); await page.fill('input[name="email"]', email); await page.click("text=Dev sign in"); await page.waitForURL(`${APP}/`);
 }
 
 test("ledger screenshots", async () => {

@@ -16,7 +16,7 @@ const sanskar = { name: "Sanskar", email: `sanskar+${run}@example.com` };
 const ayush = { name: "Ayush", email: `ayush+${run}@example.com` };
 
 async function devSignIn(page: Page, u: { name: string; email: string }) {
-  await page.goto(`${APP}/signin`);
+  await page.goto(`${APP}/signin?dev=1`);
   await page.fill('input[name="name"]', u.name);
   await page.fill('input[name="email"]', u.email);
   await page.click("text=Dev sign in");

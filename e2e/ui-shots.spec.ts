@@ -11,7 +11,7 @@ fs.mkdirSync(OUT, { recursive: true });
 const run = Date.now().toString(36);
 
 async function signIn(page: Page, name: string, email: string) {
-  await page.goto(`${APP}/signin`);
+  await page.goto(`${APP}/signin?dev=1`);
   await page.fill('input[name="name"]', name);
   await page.fill('input[name="email"]', email);
   await page.click("text=Dev sign in");
@@ -47,6 +47,7 @@ test("ui screenshots", async () => {
     const _unused = (name: string, full = true) => page.screenshot({ path: path.join(OUT, `${label}-${name}.png`), fullPage: full, animations: "disabled", caret: "initial" });
     await page.goto(`${APP}/`); await shot("01-home");
     await page.goto(`${APP}/g/${g._id}`); await shot("02-group");
+    await page.goto(`${APP}/g/${g._id}?tab=settle`); await shot("02a-settle");
     await page.goto(`${APP}/g/${g._id}?tab=expenses`); await shot("02b-expenses");
     await page.goto(`${APP}/g/${g._id}?tab=activity`); await shot("02c-activity");
     await page.goto(`${APP}/g/${g._id}?tab=settings`); await shot("02d-group-settings");
@@ -62,5 +63,13 @@ test("ui screenshots", async () => {
   }
   const anon = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true });
   const ap = await anon.newPage(); await ap.goto(`${APP}/signin`); await ap.screenshot({ path: path.join(OUT, "phone-00-signin.png") });
+  const anonD = await browser.newContext({ viewport: { width: 1280, height: 860 }, deviceScaleFactor: 2 });
+  const dp = await anonD.newPage(); await dp.goto(`${APP}/signin`); await dp.screenshot({ path: path.join(OUT, "desktop-00-signin.png") });
+  // A brand-new user with no groups yet.
+  for (const [label, viewport] of [["phone", { width: 390, height: 844 }], ["desktop", { width: 1280, height: 860 }]] as const) {
+    const fresh = await (await browser.newContext({ viewport, deviceScaleFactor: 2, isMobile: label === "phone" })).newPage();
+    await signIn(fresh, "Priya", `fresh+${label}+${run}@example.com`);
+    await fresh.screenshot({ path: path.join(OUT, `${label}-00b-home-empty.png`), fullPage: true });
+  }
   await browser.close();
 });

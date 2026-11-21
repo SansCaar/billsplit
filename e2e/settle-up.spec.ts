@@ -5,7 +5,7 @@ test("settle up on a phone: mark received, partial amount, custom payment, undo"
   const browser = await chromium.launch();
   const page = await (await browser.newContext({ viewport: { width: 360, height: 760 }, isMobile: true, hasTouch: true })).newPage();
   const run = Date.now().toString(36);
-  await page.goto(`${APP}/signin`); await page.fill('input[name="name"]', "Sanskar"); await page.fill('input[name="email"]', `su+${run}@example.com`); await page.click("text=Dev sign in"); await page.waitForURL(`${APP}/`);
+  await page.goto(`${APP}/signin?dev=1`); await page.fill('input[name="name"]', "Sanskar"); await page.fill('input[name="email"]', `su+${run}@example.com`); await page.click("text=Dev sign in"); await page.waitForURL(`${APP}/`);
   const api = (p: string, method = "GET", body?: unknown) => page.evaluate(async ([p, m, b]) => (await fetch(p as string, { method: m as string, headers: { "content-type": "application/json" }, body: b ? JSON.stringify(b) : undefined })).json(), [p, method, body] as const);
   const g = await api("/api/groups", "POST", { name: "Flat", placeholderNames: ["Ayush", "Nishant"] });
   const [s, a, n] = g.members.map((m: { id: string }) => m.id);

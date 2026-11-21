@@ -12,3 +12,4 @@ next-env.d.ts
 proof/real-chrome/*.png
 .vercel
 .env*
+proof/ui-audit

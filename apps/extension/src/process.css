@@ -14,3 +14,35 @@ body { margin: 0; background: #f7f8f3; min-height: 100vh; font-family: "DM Sans"
 .done { text-align: center; padding: 44px 24px; }
 .done .confetti { display: none; }
 a.bs-btn { display: inline-flex; text-decoration: none; }
+
+/* ---------- Gate screens: sign in, no group, errors, done ---------- */
+.gate { max-width: 460px; margin: 48px auto; background: #fff; border: 1px solid #e1e6dd; border-radius: 18px; padding: 32px 30px 26px; text-align: center; box-shadow: 0 20px 50px -30px rgba(36, 59, 52, .35); }
+.gate h2 { font-family: "Manrope", sans-serif; font-size: 22px; letter-spacing: -.03em; color: #1d3a30; margin: 14px 0 6px; }
+.gate p { color: #738078; font-size: 14px; line-height: 1.55; margin: 0 0 18px; }
+.gate-icon { width: 52px; height: 52px; margin: 0 auto; border-radius: 15px; background: #245b47; color: #f3f6ef; display: grid; place-items: center; font-family: "Manrope", sans-serif; font-weight: 800; font-size: 24px; transform: rotate(-4deg); }
+.gate-icon.ok { border-radius: 50%; transform: none; background: #e3eadb; color: #245b47; }
+.gate-icon.warn { border-radius: 50%; transform: none; background: #f8eceb; color: #a43f3d; }
+.gate .bs-btn.block { width: 100%; min-height: 48px; font-size: 15px; }
+.bs-btn { white-space: nowrap; }
+.order-chip { display: flex; align-items: center; gap: 12px; text-align: left; background: #f7f8f3; border: 1px solid #e1e6dd; border-radius: 12px; padding: 10px 12px; margin: 0 0 18px; }
+.order-chip-mark { width: 34px; height: 34px; border-radius: 9px; background: #eef3fb; border: 1px solid #dbe5f3; color: #2f5d9a; display: grid; place-items: center; font-weight: 800; flex: none; }
+.order-chip b { display: block; font-size: 14px; color: #1d3a30; }
+.order-chip span { font-size: 13px; color: #738078; }
+.gate-wait { display: flex; gap: 12px; align-items: center; text-align: left; background: #f1f5ee; border: 1px solid #d9e4d3; border-radius: 12px; padding: 12px 14px; }
+.gate-wait b { display: block; font-size: 14px; color: #1d3a30; }
+.gate-wait span:not(.spinner) { font-size: 13px; color: #738078; }
+.gate-links { display: flex; justify-content: center; gap: 18px; margin-top: 14px; flex-wrap: wrap; }
+.bs-link { background: none; border: 0; color: #245b47; font: 600 13px "DM Sans", system-ui, sans-serif; cursor: pointer; padding: 6px 0; }
+.bs-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.gate-settings { margin-top: 18px; text-align: left; border-top: 1px solid #e1e6dd; padding-top: 12px; }
+.gate-settings summary { cursor: pointer; color: #9aa59d; font-size: 12px; text-align: center; list-style: none; }
+.gate-settings summary::-webkit-details-marker { display: none; }
+.gate-settings label { display: grid; gap: 6px; font-size: 12px; font-weight: 600; color: #738078; margin-top: 10px; }
+.gate-settings-row { display: flex; gap: 8px; }
+.gate-settings input { flex: 1; min-width: 0; font: inherit; font-size: 14px; min-height: 40px; padding: 0 10px; border: 1px solid #dbe2d7; border-radius: 10px; color: #243b34; }
+.spinner { width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid #d3dccf; border-top-color: #245b47; animation: bs-spin .8s linear infinite; flex: none; display: inline-block; }
+.spinner.big { width: 36px; height: 36px; border-width: 3px; margin: 6px auto 0; display: block; }
+@keyframes bs-spin { to { transform: rotate(360deg); } }
+@media (max-width: 520px) { .gate { margin: 20px auto; padding: 26px 20px 20px; } .shell { padding: 16px 18px 40px; } .order-meta { margin-left: 0; width: 100%; font-size: 13px; } }
+.gate button.bs-btn, .gate a.bs-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px; border-radius: 10px; font-weight: 650; font-size: 14px; cursor: pointer; }
+.gate button.bs-btn.primary:hover, .gate a.bs-btn.primary:hover { background: #1b4536; }
