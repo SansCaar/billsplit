@@ -53,6 +53,17 @@ Env vars (production + preview): `MONGODB_URI`, `AUTH_SECRET`, `AUTH_GOOGLE_ID`,
 `AUTH_TRUST_HOST=true`. Leave `DEV_LOGIN` unset so only Google sign-in exists. The Google OAuth client needs the
 redirect URIs `https://bsplit.vercel.app/api/auth/callback/google` and `https://billsplit-indol.vercel.app/api/auth/callback/google`.
 
+### Pull request previews
+
+Every pull request gets its own preview deploy. Vercel comments the link on the PR and updates it on each push, and
+the **CI** check runs typecheck + unit tests. Test there, then merge; merging to `main` deploys production.
+
+- Previews use a separate database (`MONGODB_DB=billsplit-preview`, preview env only), so testing never touches real data.
+- Google sign-in works on preview URLs through `AUTH_REDIRECT_PROXY_URL=https://bsplit.vercel.app/api/auth`
+  (production + preview): Google only ever sees the production callback, which bounces the sign-in back to the preview.
+  This needs the same `AUTH_SECRET` in production and preview.
+- Preview links sit behind Vercel login (Deployment Protection), so only accounts on the Vercel team can open them.
+
 Deploy from the repo root: `npx vercel deploy --prod` (`.vercelignore` keeps proof data and node_modules out).
 The extension's default address is set at build time (`APP_URL`); it can still be changed in its Processing tab.
 
