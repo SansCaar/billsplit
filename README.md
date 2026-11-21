@@ -33,8 +33,17 @@ Sign-in: locally there is a dev sign-in (name + email). For Google, set `AUTH_GO
 Publish: bump `version` in `apps/extension/public/manifest.json`, then `git tag ext-v<version> && git push origin ext-v<version>`.
 The GitHub Action builds the extension and attaches `billsplit-extension-<version>.zip` to a release.
 
-Install or update: `tools/install-extension.sh` (needs `gh` logged in). It downloads the latest release into
-`~/.billsplit/extension` and loads it into Chrome. On later runs it reloads the extension in place.
+Install or update (macOS + Chrome):
+
+```sh
+# while the repo is private (needs `gh auth login` with access to the repo)
+curl -fsSL -H "Authorization: Bearer $(gh auth token)" https://raw.githubusercontent.com/SansCaar/billsplit/main/tools/install-extension.sh | zsh
+# once the repo is public
+curl -fsSL https://raw.githubusercontent.com/SansCaar/billsplit/main/tools/install-extension.sh | zsh
+```
+
+It downloads the latest release into `~/.billsplit/extension` and loads it into Chrome. On later runs it reloads the
+extension in place. Chrome needs View → Developer → Allow JavaScript from Apple Events turned on.
 
 ## Deploy (Vercel)
 
