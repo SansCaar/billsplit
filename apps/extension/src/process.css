@@ -1,13 +1,16 @@
-body { margin: 0; background: radial-gradient(circle at 20% 0%, #efeaff, #fafaff 50%); min-height: 100vh; font-family: ui-sans-serif, system-ui, sans-serif; color: #1b1d29; }
-.shell { max-width: 1020px; margin: 0 auto; padding: 18px 22px 60px; }
-.head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
-.logo { font-weight: 900; font-size: 20px; }
-.order-meta { color: #6b7086; font-size: 14px; }
-.toolbar { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
-.toolbar label { display: grid; gap: 4px; font-size: 12px; font-weight: 700; color: #6b7086; text-transform: uppercase; }
-.toolbar select { font-size: 15px; padding: 8px 10px; border-radius: 10px; border: 1px solid #e7e8f0; background: #fff; text-transform: none; }
-.mute { color: #6b7086; font-size: 13px; }
-.panel { background: #fff; border: 1px solid #e7e8f0; border-radius: 20px; padding: 22px; }
-.done { text-align: center; padding: 40px; }
-.confetti { font-size: 64px; animation: bs-pop .5s cubic-bezier(.2,.9,.3,1.4); }
-a.bs-btn { display: inline-block; text-decoration: none; }
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap");
+body { margin: 0; background: #f7f8f3; min-height: 100vh; font-family: "DM Sans", system-ui, sans-serif; color: #243b34; }
+.shell { max-width: 1040px; margin: 0 auto; padding: 22px 24px 60px; }
+.head { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; flex-wrap: wrap; padding-bottom: 18px; border-bottom: 1px solid #e1e6dd; }
+.logo { display: flex; align-items: center; gap: 10px; font-family: "Manrope", sans-serif; font-weight: 700; font-size: 16px; color: #1d3a30; }
+.logo::before { content: "b"; width: 32px; height: 32px; border-radius: 10px; background: #245b47; color: #f3f6ef; display: grid; place-items: center; font-weight: 800; transform: rotate(-4deg); }
+.order-meta { color: #738078; font-size: 14px; margin-left: auto; }
+.toolbar { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+.toolbar label { display: grid; gap: 6px; font-size: 13px; font-weight: 600; }
+.toolbar select { font: inherit; font-size: 15px; min-height: 42px; padding: 0 10px; border-radius: 10px; border: 1px solid #dbe2d7; background: #fff; color: #243b34; min-width: 240px; }
+.mute { color: #738078; font-size: 13px; }
+.panel { background: #fff; border: 1px solid #e1e6dd; border-radius: 14px; padding: 24px; }
+.panel h2 { font-family: "Manrope", sans-serif; letter-spacing: -.03em; color: #1d3a30; margin: 0 0 6px; }
+.done { text-align: center; padding: 44px 24px; }
+.done .confetti { display: none; }
+a.bs-btn { display: inline-flex; text-decoration: none; }

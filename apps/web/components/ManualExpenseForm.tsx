@@ -5,14 +5,14 @@ import { fmtMoney, resolveSplit, type Split, type SplitMethod } from "@billsplit
 import { Avatar } from "@billsplit/assign-ui";
 import { api, toCents } from "@/lib/client";
 
-interface M { id: string; name: string }
+interface M { id: string; name: string; colorIndex?: number }
 const localToday = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 export interface ManualInitial { id?: string; title: string; date: string; amount: number; payerId: string; split: Split }
 
 export function ManualExpenseForm({ groupId, members, allMembers, initial, meId, onCancel }: { groupId: string; members: M[]; allMembers: M[]; initial?: ManualInitial; meId: string; onCancel?: () => void }) {
   const r = useRouter();
   const [title, setTitle] = useState(initial?.title ?? "");
-  // Local calendar date (toISOString would give tomorrow's date in the evening in US time zones).
+  // Local calendar date, set in the browser (the server may be in UTC).
   const [date, setDate] = useState(initial?.date ?? "");
   useEffect(() => { if (!initial?.date) setDate((d) => d || localToday()); }, [initial?.date]);
   const [amount, setAmount] = useState(initial ? (initial.amount / 100).toFixed(2) : "");
@@ -22,14 +22,14 @@ export function ManualExpenseForm({ groupId, members, allMembers, initial, meId,
   const [busy, setBusy] = useState(false);
   const cents = toCents(amount);
   const preview = useMemo(() => { try { return resolveSplit(cents, split); } catch (e) { return { error: (e as Error).message }; } }, [cents, split]);
-  const idx = (id: string) => allMembers.findIndex((m) => m.id === id);
+  const colorIndex = (id: string) => allMembers.find((m) => m.id === id)?.colorIndex ?? allMembers.findIndex((m) => m.id === id);
   const on = (id: string) => split.shares.some((s) => s.memberId === id);
   const share = (id: string) => split.shares.find((s) => s.memberId === id);
   const toggle = (id: string) => setSplit((sp) => ({ ...sp, shares: sp.shares.some((s) => s.memberId === id) ? sp.shares.filter((s) => s.memberId !== id) : [...sp.shares, { memberId: id, parts: 1, amount: 0 }] }));
   const setShare = (id: string, p: { parts?: number; amount?: number }) => setSplit((sp) => ({ ...sp, shares: sp.shares.map((s) => (s.memberId === id ? { ...s, ...p } : s)) }));
-  const label = (m: M) => (m.id === meId ? `${m.name} (you)` : m.name);
-  const short = (m: M) => (m.id === meId ? "You" : m.name);
+  const everyone = members.every((m) => on(m.id));
   const ready = title.trim() && cents > 0 && split.shares.length > 0 && !("error" in preview);
+  const stop = (e: React.SyntheticEvent) => e.stopPropagation();
 
   const save = async () => {
     setErr(null); setBusy(true);
@@ -41,52 +41,55 @@ export function ManualExpenseForm({ groupId, members, allMembers, initial, meId,
   };
 
   return (
-    <>
+    <div className="two-col">
       <section className="card">
         <label className="field" htmlFor="amount">Amount</label>
-        <div className="money-input"><span>$</span><input id="amount" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.00" inputMode="decimal" name="amount" autoFocus={!initial} /></div>
+        <div className="amount-field"><span>$</span><input id="amount" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.00" inputMode="decimal" name="amount" autoFocus={!initial} /></div>
         <label className="field">What was it for?<input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Electricity, rent, pizza…" name="title" /></label>
         <div className="field-row">
-          <label className="field">Paid by<select value={payerId} onChange={(e) => setPayerId(e.target.value)} name="payer">{members.map((m) => <option key={m.id} value={m.id}>{short(m)}</option>)}</select></label>
+          <label className="field">Paid by<select value={payerId} onChange={(e) => setPayerId(e.target.value)} name="payer">{members.map((m) => <option key={m.id} value={m.id}>{m.id === meId ? "You" : m.name}</option>)}</select></label>
           <label className="field">Date<input type="date" value={date} onChange={(e) => setDate(e.target.value)} /></label>
         </div>
       </section>
 
       <section className="card">
-        <div className="card-head"><h2>Split</h2><span className="small mute">{split.shares.length} of {members.length}</span></div>
-        <div className="segmented" role="tablist">
+        <div className="card-head">
+          <h2>Split between</h2>
+          <button type="button" className="link" onClick={() => setSplit({ ...split, shares: everyone ? [] : members.map((m) => share(m.id) ?? { memberId: m.id, parts: 1, amount: 0 }) })}>{everyone ? "Clear" : "Everyone"}</button>
+        </div>
+        <span className="seg" role="tablist" style={{ marginBottom: 6 }}>
           {(["equal", "parts", "amount"] as SplitMethod[]).map((m) => (
             <button key={m} type="button" role="tab" aria-selected={split.method === m} className={split.method === m ? "on" : ""} onClick={() => setSplit({ ...split, method: m })}>{m === "equal" ? "Equally" : m === "parts" ? "By parts" : "By amount"}</button>
           ))}
-        </div>
+        </span>
         <div>
           {members.map((m) => (
-            <div key={m.id} className={`toggle-row ${on(m.id) ? "on" : ""}`} role="checkbox" aria-checked={on(m.id)} aria-label={m.name} tabIndex={0}
-              onClick={(e) => { if ((e.target as HTMLElement).closest("input,button.step")) return; toggle(m.id); }}
-              onKeyDown={(e) => { if (e.key === " " || e.key === "Enter") { e.preventDefault(); toggle(m.id); } }}>
-              <span className="check">{on(m.id) ? "✓" : ""}</span>
-              <Avatar name={m.name} index={idx(m.id)} size={32} />
-              <span className="grow row-title ellipsis">{label(m)}</span>
+            <div key={m.id} className={`person ${on(m.id) ? "on" : ""}`} role="checkbox" aria-checked={on(m.id)} aria-label={m.name} tabIndex={0}
+              onClick={() => toggle(m.id)} onKeyDown={(e) => { if (e.key === " " || e.key === "Enter") { e.preventDefault(); toggle(m.id); } }}>
+              <span className="box">{on(m.id) ? "✓" : ""}</span>
+              <Avatar name={m.name} index={colorIndex(m.id)} size={30} />
+              <span className="grow ellipsis">{m.id === meId ? `${m.name} (you)` : m.name}</span>
               {on(m.id) && split.method === "parts" && (
-                <span className="stepper">
-                  <button type="button" className="step" aria-label={`fewer parts for ${m.name}`} onClick={() => setShare(m.id, { parts: Math.max(1, (share(m.id)?.parts ?? 1) - 1) })}>−</button>
+                <span className="stepper" onClick={stop}>
+                  <button type="button" aria-label={`fewer parts for ${m.name}`} onClick={() => setShare(m.id, { parts: Math.max(1, (share(m.id)?.parts ?? 1) - 1) })}>−</button>
                   <b>{share(m.id)?.parts ?? 1}</b>
-                  <button type="button" className="step" aria-label={`more parts for ${m.name}`} onClick={() => setShare(m.id, { parts: (share(m.id)?.parts ?? 1) + 1 })}>+</button>
+                  <button type="button" aria-label={`more parts for ${m.name}`} onClick={() => setShare(m.id, { parts: (share(m.id)?.parts ?? 1) + 1 })}>+</button>
                 </span>
               )}
-              {on(m.id) && split.method === "amount" && <input aria-label={`amount for ${m.name}`} inputMode="decimal" defaultValue={((share(m.id)?.amount ?? 0) / 100).toFixed(2)} onChange={(e) => setShare(m.id, { amount: toCents(e.target.value) })} />}
+              {on(m.id) && split.method === "amount" && <input aria-label={`amount for ${m.name}`} inputMode="decimal" onClick={stop} onKeyDown={stop} defaultValue={((share(m.id)?.amount ?? 0) / 100).toFixed(2)} onChange={(e) => setShare(m.id, { amount: toCents(e.target.value) })} />}
               {on(m.id) && split.method !== "amount" && "shares" in preview && <span className="amt">{fmtMoney(preview.shares.get(m.id) ?? 0)}</span>}
             </div>
           ))}
         </div>
         {"error" in preview ? <div className="err">{String(preview.error).replace(/(\d+)¢/g, (_, c) => fmtMoney(Number(c)))}</div>
-          : preview.remainder !== 0 && cents > 0 && split.shares.length > 0 && <p className="note">{fmtMoney(preview.remainder)} left over — not added to anyone.</p>}
+          : preview.remainder !== 0 && cents > 0 && split.shares.length > 0 && <p className="note">{fmtMoney(preview.remainder)} left over from rounding — not added to anyone.</p>}
+        {err && <div className="err" role="alert">{err}</div>}
       </section>
-      {err && <div className="err" role="alert">{err}</div>}
-      <div className="sticky-bar"><div>
-        {onCancel && <button className="btn" onClick={onCancel}>Cancel</button>}
-        <button className="btn primary block" onClick={save} disabled={!ready || busy} data-testid="save-expense">{busy ? "Saving…" : initial?.id ? "Save changes" : `Add ${cents > 0 ? fmtMoney(cents) : "expense"}`}</button>
+
+      <div className="sticky-bar" style={{ gridColumn: "1 / -1" }}><div>
+        {onCancel && <button className="btn secondary" onClick={onCancel}>Cancel</button>}
+        <button className="btn primary block" onClick={save} disabled={!ready || busy} data-testid="save-expense">{busy ? "Saving…" : initial?.id ? "Save changes" : cents > 0 ? `Add ${fmtMoney(cents)}` : "Add expense"}</button>
       </div></div>
-    </>
+    </div>
   );
 }

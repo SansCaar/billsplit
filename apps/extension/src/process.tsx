@@ -160,7 +160,7 @@ function Shell({ order, children }: { order?: ParsedOrder; children: React.React
   return (
     <div className="shell">
       <header className="head">
-        <div className="logo">🧾 Bill Split</div>
+        <div className="logo">Bill Split</div>
         {order && (
           <div className="order-meta" data-testid="order-meta">
             Walmart #{order.orderNumber}

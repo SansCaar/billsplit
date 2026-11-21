@@ -53,7 +53,7 @@ test("process a Walmart order through the extension, fix it as another member, t
   await app.waitForURL(/\/g\//);
   const groupUrl = app.url().split("?")[0];
   await expect(app.getByTestId("group-name")).toHaveText(`Apartment ${run}`);
-  await app.goto(`${groupUrl}?tab=group`);
+  await app.goto(`${groupUrl}?tab=settings`);
   await expect(app.getByTestId("invite-link")).toContainText("/join/");
   const invite = (await app.getByTestId("invite-link").innerText()).trim();
   await shot(app, "group-created");
@@ -125,7 +125,7 @@ test("process a Walmart order through the extension, fix it as another member, t
   await shot(proc, "sent-to-group");
 
   // 4) The expense is in the web app with correct totals.
-  await app.goto(groupUrl);
+  await app.goto(`${groupUrl}?tab=expenses`);
   await expect(app.getByTestId("expenses")).toContainText("Walmart order");
   await expect(app.getByTestId("expenses")).toContainText(`#…${walmartOrder.id.slice(-4)}`);
   await expect(app.getByTestId("expenses")).toContainText("Ayush paid");
@@ -152,7 +152,8 @@ test("process a Walmart order through the extension, fix it as another member, t
   await phone.getByTestId("join").click();
   await phone.waitForURL(/\/g\//);
   await phone.goto(phone.url().split("?")[0] + "?tab=balances");
-  await expect(phone.getByTestId("balances")).toContainText("Ayush (you)");
+  await expect(phone.getByTestId("balances")).toContainText("Ayush");
+  await expect(phone.getByTestId("balances").locator(".bal-card.me")).toContainText("Ayush");
   await shot(phone, "ayush-joined-on-phone");
   await phone.goto(expenseUrl);
   await phone.getByTestId("edit").click();
@@ -186,7 +187,7 @@ test("process a Walmart order through the extension, fix it as another member, t
   await proc2.getByTestId("submit").click();
   await expect(proc2.getByTestId("done")).toContainText("Order updated in");
 
-  await app.goto(groupUrl);
+  await app.goto(`${groupUrl}?tab=expenses`);
   await expect(app.getByTestId("expenses").locator("li")).toHaveCount(1); // never duplicated
   await app.goto(expenseUrl);
   await expect(app.getByTestId("expense-amount")).not.toHaveText("$53.22");

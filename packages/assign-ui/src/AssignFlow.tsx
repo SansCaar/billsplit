@@ -17,6 +17,8 @@ import {
 export interface FlowMember {
   id: MemberId;
   name: string;
+  /** Position in the group's member list, for a stable per-person colour. */
+  colorIndex?: number;
 }
 
 export interface AssignFlowProps {
@@ -35,13 +37,17 @@ export interface AssignFlowProps {
   onSubmit: (r: { assignments: Assignments; rules: SplitRules; payerId: MemberId }) => void;
 }
 
-const COLORS = ["#ff6b6b", "#4dabf7", "#51cf66", "#fcc419", "#cc5de8", "#ff922b", "#20c997", "#f06595", "#748ffc"];
-export const memberColor = (i: number) => COLORS[i % COLORS.length]!;
-const initials = (n: string) => n.split(/\s+/).map((p) => p[0]).join("").slice(0, 2).toUpperCase();
+// Each person gets their own colour, chosen from their name so it's the same on every screen.
+const COLORS = ["#d9776b", "#5b8fc7", "#4f9e6e", "#d99a2b", "#9b72c4", "#e0844a", "#3a9c93", "#cf6690", "#7381c9", "#8a9a3b"];
+const hash = (s: string) => { let h = 0; for (const c of s.trim().toLowerCase()) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; };
+/** Colour by position in the group (unique within a group); falls back to the name when no position is known. */
+export const memberColor = (name: string, index?: number) => COLORS[(index !== undefined && index >= 0 ? index : hash(name)) % COLORS.length]!;
+const initials = (n: string) => (n.trim()[0] ?? "?").toUpperCase();
 
-export function Avatar({ name, index, size = 36, dim = false }: { name: string; index: number; size?: number; dim?: boolean }) {
+/** Initial in a coloured circle. Pass the member's position in the group as `index` so colours never clash. */
+export function Avatar({ name, index, size = 36, dim = false }: { name: string; index?: number; size?: number; dim?: boolean }) {
   return (
-    <span className="bs-avatar" style={{ width: size, height: size, background: memberColor(index), opacity: dim ? 0.35 : 1, fontSize: size * 0.4 }}>
+    <span className="bs-avatar" style={{ width: size, height: size, background: memberColor(name, index), opacity: dim ? 0.4 : 1, fontSize: Math.round(size * 0.42) }}>
       {initials(name)}
     </span>
   );
@@ -65,7 +71,7 @@ export function AssignFlow(props: AssignFlowProps) {
   const reviewing = step >= assignable.length;
   const item = assignable[step];
   const fulfillment = (it: Item) => order.fulfillments.find((f) => f.id === it.fulfillmentId);
-  const idx = (id: MemberId) => members.findIndex((m) => m.id === id);
+  const idx = (id: MemberId) => { const m = members.find((x) => x.id === id); return m?.colorIndex ?? members.indexOf(m!); };
   const name = (id: MemberId) => members.find((m) => m.id === id)?.name ?? "?";
   const current = currentSplit(assignable, state);
   const check = checkSplit(item, current);
@@ -114,8 +120,8 @@ export function AssignFlow(props: AssignFlowProps) {
   return (
     <div className="bs-flow" ref={rootRef}>
       <div className="bs-progress" title={`${assignedCount}/${assignable.length} assigned`}>
-        <div className="bs-progress-bar" style={{ width: `${progress * 100}%` }} />
         <span className="bs-progress-label">{assignedCount}/{assignable.length} assigned</span>
+        <div className="bs-progress-track"><div className="bs-progress-bar" style={{ width: `${progress * 100}%` }} /></div>
       </div>
       {props.notice}
       {!reviewing && item ? (
@@ -178,96 +184,91 @@ function ItemCard(p: {
       return new Map<MemberId, number>();
     }
   }, [item, split]);
-  const setMethod = (method: SplitMethod) => p.dispatch({ type: "method", method });
+  const share = (id: MemberId) => split.shares.find((s) => s.memberId === id);
   const setShare = (memberId: MemberId, patch: { parts?: number; amount?: number }) => p.dispatch({ type: "patchShare", memberId, patch });
-  const onNext = () => p.dispatch({ type: "next" });
-  const onBack = () => p.dispatch({ type: "back" });
+  const everyone = p.members.length > 0 && p.members.every((m) => selected.has(m.id));
+  const stop = (e: React.SyntheticEvent) => e.stopPropagation();
 
   return (
-    <div className="bs-card-wrap">
-      <div className="bs-card" data-testid="item-card">
-        <div className="bs-card-top">
-          <span className="bs-count">Item {p.position + 1} of {p.total}</span>
-          {p.fulfillmentLabel && <span className="bs-chip">{p.fulfillmentLabel}</span>}
-          {item.status === "substituted" && <span className="bs-chip bs-chip-warn">Substituted{item.substitutedFor ? ` for ${item.substitutedFor}` : ""}</span>}
+    <div className="bs-item" data-testid="item-card">
+      <section className="bs-product">
+        <div className="bs-eyebrow">
+          Item {p.position + 1} of {p.total}
+          {p.fulfillmentLabel ? <> · {p.fulfillmentLabel}</> : null}
         </div>
-        <div className="bs-card-body">
-          {item.imageUrl ? <img className="bs-img" src={item.imageUrl} alt="" /> : <div className="bs-img bs-img-empty">🛒</div>}
-          <div className="bs-card-info">
+        <div className="bs-product-body">
+          {item.imageUrl ? <img className="bs-img" src={item.imageUrl} alt="" /> : null}
+          <div className="bs-product-info">
             <h2 className="bs-item-name" data-testid="item-name">{item.name}</h2>
-            <div className="bs-item-meta">Qty {item.quantity}</div>
+            <div className="bs-item-meta">
+              Qty {item.quantity}
+              {item.status === "substituted" ? <span className="bs-tag">Substituted{item.substitutedFor ? ` for ${item.substitutedFor}` : ""}</span> : null}
+            </div>
             <div className="bs-item-price">{fmtMoney(item.amount)}</div>
           </div>
         </div>
-        <div className="bs-split">
-          <div className="bs-tabs" role="tablist">
-            {(["equal", "parts", "amount"] as const).map((m) => (
-              <button key={m} role="tab" aria-selected={split.method === m} className={`bs-tab ${split.method === m ? "on" : ""}`} onClick={() => setMethod(m)}>
-                {m === "equal" ? "Equal" : m === "parts" ? "By parts" : "By amount"}
-              </button>
-            ))}
+      </section>
+
+      <section className="bs-editor">
+        <div className="bs-editor-head">
+          <h3>Who shares this?</h3>
+          <div className="bs-shortcuts">
+            <button type="button" onClick={() => p.dispatch({ type: "all", memberIds: p.members.map((m) => m.id) })} data-testid="all">{everyone ? "Clear" : "Everyone"}</button>
+            <button type="button" onClick={() => p.dispatch({ type: "sameAsLast" })} disabled={!p.hasLast} data-testid="same-as-last">Same as last</button>
           </div>
-          {split.shares.length === 0 ? (
-            <div className="bs-hint">Tap who's splitting this →</div>
-          ) : (
-            <ul className="bs-share-list">
-              {split.shares.map((s) => {
-                const i = p.members.findIndex((m) => m.id === s.memberId);
-                const m = p.members[i];
-                if (!m) return null;
-                return (
-                  <li key={s.memberId} className="bs-share-row">
-                    <Avatar name={m.name} index={i} size={24} />
-                    <span className="bs-share-name">{m.name}</span>
-                    {split.method === "parts" && (
-                      <span className="bs-stepper">
-                        <button aria-label={`fewer parts for ${m.name}`} onClick={() => setShare(m.id, { parts: Math.max(1, (s.parts ?? 1) - 1) })}>−</button>
-                        <span>{s.parts ?? 1}</span>
-                        <button aria-label={`more parts for ${m.name}`} onClick={() => setShare(m.id, { parts: (s.parts ?? 1) + 1 })}>+</button>
-                      </span>
-                    )}
-                    {split.method === "amount" ? (
-                      <input
-                        className="bs-money"
-                        aria-label={`amount for ${m.name}`}
-                        defaultValue={((s.amount ?? 0) / 100).toFixed(2)}
-                        onChange={(e) => setShare(m.id, { amount: parseDollars(e.target.value) })}
-                      />
-                    ) : (
-                      <span className="bs-share-amt">{fmtMoney(preview.get(m.id) ?? 0)}</span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-          {p.error && <div className="bs-error">{p.error}</div>}
         </div>
-      </div>
-      <aside className="bs-people" aria-label="Members">
-        <button className={`bs-person bs-all ${selected.size === p.members.length ? "on" : ""}`} onClick={() => p.dispatch({ type: "all", memberIds: p.members.map((m) => m.id) })} data-testid="all">
-          <span className="bs-avatar bs-avatar-all">All</span>
-          <span className="bs-person-name">Everyone</span>
-          <kbd>A</kbd>
-        </button>
-        {p.members.map((m, i) => (
-          <button key={m.id} className={`bs-person ${selected.has(m.id) ? "on" : ""}`} onClick={() => p.dispatch({ type: "toggle", memberId: m.id })} aria-pressed={selected.has(m.id)} data-testid={`member-${m.name}`}>
-            <Avatar name={m.name} index={i} dim={!selected.has(m.id)} />
-            <span className="bs-person-name">{m.name}</span>
-            {i < 9 && <kbd>{i + 1}</kbd>}
-          </button>
-        ))}
-        <button className="bs-person bs-same" onClick={() => p.dispatch({ type: "sameAsLast" })} disabled={!p.hasLast} data-testid="same-as-last">
-          <span className="bs-avatar bs-avatar-all">↺</span>
-          <span className="bs-person-name">Same as last</span>
-          <kbd>S</kbd>
-        </button>
-      </aside>
+        <div className="bs-seg" role="tablist" aria-label="Split method">
+          {(["equal", "parts", "amount"] as const).map((m) => (
+            <button key={m} type="button" role="tab" aria-selected={split.method === m} className={split.method === m ? "on" : ""} onClick={() => p.dispatch({ type: "method", method: m })}>
+              {m === "equal" ? "Equally" : m === "parts" ? "By parts" : "By amount"}
+            </button>
+          ))}
+        </div>
+        <div className="bs-people" aria-label="Members">
+          {p.members.map((m, i) => {
+            const on = selected.has(m.id);
+            const s = share(m.id);
+            return (
+              <div
+                key={m.id}
+                role="checkbox"
+                aria-checked={on}
+                aria-pressed={on}
+                tabIndex={0}
+                className={`bs-person ${on ? "on bs-share-row" : ""}`}
+                onClick={() => p.dispatch({ type: "toggle", memberId: m.id })}
+                onKeyDown={(e) => { if (e.key === " ") { e.preventDefault(); e.stopPropagation(); p.dispatch({ type: "toggle", memberId: m.id }); } }}
+                data-testid={`member-${m.name}`}
+              >
+                <span className="bs-box">{on ? "✓" : ""}</span>
+                <Avatar name={m.name} index={m.colorIndex ?? i} size={30} dim={!on} />
+                <span className="bs-person-name bs-share-name">{m.name}</span>
+                {i < 9 && <kbd>{i + 1}</kbd>}
+                {on && split.method === "parts" && (
+                  <span className="bs-stepper" onClick={stop}>
+                    <button type="button" aria-label={`fewer parts for ${m.name}`} onClick={() => setShare(m.id, { parts: Math.max(1, (s?.parts ?? 1) - 1) })}>−</button>
+                    <b>{s?.parts ?? 1}</b>
+                    <button type="button" aria-label={`more parts for ${m.name}`} onClick={() => setShare(m.id, { parts: (s?.parts ?? 1) + 1 })}>+</button>
+                  </span>
+                )}
+                {on && split.method === "amount" ? (
+                  <input className="bs-money" aria-label={`amount for ${m.name}`} inputMode="decimal" onClick={stop} onKeyDown={stop}
+                    defaultValue={((s?.amount ?? 0) / 100).toFixed(2)} onChange={(e) => setShare(m.id, { amount: parseDollars(e.target.value) })} />
+                ) : (
+                  <span className="bs-share-amt">{on ? fmtMoney(preview.get(m.id) ?? 0) : ""}</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        {p.error && <div className="bs-error">{p.error}</div>}
+      </section>
+
       <div className="bs-nav bs-nav-card">
-        <button className="bs-btn ghost" onClick={onBack} disabled={p.position === 0}>← Back</button>
-        <span className="bs-nav-count">{p.position + 1} / {p.total}</span>
-        <button className="bs-btn primary" onClick={onNext} disabled={!p.canNext} data-testid="next">
-          {p.position + 1 === p.total ? "Review →" : "Next →"}
+        <button type="button" className="bs-btn ghost" onClick={() => p.dispatch({ type: "back" })} disabled={p.position === 0}>Back</button>
+        <button type="button" className="bs-btn ghost" onClick={() => p.dispatch({ type: "skip" })} data-testid="skip">Skip</button>
+        <button type="button" className="bs-btn primary" onClick={() => p.dispatch({ type: "next" })} disabled={!p.canNext} data-testid="next">
+          {p.position + 1 === p.total ? "Review" : "Next"}
         </button>
       </div>
     </div>
@@ -300,7 +301,8 @@ function Review(p: {
   return (
     <div className="bs-review" data-testid="review">
       <div className="bs-review-head">
-        <h2>{missing.length === 0 ? "🎉 All assigned — review & send" : `${missing.length} item(s) still need someone`}</h2>
+        <div className="bs-eyebrow">Review</div>
+        <h2>{missing.length === 0 ? "All assigned — review & send" : `${missing.length} item${missing.length === 1 ? "" : "s"} still need someone`}</h2>
         <div className="bs-review-sub">
           Walmart #…{p.order.orderNumber.slice(-4)}
           {card?.last4 ? ` · paid with ${card.brand} •••• ${card.last4}` : ""}

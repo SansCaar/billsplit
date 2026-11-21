@@ -13,9 +13,8 @@ export function ExpenseList({ group, meId, expenses, settlements }: { group: Gro
   if (!rows.length)
     return (
       <section className="card empty">
-        <div className="big">🛒</div>
-        <p><b>No expenses yet</b></p>
-        <p className="small">Add one with the + button, or open a Walmart order and click “Split this order”.</p>
+        <h3>No expenses yet</h3>
+        <p className="small">Add one above, or open a Walmart order and choose “Split this order”.</p>
       </section>
     );
   const months: [string, Row[]][] = [];
@@ -27,42 +26,43 @@ export function ExpenseList({ group, meId, expenses, settlements }: { group: Gro
   }
   const name = (id: string) => (id === meId ? "You" : memberName(group, id));
   return (
-    <section className="card flush" data-testid="expenses">
+    <section className="card list-card" data-testid="expenses">
       {months.map(([m, list]) => (
         <div key={m}>
-          <div className="month">{m}</div>
+          <div className="month eyebrow">{m}</div>
           <ul className="list">
             {list.map((r) => {
               if (r.kind === "s") {
                 const s = r.s;
                 return (
                   <li key={s._id} className={s.deleted ? "deleted" : ""}>
-                    <div className="item-row">
-                      <span className="icon-tile pay">💸</span>
+                    <div className="li">
+                      <span className="tile repay">↔</span>
                       <div className="grow">
-                        <div className="row-title ellipsis">{name(s.fromId)} paid {s.toId === meId ? "you" : memberName(group, s.toId)}</div>
-                        <div className="row-sub">{dayLabel(s.date)} · settlement{s.note ? ` · ${s.note}` : ""}</div>
+                        <div className="li-title ellipsis">{name(s.fromId)} paid {s.toId === meId ? "you" : memberName(group, s.toId)}</div>
+                        <div className="li-sub">{dayLabel(s.date)} · repayment{s.note ? ` · ${s.note}` : ""}</div>
                       </div>
-                      <div className="row-right"><div className="amt">{fmtMoney(s.amount)}</div></div>
+                      <div className="li-right"><div className="amt">{fmtMoney(s.amount)}</div></div>
                     </div>
                   </li>
                 );
               }
               const e = r.e;
               const inv = involvement(e, meId);
+              const title = displayTitle(e);
               return (
                 <li key={e._id} className={e.deleted ? "deleted" : ""}>
-                  <Link href={`/e/${e._id}`} className="item-row">
-                    <span className={`icon-tile ${e.kind === "walmart" ? "walmart" : ""}`}>{e.kind === "walmart" ? "🛒" : "🧾"}</span>
+                  <Link href={`/e/${e._id}`} className="li">
+                    <span className={`tile ${e.kind === "walmart" ? "walmart" : ""}`}>{e.kind === "walmart" ? "W" : title.trim()[0]?.toUpperCase()}</span>
                     <div className="grow">
-                      <div className="row-title ellipsis">{displayTitle(e)}</div>
-                      <div className="row-sub ellipsis">{dayLabel(e.date)} · {expenseSubtitle(e, name(e.payerId))}{e.deleted ? " · deleted" : ""}</div>
+                      <div className="li-title ellipsis">{title}</div>
+                      <div className="li-sub ellipsis">{dayLabel(e.date)} · {expenseSubtitle(e, name(e.payerId))}{e.deleted ? " · deleted" : ""}</div>
                     </div>
-                    <div className="row-right">
-                      {inv.kind === "lent" && <><div className="k pos">you lent</div><div className="amt pos">{fmtMoney(inv.amount)}</div></>}
-                      {inv.kind === "owe" && <><div className="k neg">you owe</div><div className="amt neg">{fmtMoney(inv.amount)}</div></>}
-                      {inv.kind === "none" && <div className="k faint">not involved</div>}
-                      {inv.kind === "even" && <div className="k faint">just you</div>}
+                    <div className="li-right">
+                      {inv.kind === "lent" && <><div className="amt pos">{fmtMoney(inv.amount)}</div><div className="cap">you lent</div></>}
+                      {inv.kind === "owe" && <><div className="amt neg">{fmtMoney(inv.amount)}</div><div className="cap">you owe</div></>}
+                      {inv.kind === "none" && <div className="cap">not involved</div>}
+                      {inv.kind === "even" && <div className="cap">just you</div>}
                     </div>
                   </Link>
                 </li>

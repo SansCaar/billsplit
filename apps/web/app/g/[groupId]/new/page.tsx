@@ -10,14 +10,15 @@ export default async function NewExpense({ params }: { params: Promise<{ groupId
   const actor = await currentActor();
   if (!actor) redirect("/signin");
   const { group, me } = await requireGroup(await getDb(), actor, groupId);
-  const all = group.members.map((m) => ({ id: m.id, name: m.name }));
-  const members = group.members.filter((m) => !m.leftAt).map((m) => ({ id: m.id, name: m.name }));
+  const all = group.members.map((m, i) => ({ id: m.id, name: m.name, colorIndex: i }));
+  const members = all.filter((m) => !group.members.find((x) => x.id === m.id)!.leftAt);
   return (
     <main className="page">
-      <Link href={`/g/${groupId}`} className="back">← {group.name}</Link>
-      <h1 style={{ margin: "4px 4px 14px" }}>Add expense</h1>
+      <div className="crumb"><Link href="/">Your groups</Link><span>/</span><Link href={`/g/${groupId}`}>{group.name}</Link><span>/</span></div>
+      <header className="page-head">
+        <div><h1>Add an expense</h1><p className="sub">For Walmart orders, open the order on walmart.com and choose “Split this order”.</p></div>
+      </header>
       <ManualExpenseForm groupId={groupId} members={members} allMembers={all} meId={me.id} />
-      <p className="note" style={{ textAlign: "center" }}>Walmart order? Open it on walmart.com and click “Split this order”.</p>
     </main>
   );
 }
