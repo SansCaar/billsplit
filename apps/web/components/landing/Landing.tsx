@@ -4,6 +4,8 @@ import { Avatar } from "@billsplit/assign-ui";
 import { Story } from "./Story";
 import { CopyCommand } from "./CopyCommand";
 
+const REPO = "https://github.com/SansCaar/billsplit";
+const COFFEE = "https://buymeacoffee.com/sanscar";
 const INSTALL = "curl -fsSL https://raw.githubusercontent.com/SansCaar/billsplit/main/tools/install-extension.sh | zsh";
 
 export function Landing() {
@@ -70,7 +72,7 @@ export function Landing() {
           <h2>Install in one line</h2>
           <p>Paste this into Terminal. It downloads the extension and opens Chrome with the two clicks left to do.</p>
           <CopyCommand command={INSTALL} />
-          <p className="lp-small">Only the person splitting Walmart orders needs it. Open source on <a href="https://github.com/SansCaar/billsplit">GitHub</a>.</p>
+          <p className="lp-small">Only the person splitting Walmart orders needs it. Open source on <a href={REPO}>GitHub</a>.</p>
         </div>
       </section>
 
@@ -81,9 +83,22 @@ export function Landing() {
       </section>
 
       <footer className="lp-foot">
-        <span className="lp-brand small"><span className="brand-mark">b</span>Bill Split</span>
-        <span>Not affiliated with Walmart.</span>
-        <a href="https://github.com/SansCaar/billsplit">GitHub</a>
+        <div className="lp-support">
+          <div>
+            <h3>Help shape Bill Split</h3>
+            <p>It&apos;s free and open source. Ideas, bug reports and coffee all keep it going.</p>
+          </div>
+          <div className="lp-support-links">
+            <a href={COFFEE} target="_blank" rel="noopener noreferrer" className="lp-coffee">☕ Buy me a coffee</a>
+            <a href={`${REPO}/issues/new?template=feature_request.yml`} target="_blank" rel="noopener noreferrer" className="lp-btn ghost sm">💡 Suggest a feature</a>
+            <a href={`${REPO}/issues/new?template=bug_report.yml`} target="_blank" rel="noopener noreferrer" className="lp-btn ghost sm">🐞 Report a problem</a>
+          </div>
+        </div>
+        <div className="lp-foot-row">
+          <span className="lp-brand small"><span className="brand-mark">b</span>Bill Split</span>
+          <span>Not affiliated with Walmart.</span>
+          <a href={REPO}>GitHub</a>
+        </div>
       </footer>
     </div>
   );

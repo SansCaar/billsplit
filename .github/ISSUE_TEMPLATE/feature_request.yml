@@ -1,0 +1,28 @@
+name: Feature request or suggestion
+description: Something Bill Split should do, or do better
+title: "Suggestion: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping make Bill Split better. A sentence or two is plenty.
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like?
+      placeholder: e.g. Split Costco orders the same way as Walmart ones
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why would it help?
+      placeholder: What are you doing today instead, and what's annoying about it?
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where in Bill Split?
+      options:
+        - Website (groups, expenses, balances)
+        - Chrome extension (splitting Walmart orders)
+        - Something else

@@ -253,3 +253,18 @@
 }
 @media (min-width: 900px) { .lp-steps::after { content: ""; display: block; height: 35vh; } }
 @media (max-width: 899px) { .lp-steps::after { content: ""; display: block; height: 40svh; } }
+
+/* Footer: support strip (coffee, suggestions, bugs) */
+.lp-foot { display: block; }
+.lp-support { display: grid; gap: 18px; background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 24px; margin-bottom: 26px; }
+.lp-support h3 { font-size: 20px; }
+.lp-support p { margin: 6px 0 0; color: var(--lp-mute); font-size: 15px; }
+.lp-support-links { display: flex; flex-wrap: wrap; gap: 10px; }
+.lp-support-links a { flex: 1 1 auto; }
+.lp-coffee { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 0 16px; border-radius: 12px; background: #ffdd00; color: #1f1a00; font-weight: 700; font-size: 14px; white-space: nowrap; transition: transform .15s, box-shadow .15s; box-shadow: 0 8px 20px -12px rgba(120, 100, 0, .8); }
+.lp-coffee:hover { transform: translateY(-1px); box-shadow: 0 12px 24px -12px rgba(120, 100, 0, .9); }
+.lp-foot-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+@media (min-width: 900px) {
+  .lp-support { grid-template-columns: minmax(0, 1fr) auto; align-items: center; padding: 28px 32px; }
+  .lp-support-links a { flex: none; }
+}

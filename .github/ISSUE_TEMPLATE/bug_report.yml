@@ -1,0 +1,25 @@
+name: Something's not working
+description: Report a problem with the website or the extension
+title: "Bug: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Please don't paste order numbers, card details or other personal information.
+      placeholder: I clicked Split this order and…
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect instead?
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where?
+      options:
+        - Website on a phone
+        - Website on a computer
+        - Chrome extension
