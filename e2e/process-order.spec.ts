@@ -5,7 +5,7 @@ import path from "node:path";
 import { loadFixture, orderPageHtml, withRefund } from "./fake-walmart";
 
 const APP = process.env.APP_URL ?? "http://localhost:3000";
-const EXT = path.resolve(import.meta.dirname, "../apps/extension/dist");
+const EXT = process.env.EXT_DIR ?? path.resolve(import.meta.dirname, "../apps/extension/dist");
 const SHOTS = path.resolve(import.meta.dirname, "../proof/e2e");
 fs.mkdirSync(SHOTS, { recursive: true });
 let n = 0;

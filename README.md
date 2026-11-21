@@ -47,11 +47,11 @@ It downloads the latest release into `~/Bill Split Extension`. The first time, l
 
 ## Deploy (Vercel)
 
-Hosted at https://billsplit-indol.vercel.app (Vercel project `billsplit`, root directory `apps/web`, MongoDB Atlas).
+Hosted at https://bsplit.vercel.app, with the older https://billsplit-indol.vercel.app still working (Vercel project `billsplit`, root directory `apps/web`, MongoDB Atlas).
 
 Env vars (production + preview): `MONGODB_URI`, `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`,
 `AUTH_TRUST_HOST=true`. Leave `DEV_LOGIN` unset so only Google sign-in exists. The Google OAuth client needs the
-redirect URI `https://billsplit-indol.vercel.app/api/auth/callback/google`.
+redirect URIs `https://bsplit.vercel.app/api/auth/callback/google` and `https://billsplit-indol.vercel.app/api/auth/callback/google`.
 
 Deploy from the repo root: `npx vercel deploy --prod` (`.vercelignore` keeps proof data and node_modules out).
 The extension's default address is set at build time (`APP_URL`); it can still be changed in its Processing tab.
