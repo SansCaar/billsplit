@@ -9,3 +9,4 @@ proof/e2e-report
 tools/dist
 next-env.d.ts
 *.tsbuildinfo
+proof/real-chrome/*.png
