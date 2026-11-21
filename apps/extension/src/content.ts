@@ -1,11 +1,10 @@
+import { BTN_ID, createSplitButton, setButtonBusy } from "./splitButton";
 import { crossCheck, expandAllSections, orderIdFromPath, parseOrderHtml, visibleItemNames } from "./walmartPage";
-
-const BTN_ID = "billsplit-process-btn";
 
 async function processCurrentOrder(btn?: HTMLButtonElement) {
   const id = orderIdFromPath(location.pathname);
   if (!id) return { error: "Open a single order's details page on walmart.com first." };
-  if (btn) { btn.disabled = true; btn.textContent = "Reading order…"; }
+  if (btn) setButtonBusy(btn, true);
   try {
     const res = await fetch(`/orders/${id}`, { credentials: "include" });
     const order = parseOrderHtml(await res.text(), location.href);
@@ -21,7 +20,7 @@ async function processCurrentOrder(btn?: HTMLButtonElement) {
     alert(`Bill Split: ${msg}`);
     return { error: msg };
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = "🧾 Split this order"; }
+    if (btn) setButtonBusy(btn, false);
   }
 }
 
@@ -30,15 +29,7 @@ function ensureButton() {
   const existing = document.getElementById(BTN_ID);
   if (!onOrder) { existing?.remove(); return; }
   if (existing) return;
-  const b = document.createElement("button");
-  b.id = BTN_ID;
-  b.textContent = "🧾 Split this order";
-  Object.assign(b.style, {
-    position: "fixed", right: "22px", bottom: "22px", zIndex: "2147483647", padding: "14px 20px", borderRadius: "999px",
-    border: "0", background: "#245b47", color: "#f7faf5", font: "700 15px system-ui,sans-serif",
-    boxShadow: "0 12px 30px -10px rgba(27,69,54,.65)", cursor: "pointer",
-  } as CSSStyleDeclaration);
-  b.addEventListener("click", () => processCurrentOrder(b));
+  const b = createSplitButton((btn) => processCurrentOrder(btn));
   document.body.appendChild(b);
 }
 
