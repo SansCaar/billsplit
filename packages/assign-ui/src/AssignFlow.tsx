@@ -1,5 +1,6 @@
 "use client";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { canAdvance, checkSplit, currentSplit, flowReducer, type FlowAction, type FlowState } from "./flowState";
 import {
   fmtMoney,
   resolveSplit,
@@ -52,78 +53,51 @@ export function AssignFlow(props: AssignFlowProps) {
   const { order, members } = props;
   const assignable = useMemo(() => order.items.filter((i) => i.amount > 0), [order]);
   const zeroItems = useMemo(() => order.items.filter((i) => i.amount <= 0), [order]);
-  const [assignments, setAssignments] = useState<Assignments>(() => ({ ...(props.initialAssignments ?? {}) }));
+  const reducer = useMemo(() => flowReducer(assignable), [assignable]);
+  const [state, dispatch] = useReducer(reducer, undefined, (): FlowState => ({
+    assignments: { ...(props.initialAssignments ?? {}) },
+    step: props.startAtReview ? assignable.length : 0,
+    lastSplit: null,
+  }));
+  const { assignments, step, lastSplit } = state;
   const [rules, setRules] = useState<SplitRules>(props.rules);
   const [payerId, setPayerId] = useState<MemberId | null>(props.payerId);
-  const [step, setStep] = useState(() => (props.startAtReview ? assignable.length : 0)); // 0..assignable.length-1 = item cards; assignable.length = review
-  const [lastSplit, setLastSplit] = useState<Split | null>(null);
   const reviewing = step >= assignable.length;
   const item = assignable[step];
   const fulfillment = (it: Item) => order.fulfillments.find((f) => f.id === it.fulfillmentId);
   const idx = (id: MemberId) => members.findIndex((m) => m.id === id);
   const name = (id: MemberId) => members.find((m) => m.id === id)?.name ?? "?";
+  const current = currentSplit(assignable, state);
+  const check = checkSplit(item, current);
+  const itemError = check ? check.message.replace(/(\d+)¢/g, (_, c) => fmtMoney(Number(c))) : null;
+  const canNext = canAdvance(assignable, state);
 
-  const current: Split = (item && assignments[item.key]) || { method: "equal", shares: [] };
-  const setCurrent = useCallback(
-    (s: Split) => item && setAssignments((a) => ({ ...a, [item.key]: s })),
-    [item],
-  );
-
-  const toggle = useCallback(
-    (mid: MemberId) => {
-      const has = current.shares.some((s) => s.memberId === mid);
-      setCurrent({ ...current, shares: has ? current.shares.filter((s) => s.memberId !== mid) : [...current.shares, { memberId: mid, parts: 1 }] });
-    },
-    [current, setCurrent],
-  );
-  const all = useCallback(() => {
-    const everyone = current.shares.length === members.length;
-    setCurrent({ ...current, shares: everyone ? [] : members.map((m) => ({ memberId: m.id, parts: 1 })) });
-  }, [current, members, setCurrent]);
-  const sameAsLast = useCallback(() => lastSplit && setCurrent(structuredClone(lastSplit)), [lastSplit, setCurrent]);
-
-  /** Blocking errors stop Next; warnings (e.g. leftover in a by-amount split) do not. */
-  const itemCheck = useMemo((): { message: string; blocking: boolean } | null => {
-    if (!item || !current.shares.length) return null;
-    try {
-      const r = resolveSplit(item.amount, current);
-      if (current.method === "amount" && r.remainder > 0) return { message: `${fmtMoney(r.remainder)} not assigned to anyone`, blocking: false };
-      return null;
-    } catch (e) {
-      return { message: (e as Error).message.replace(/(\d+)¢/g, (_, c) => fmtMoney(Number(c))), blocking: true };
-    }
-  }, [item, current]);
-  const itemError = itemCheck?.message ?? null;
-  const canNext = !!item && current.shares.length > 0 && !itemCheck?.blocking;
-
-  const next = useCallback(() => {
-    if (!canNext) return;
-    setLastSplit(current);
-    setStep((s) => s + 1);
-  }, [canNext, current]);
-  const back = useCallback(() => setStep((s) => Math.max(0, s - 1)), []);
-
+  // Members/reviewing are read through a ref so the key listener is registered once and never stale;
+  // the state changes themselves go through dispatch, which always applies to the latest state.
+  const live = useRef({ members, reviewing });
+  live.current = { members, reviewing };
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
       if (t && (t.tagName === "INPUT" || t.tagName === "SELECT" || t.tagName === "TEXTAREA")) return;
-      if (reviewing) {
-        if (e.key === "ArrowLeft" || e.key === "Backspace") back();
+      const { members: ms, reviewing: rv } = live.current;
+      if (rv) {
+        if (e.key === "ArrowLeft" || e.key === "Backspace") dispatch({ type: "back" });
         return;
       }
       if (/^[1-9]$/.test(e.key)) {
-        const m = members[Number(e.key) - 1];
-        if (m) toggle(m.id);
-      } else if (e.key === "a" || e.key === "A") all();
-      else if (e.key === "s" || e.key === "S") sameAsLast();
-      else if (e.key === "Enter" || e.key === "ArrowRight") next();
-      else if (e.key === "ArrowLeft" || e.key === "Backspace") back();
+        const m = ms[Number(e.key) - 1];
+        if (m) dispatch({ type: "toggle", memberId: m.id });
+      } else if (e.key === "a" || e.key === "A") dispatch({ type: "all", memberIds: ms.map((m) => m.id) });
+      else if (e.key === "s" || e.key === "S") dispatch({ type: "sameAsLast" });
+      else if (e.key === "Enter" || e.key === "ArrowRight") dispatch({ type: "next" });
+      else if (e.key === "ArrowLeft" || e.key === "Backspace") dispatch({ type: "back" });
       else return;
       e.preventDefault();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [reviewing, members, toggle, all, sameAsLast, next, back]);
+  }, []);
 
   const assignedCount = assignable.filter((i) => (assignments[i.key]?.shares.length ?? 0) > 0).length;
   const progress = assignable.length ? assignedCount / assignable.length : 1;
@@ -147,12 +121,7 @@ export function AssignFlow(props: AssignFlowProps) {
           error={itemError}
           canNext={canNext}
           hasLast={!!lastSplit}
-          onToggle={toggle}
-          onAll={all}
-          onSameAsLast={sameAsLast}
-          onSplit={setCurrent}
-          onNext={next}
-          onBack={back}
+          dispatch={dispatch}
         />
       ) : (
         <Review
@@ -170,8 +139,8 @@ export function AssignFlow(props: AssignFlowProps) {
           submitLabel={props.submitLabel ?? "Send to group"}
           onRules={setRules}
           onPayer={setPayerId}
-          onJump={(k) => setStep(assignable.findIndex((i) => i.key === k))}
-          onBack={back}
+          onJump={(key) => dispatch({ type: "jump", key })}
+          onBack={() => dispatch({ type: "back" })}
           onSubmit={() => payerId && props.onSubmit({ assignments, rules, payerId })}
         />
       )}
@@ -189,12 +158,7 @@ function ItemCard(p: {
   error: string | null;
   canNext: boolean;
   hasLast: boolean;
-  onToggle: (id: MemberId) => void;
-  onAll: () => void;
-  onSameAsLast: () => void;
-  onSplit: (s: Split) => void;
-  onNext: () => void;
-  onBack: () => void;
+  dispatch: React.Dispatch<FlowAction>;
 }) {
   const { item, split } = p;
   const selected = new Set(split.shares.map((s) => s.memberId));
@@ -205,16 +169,10 @@ function ItemCard(p: {
       return new Map<MemberId, number>();
     }
   }, [item, split]);
-  const setMethod = (method: SplitMethod) => {
-    const shares = split.shares.map((s) => ({
-      memberId: s.memberId,
-      parts: s.parts ?? 1,
-      amount: method === "amount" ? s.amount ?? Math.floor(item.amount / Math.max(1, split.shares.length)) : s.amount,
-    }));
-    p.onSplit({ method, shares });
-  };
-  const setShare = (mid: MemberId, patch: { parts?: number; amount?: number }) =>
-    p.onSplit({ ...split, shares: split.shares.map((s) => (s.memberId === mid ? { ...s, ...patch } : s)) });
+  const setMethod = (method: SplitMethod) => p.dispatch({ type: "method", method });
+  const setShare = (memberId: MemberId, patch: { parts?: number; amount?: number }) => p.dispatch({ type: "patchShare", memberId, patch });
+  const onNext = () => p.dispatch({ type: "next" });
+  const onBack = () => p.dispatch({ type: "back" });
 
   return (
     <div className="bs-card-wrap">
@@ -277,26 +235,26 @@ function ItemCard(p: {
           {p.error && <div className="bs-error">{p.error}</div>}
         </div>
         <div className="bs-nav">
-          <button className="bs-btn ghost" onClick={p.onBack} disabled={p.position === 0}>← Back</button>
-          <button className="bs-btn primary" onClick={p.onNext} disabled={!p.canNext} data-testid="next">
+          <button className="bs-btn ghost" onClick={onBack} disabled={p.position === 0}>← Back</button>
+          <button className="bs-btn primary" onClick={onNext} disabled={!p.canNext} data-testid="next">
             {p.position + 1 === p.total ? "Review →" : "Next →"}
           </button>
         </div>
       </div>
       <aside className="bs-people" aria-label="Members">
-        <button className={`bs-person bs-all ${selected.size === p.members.length ? "on" : ""}`} onClick={p.onAll} data-testid="all">
+        <button className={`bs-person bs-all ${selected.size === p.members.length ? "on" : ""}`} onClick={() => p.dispatch({ type: "all", memberIds: p.members.map((m) => m.id) })} data-testid="all">
           <span className="bs-avatar bs-avatar-all">All</span>
           <span className="bs-person-name">Everyone</span>
           <kbd>A</kbd>
         </button>
         {p.members.map((m, i) => (
-          <button key={m.id} className={`bs-person ${selected.has(m.id) ? "on" : ""}`} onClick={() => p.onToggle(m.id)} aria-pressed={selected.has(m.id)} data-testid={`member-${m.name}`}>
+          <button key={m.id} className={`bs-person ${selected.has(m.id) ? "on" : ""}`} onClick={() => p.dispatch({ type: "toggle", memberId: m.id })} aria-pressed={selected.has(m.id)} data-testid={`member-${m.name}`}>
             <Avatar name={m.name} index={i} dim={!selected.has(m.id)} />
             <span className="bs-person-name">{m.name}</span>
             {i < 9 && <kbd>{i + 1}</kbd>}
           </button>
         ))}
-        <button className="bs-person bs-same" onClick={p.onSameAsLast} disabled={!p.hasLast} data-testid="same-as-last">
+        <button className="bs-person bs-same" onClick={() => p.dispatch({ type: "sameAsLast" })} disabled={!p.hasLast} data-testid="same-as-last">
           <span className="bs-avatar bs-avatar-all">↺</span>
           <span className="bs-person-name">Same as last</span>
           <kbd>S</kbd>
