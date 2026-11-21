@@ -47,7 +47,7 @@ const initials = (n: string) => (n.trim()[0] ?? "?").toUpperCase();
 /** Initial in a coloured circle. Pass the member's position in the group as `index` so colours never clash. */
 export function Avatar({ name, index, size = 36, dim = false }: { name: string; index?: number; size?: number; dim?: boolean }) {
   return (
-    <span className="bs-avatar" style={{ width: size, height: size, background: memberColor(name, index), opacity: dim ? 0.4 : 1, fontSize: Math.round(size * 0.42) }}>
+    <span className="bs-avatar" style={{ width: size, height: size, background: memberColor(name, index), opacity: dim ? 0.4 : 1, fontSize: Math.max(10, Math.round(size * 0.42)) }}>
       {initials(name)}
     </span>
   );

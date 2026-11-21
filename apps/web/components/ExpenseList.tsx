@@ -40,7 +40,7 @@ export function ExpenseList({ group, meId, expenses, settlements }: { group: Gro
                       <span className="tile repay">↔</span>
                       <div className="grow">
                         <div className="li-title ellipsis">{name(s.fromId)} paid {s.toId === meId ? "you" : memberName(group, s.toId)}</div>
-                        <div className="li-sub">{dayLabel(s.date)} · repayment{s.note ? ` · ${s.note}` : ""}</div>
+                        <div className="li-sub">{dayLabel(s.date)} · payment{s.note ? ` · ${s.note}` : ""}</div>
                       </div>
                       <div className="li-right"><div className="amt">{fmtMoney(s.amount)}</div></div>
                     </div>

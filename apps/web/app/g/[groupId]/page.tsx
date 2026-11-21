@@ -28,6 +28,7 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
   const allSettled = members.every((m) => (s.balances[m.id] ?? 0) === 0);
   const tabs = [
     ["balances", "Balances", null],
+    ["settle", "Settle up", mine.length || null],
     ["expenses", "Expenses", live.length || null],
     ["activity", "Activity", null],
     ["settings", "Settings", null],
@@ -42,7 +43,7 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
           <p className="sub">{members.length} housemate{members.length === 1 ? "" : "s"} · {live.length} expense{live.length === 1 ? "" : "s"}</p>
         </div>
         <div className="actions">
-          <Link className="btn secondary" href={`/g/${groupId}?tab=balances#repay`}>Record repayment</Link>
+          <Link className="btn secondary" href={`/g/${groupId}?tab=settle`}>Settle up</Link>
           <Link className="btn primary" href={`/g/${groupId}/new`}>Add expense</Link>
         </div>
       </header>
@@ -84,9 +85,16 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
               );
             })}
           </div>
-          <SettleUp groupId={groupId} members={members.map((m) => ({ id: m.id, name: m.name }))} suggestions={s.suggestions} meId={s.me.id}
-            settlements={s.settlements.map((x) => ({ id: x._id, fromId: x.fromId, toId: x.toId, amount: x.amount, date: String(x.date), deleted: x.deleted }))} />
+          <div className="bal-cta">
+            <div><h3>{s.suggestions.length ? `${s.suggestions.length} payment${s.suggestions.length === 1 ? "" : "s"} would settle everyone` : "Everyone is settled up"}</h3><p className="note" style={{ margin: "2px 0 0" }}>Record payments made outside the app to keep balances right.</p></div>
+            <Link className="btn primary" href={`/g/${groupId}?tab=settle`}>Settle up</Link>
+          </div>
         </>
+      )}
+
+      {tab === "settle" && (
+        <SettleUp groupId={groupId} members={members.map((m) => ({ id: m.id, name: m.name, colorIndex: memberIndex(g, m.id) }))} suggestions={s.suggestions} meId={s.me.id}
+          settlements={s.settlements.map((x) => ({ id: x._id, fromId: x.fromId, toId: x.toId, amount: x.amount, date: String(x.date), note: x.note, deleted: x.deleted }))} />
       )}
 
       {tab === "expenses" && <ExpenseList group={g} meId={s.me.id} expenses={s.expenses} settlements={s.settlements} />}

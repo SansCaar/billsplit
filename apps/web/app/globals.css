@@ -229,3 +229,63 @@ body.editing .hide-when-editing { display: none; }
   .section-head { display: block; }
   .section-head .aside { display: block; text-align: left; margin-top: 6px; }
 }
+
+/* ---------- Mobile compatibility fixes ---------- */
+/* Grid/flex children must be allowed to shrink, otherwise long names in selects stretch the page. */
+.two-col, .field-row, .bal-grid { grid-template-columns: minmax(0, 1fr); }
+.field-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.bal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+input, select, textarea { min-width: 0; max-width: 100%; font-size: 16px; } /* ≥16px stops iOS zooming in on focus */
+input[type="date"] { -webkit-appearance: none; appearance: none; display: block; }
+.card-head, .page-head > div, .exp-meta { min-width: 0; }
+.card-head { flex-wrap: wrap; }
+h1 { overflow-wrap: anywhere; }
+.li-title, .li-sub { min-width: 0; }
+@media (pointer: coarse) {
+  .btn.sm { min-height: 40px; }
+  .seg button { min-height: 40px; }
+  .link { min-height: 40px; display: inline-flex; align-items: center; }
+  .menu > summary { min-height: 44px; }
+  .menu-pop button, .menu-pop a { min-height: 44px; display: flex; align-items: center; }
+  .crumb a { padding: 10px 0; }
+  .person input { min-height: 40px; }
+  .stepper button { width: 40px; height: 40px; }
+}
+@media (min-width: 760px) {
+  .two-col { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .bal-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+}
+
+/* ---------- Settle up ---------- */
+.settle { display: grid; gap: 0; }
+.pay-list { display: grid; gap: 12px; }
+.pay-card { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px 16px; align-items: center; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: #fcfdfa; }
+.pay-flow { display: inline-flex; align-items: center; gap: 6px; }
+.pay-arrow { color: var(--faint); font-size: 16px; }
+.pay-title { font-size: 15px; color: var(--ink); }
+.pay-title b { color: var(--ink-strong); font-weight: 650; }
+.pay-amount { font-family: var(--font-head); font-size: 28px; font-weight: 750; letter-spacing: -.04em; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.pay-actions, .pay-custom { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
+.pay-custom { grid-template-columns: minmax(0, 1fr); }
+.settled { display: flex; align-items: center; gap: 14px; padding: 6px 0; }
+.settled-mark { width: 40px; height: 40px; border-radius: 50%; background: var(--green-soft); color: var(--green); display: grid; place-items: center; font-weight: 800; flex: none; }
+.chip-pick { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+.chip-pick button { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; max-width: 100%; padding: 0 14px 0 8px; border-radius: 999px; border: 1px solid var(--line-strong); background: #fff; font-size: 14px; font-weight: 550; color: var(--ink); }
+.chip-pick button.on { border-color: var(--green); background: var(--green-tint); box-shadow: inset 0 0 0 1px var(--green); color: var(--ink-strong); }
+.field > span:first-child { font-size: 13px; font-weight: 600; }
+.bal-cta { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 20px; }
+@media (min-width: 760px) {
+  .pay-card { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .pay-actions { grid-column: auto; display: flex; }
+  .pay-custom { grid-column: 1 / -1; grid-template-columns: minmax(0, 260px) auto; align-items: end; justify-content: end; }
+}
+.bal-cta { flex-wrap: wrap; } .bal-cta > div { min-width: 0; flex: 1 1 220px; }
+.settle { grid-template-columns: minmax(0, 1fr); }
+.pay-actions .btn { min-width: 0; white-space: normal; text-align: center; line-height: 1.2; }
+@media (max-width: 379px) { .pay-actions { grid-template-columns: minmax(0, 1fr); } }
+@media (pointer: coarse) {
+  .link { padding: 0 6px; }
+  .menu > summary { padding: 0 4px; min-width: 44px; justify-content: center; }
+}
+@media (max-width: 379px) { .li .pay-flow.sm .pay-arrow, .li .pay-flow.sm .bs-avatar:last-child { display: none; } }
+.pay-text { min-width: 0; } .pay-title { overflow-wrap: anywhere; }
