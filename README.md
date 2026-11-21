@@ -18,7 +18,8 @@ proof                test evidence (screenshots, reports). proof/raw is git-igno
 ```sh
 pnpm install
 pnpm dev                 # web app on http://localhost:3000 + a local MongoDB in apps/web/.data
-pnpm build:ext           # builds apps/extension/dist
+pnpm build:ext           # builds apps/extension/dist, pointed at the hosted app
+pnpm --filter extension build:local   # same, pointed at http://localhost:3000
 ```
 
 Load the extension: `chrome://extensions` → Developer mode → **Load unpacked** → `apps/extension/dist`.
@@ -29,14 +30,20 @@ Sign-in: locally there is a dev sign-in (name + email). For Google, set `AUTH_GO
 
 ## Deploy (Vercel)
 
-Set `MONGODB_URI`, `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` and leave `DEV_LOGIN` unset.
-In the extension's Processing tab, change "Bill Split address" to the Vercel URL.
+Hosted at https://billsplit-indol.vercel.app (Vercel project `billsplit`, root directory `apps/web`, MongoDB Atlas).
+
+Env vars (production + preview): `MONGODB_URI`, `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`,
+`AUTH_TRUST_HOST=true`. Leave `DEV_LOGIN` unset so only Google sign-in exists. The Google OAuth client needs the
+redirect URI `https://billsplit-indol.vercel.app/api/auth/callback/google`.
+
+Deploy from the repo root: `npx vercel deploy --prod` (`.vercelignore` keeps proof data and node_modules out).
+The extension's default address is set at build time (`APP_URL`); it can still be changed in its Processing tab.
 
 ## Tests
 
 ```sh
-pnpm -r test                         # core (37) + web services (11)
-cd e2e && npx playwright test        # extension end-to-end (needs `pnpm dev` running)
+pnpm -r test                         # core (37) + web services (12)
+cd e2e && npx playwright test        # extension end-to-end (needs `pnpm dev` and `build:local`)
 ```
 
 ## How Walmart orders are read

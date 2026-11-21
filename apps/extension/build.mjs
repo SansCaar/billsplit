@@ -7,6 +7,6 @@ fs.cpSync("public", "dist", { recursive: true });
 const opts = {
   entryPoints: { content: "src/content.ts", background: "src/background.ts", process: "src/process.tsx" },
   bundle: true, outdir: "dist", format: "iife", target: "chrome120", jsx: "automatic",
-  define: { "process.env.NODE_ENV": '"production"' }, minify: false, sourcemap: false, logLevel: "info",
+  define: { "process.env.NODE_ENV": '"production"', __APP_URL__: JSON.stringify(process.env.APP_URL || "https://billsplit-indol.vercel.app") }, minify: false, sourcemap: false, logLevel: "info",
 };
 if (watch) { const ctx = await esbuild.context(opts); await ctx.watch(); } else await esbuild.build(opts);
