@@ -1,83 +1,177 @@
-# Bill Split (v0)
+# 🧾 Bill Split
 
-Split shared household costs, with itemized Walmart orders processed straight from walmart.com.
-Vocabulary lives in [GLOSSARY.md](GLOSSARY.md); decisions in [docs/adr](docs/adr).
+**Split shared costs with the people you live with, and split Walmart orders item by item so everyone pays for exactly what they used.**
 
-```
-packages/core        split math, balances, order diff, Walmart parser (pure TS, unit-tested)
-packages/assign-ui   the one-item-at-a-time assignment screen (shared by extension + web)
-apps/web             Next.js app: groups, invites, expenses, settlements, activity (MongoDB)
-apps/extension       Chrome extension (MV3): "Split this order" on walmart.com order pages
-e2e                  Playwright: extension + web app end to end
-tools                real-Chrome harness (AppleScript) + fixture anonymizer
-proof                test evidence (screenshots, reports). proof/raw is git-ignored (real order data)
-```
+Open the app at **[bsplit.vercel.app](https://bsplit.vercel.app)**.
 
-## Run locally
+![Bill Split demo: create a group, add an expense, split a Walmart order item by item, settle up](docs/demo/billsplit-demo.gif)
 
-```sh
-pnpm install
-pnpm dev                 # web app on http://localhost:3000 + a local MongoDB in apps/web/.data
-pnpm build:ext           # builds apps/extension/dist, pointed at the hosted app
-pnpm --filter extension build:local   # same, pointed at http://localhost:3000
-```
+▶️ [Watch the full demo video (1.5 min, with captions)](docs/demo/billsplit-demo.mp4)
 
-Load the extension: `chrome://extensions` → Developer mode → **Load unpacked** → `apps/extension/dist`.
-Open any order at walmart.com/orders → click **🧾 Split this order**.
+---
 
-Sign-in: locally there is a dev sign-in (name + email) at `/signin?dev=1`. For Google, set `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET`
-(redirect URI `http://localhost:3000/api/auth/callback/google`). Set `MONGODB_URI` to use a real MongoDB.
+## What it does
 
-## Extension releases
+- **Groups for your household.** Create a group, add your roommates by name, and share one invite link. Each person joins and picks their name.
+- **Everyday expenses in seconds.** Rent, internet, pizza. Split **equally**, **by parts** (for example, 2 shares for one person, 1 for another), or **by exact amounts**.
+- **Walmart orders, one item at a time.** With the Chrome extension, open any order on walmart.com and click **🧾 Split this order**. Bill Split shows each item as a card and you tap who shared it. Tax and fees split themselves.
+- **Always know who owes whom.** Balances update as soon as anything changes. **Settle up** suggests the fewest payments needed to get everyone to $0.
+- **Every change on record.** If someone edits an expense, the **Activity** feed shows who changed what, when, and how it affected each person's share.
 
-Publish: bump `version` in `apps/extension/public/manifest.json`, then `git tag ext-v<version> && git push origin ext-v<version>`.
-The GitHub Action builds the extension and attaches `billsplit-extension-<version>.zip` to a release.
+---
 
-Install or update (macOS + Chrome):
+## Getting started
 
-```sh
-# while the repo is private (needs `gh auth login` with access to the repo)
-curl -fsSL -H "Authorization: Bearer $(gh auth token)" https://raw.githubusercontent.com/SansCaar/billsplit/main/tools/install-extension.sh | zsh
-# once the repo is public
-curl -fsSL https://raw.githubusercontent.com/SansCaar/billsplit/main/tools/install-extension.sh | zsh
-```
+### 1. Sign in
 
-It downloads the latest release into `~/Bill Split Extension`. The first time, load that folder in Chrome yourself
-(`chrome://extensions` → Developer mode → Load unpacked). To update, run the command again and click ↻ on the extension.
+Go to **[bsplit.vercel.app](https://bsplit.vercel.app)** and choose **Continue with Google**. There's no password to set up. It works on your phone and on your computer.
 
-## Deploy (Vercel)
+### 2. Create your group
 
-Hosted at https://bsplit.vercel.app, with the older https://billsplit-indol.vercel.app still working (Vercel project `billsplit`, root directory `apps/web`, MongoDB Atlas).
+On **Your groups**, give the group a name (like *Apartment 4B*) and type your housemates' names, separated by commas. They don't need accounts yet: you can start adding expenses for them right away.
 
-Env vars (production + preview): `MONGODB_URI`, `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`,
-`AUTH_TRUST_HOST=true`. Leave `DEV_LOGIN` unset so only Google sign-in exists. The Google OAuth client needs the
-redirect URIs `https://bsplit.vercel.app/api/auth/callback/google` and `https://billsplit-indol.vercel.app/api/auth/callback/google`.
+### 3. Invite everyone
 
-### Pull request previews
+Open the group's **Settings** tab and copy the **invite link**. Send it however you like (text, WhatsApp, email). When a housemate opens it, they sign in, choose **"I'm …"** to claim the name you added, and they're in, with their balance already up to date.
 
-Every pull request gets its own preview deploy. Vercel comments the link on the PR and updates it on each push, and
-the **CI** check runs typecheck + unit tests. Test there, then merge; merging to `main` deploys production.
+> Anyone in the group can share the invite link. Only the person who created the group can turn it off.
 
-- Previews use a separate database (`MONGODB_DB=billsplit-preview`, preview env only), so testing never touches real data.
-- Google sign-in works on preview URLs through `AUTH_REDIRECT_PROXY_URL=https://bsplit.vercel.app/api/auth`
-  (production + preview): Google only ever sees the production callback, which bounces the sign-in back to the preview.
-  This needs the same `AUTH_SECRET` in production and preview.
-- Preview links sit behind Vercel login (Deployment Protection), so only accounts on the Vercel team can open them.
+---
 
-Deploy from the repo root: `npx vercel deploy --prod` (`.vercelignore` keeps proof data and node_modules out).
-The extension's default address is set at build time (`APP_URL`); it can still be changed in its Processing tab.
+## Everyday use
 
-## Tests
+### Add an expense
 
-```sh
-pnpm -r test                         # core (37) + web services (12)
-cd e2e && npx playwright test        # extension end-to-end (needs `pnpm dev` and `build:local`)
-```
+In your group, click **Add expense**:
 
-## How Walmart orders are read
+1. Enter the **amount** and **what it was for**.
+2. Choose **who paid** (you by default) and the date.
+3. Under **Split between**, pick who shares it and how:
+   - **Equally:** everyone ticked pays the same.
+   - **By parts:** use **+ / −** to give someone more shares (say, someone who has the bigger room).
+   - **By amount:** type exactly what each person owes.
+4. Click **Add**.
 
-The content script fetches a fresh copy of the order page (Walmart is a single-page app, so in-page state can be stale),
-reads Walmart's own order JSON from `__NEXT_DATA__`, then expands every collapsed section on the page and cross-checks
-the visible item names against what it parsed. Unavailable, canceled and returned items count as $0; a refund's tax
-portion is taken off the tax; substitutions keep the original item's name. Every parse is checked against Walmart's
-charged total to the cent.
+If an amount doesn't divide evenly, the leftover cent or two shows on the expense as *rounding left over* and isn't added to anyone's share, so nobody silently pays extra.
+
+### Check balances
+
+The **Balances** tab shows what you're owed (or what you owe) and where everyone in the group stands.
+
+### Settle up
+
+When someone pays you back (Venmo, Zelle, cash, anything outside the app):
+
+- Open **Settle up** and tap **Mark paid** next to their name if they paid the full amount.
+- Tap **Other amount** if they paid part of it.
+- Tap **Something else?** to record any other payment between any two people.
+
+Made a mistake? Each recorded payment has an **Undo**.
+
+### See what changed
+
+The **Activity** tab lists every change in the group: new expenses, edits, payments, re-processed orders. Each entry shows who made the change and how it moved each person's balance.
+
+---
+
+## Splitting Walmart orders
+
+This is what Bill Split is built for. A 40-item grocery order becomes a fair split in about a minute.
+
+### Install the Chrome extension (one time)
+
+You need **Google Chrome** on a Mac.
+
+▶️ [Watch the install guide video](docs/demo/install-guide.mp4)
+
+1. Open **Terminal** and paste:
+
+   ```sh
+   curl -fsSL https://raw.githubusercontent.com/SansCaar/billsplit/main/tools/install-extension.sh | zsh
+   ```
+
+   This downloads the latest extension into a folder called **Bill Split Extension** in your home folder.
+
+   > While the repository is private, use this version instead. It needs the [GitHub CLI](https://cli.github.com) signed in with access to the repo:
+   > ```sh
+   > curl -fsSL -H "Authorization: Bearer $(gh auth token)" https://raw.githubusercontent.com/SansCaar/billsplit/main/tools/install-extension.sh | zsh
+   > ```
+
+2. In Chrome, go to **`chrome://extensions`**.
+3. Turn on **Developer mode** (top right).
+4. Click **Load unpacked** and choose the **Bill Split Extension** folder in your home folder.
+5. Optional: pin the 🧾 icon from Chrome's puzzle-piece menu.
+
+**Updating:** run the same Terminal command again, then click the ↻ (reload) button on the Bill Split card in `chrome://extensions`.
+
+### Split an order
+
+1. Go to **[walmart.com/orders](https://www.walmart.com/orders)** and open an order.
+2. Click the green **🧾 Split this order** button at the bottom right of the page.
+   The first time, Bill Split asks you to sign in. Do that, then return to the order tab.
+3. Pick the **group** at the top. Bill Split reads the whole order, opening every collapsed section for you, and checks that it adds up to Walmart's total **to the cent**.
+4. Each item appears as a card. **Tap who shares it**, then **Next**:
+   - **Everyone:** everyone in the group shares the item.
+   - **Same as last:** reuses the people from the previous item.
+   - **By parts / By amount:** for items that aren't shared evenly.
+   - **Skip:** come back to an item later.
+5. On the **Review** screen:
+   - Choose **who paid** for the order.
+   - Choose how **tax** is split. *Proportional* (the default) means people who bought more pay more tax. *Equal* splits it evenly.
+   - Choose how **fees** (delivery, tip, bag fee) are split: *Equal* (the default) or *Proportional*.
+   - Check each person's total, then click **Send to group**.
+
+The order shows up in the group as one expense, listing every item and who shares it.
+
+#### Keyboard shortcuts
+
+On a computer, you can go through a big order without touching the mouse:
+
+| Key | Does |
+| --- | --- |
+| `1`, `2`, `3` … | Add or remove that person (in the order they're listed) |
+| `Enter` | Next item |
+
+### What Bill Split handles for you
+
+- **Substitutions** are labeled and keep the name of the item you ordered.
+- **Out-of-stock, canceled and returned items** count as $0, so nobody pays for them.
+- **Weight-adjusted items** (produce, meat) use the price you were actually charged.
+- **Refunds:** when Walmart refunds an item, the refunded tax comes off the tax too.
+- **Orders with several deliveries** (shipped plus delivered from store) and their separate fees are all read.
+
+### When an order changes later
+
+If Walmart refunds something after you've split the order, open the order again and click **Split this order**. Bill Split recognizes the order, **shows what changed**, and keeps every assignment you already made. Click **Update in group**. The expense is updated instead of duplicated, and the change appears in Activity.
+
+### Fixing an assignment
+
+Anyone in the group can correct a split. Open the expense, click **Fix assignments** (or **Edit expense** for a regular expense), tap the item to change it, and save. Everyone sees the change in **Activity**, including whose share went up or down.
+
+---
+
+## FAQ
+
+**Do my housemates need the extension?**
+No. Only the person splitting a Walmart order needs it. Everyone else just uses the website, on any phone or computer.
+
+**Does it work on my phone?**
+The website does: add expenses, check balances and settle up from your phone. Splitting Walmart orders needs Chrome on a computer.
+
+**Does Bill Split move money?**
+No. It keeps track of who owes whom. You pay each other however you normally do, then record it under **Settle up**.
+
+**What does the extension have access to?**
+It only runs on walmart.com, and only reads an order when you click **Split this order**. It sends the order to your Bill Split group. It doesn't change anything on Walmart.
+
+**Someone left the group. What happens to their balance?**
+A member can be removed (or can leave) from **Settings** once their balance is $0. Settle up first.
+
+**I see "rounding left over" on an expense.**
+When an amount doesn't divide evenly, the extra cent or two stays visible on the expense instead of being quietly added to someone's share.
+
+---
+
+## For developers
+
+Setup, architecture, deployment, tests and how the demo video is recorded: **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)**.
