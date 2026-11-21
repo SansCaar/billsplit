@@ -51,8 +51,11 @@ ${GO}{opacity:1;animation:bs-in .9s cubic-bezier(.2,1.45,.4,1) both,bs-hop 6.5s 
 ${B}:hover{translate:0 -3px;box-shadow:0 20px 38px -14px rgba(27,69,54,.85),inset 0 1px 0 rgba(255,255,255,.22)}
 ${B}:active{scale:.96}
 ${B}:focus-visible{outline:3px solid #f2c14e;outline-offset:3px}
-${B}[disabled]{cursor:progress;opacity:.88}
-${B}[disabled] .bs-ico{animation:bs-spin 1s linear infinite!important}
+${B}[disabled]{cursor:progress;animation:none!important;translate:none;scale:none}
+${B}[disabled] .bs-ico{animation:none!important}
+/* busy: the shine keeps sweeping while the order is read */
+${B}[disabled]::after{background-image:linear-gradient(105deg,transparent 25%,rgba(255,255,255,.7) 47%,rgba(255,255,255,.2) 55%,transparent 72%);animation:bs-shine-busy 1s ease-in-out infinite!important}
+${B}[disabled] .bs-ring{animation:none!important;opacity:0}
 ${B} .bs-ico{display:inline-block;font-size:18px;transform-origin:50% 80%}
 ${GO} .bs-ico{animation:bs-wiggle-in .75s ${LAND + 80}ms ease-in-out both,bs-wiggle 6.5s 3.4s ease-in-out 3}
 ${B} .bs-label{position:relative;z-index:1}
@@ -92,7 +95,7 @@ ${GO} .bs-burst>*{animation:bs-pop 1.05s cubic-bezier(.12,.75,.3,1) both}
   12%{opacity:1}
   70%{opacity:1;transform:translate(calc(var(--x) - 50%),calc(var(--y) - 50%)) scale(1) rotate(calc(var(--r) * .8))}
   100%{opacity:0;transform:translate(calc(var(--x) - 50%),calc(var(--y) - 50% + 26px)) scale(.6) rotate(var(--r))}}
-@keyframes bs-spin{to{transform:rotate(360deg)}}
+@keyframes bs-shine-busy{from{background-position:160% 0}to{background-position:-60% 0}}
 @keyframes bs-fade{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){
   ${GO},${GO} .bs-ico,${GO}::after{animation:bs-fade .3s both!important}
