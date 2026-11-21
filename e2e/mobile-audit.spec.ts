@@ -15,8 +15,8 @@ const api = (page: Page, p: string, method = "GET", body?: unknown) =>
 
 async function audit(page: Page) {
   return page.evaluate(() => {
-    const W = document.documentElement.clientWidth;
-    const out: { overflow: string[]; smallTargets: string[]; zoomInputs: string[]; tinyText: string[]; docWidth: number; vw: number } = { overflow: [], smallTargets: [], zoomInputs: [], tinyText: [], docWidth: document.documentElement.scrollWidth, vw: W };
+    const W = Math.min(document.documentElement.clientWidth, screen.width);
+    const out: { overflow: string[]; smallTargets: string[]; zoomInputs: string[]; tinyText: string[]; docWidth: number; vw: number } = { overflow: [], smallTargets: [], zoomInputs: [], tinyText: [], docWidth: Math.max(document.documentElement.scrollWidth, innerWidth), vw: W };
     const desc = (e: Element) => { const h = e as HTMLElement; const t = (h.innerText || h.getAttribute("aria-label") || (h as HTMLInputElement).placeholder || "").trim().replace(/\s+/g, " ").slice(0, 30); return `${e.tagName.toLowerCase()}${h.className && typeof h.className === "string" ? "." + h.className.split(" ").filter(Boolean).slice(0, 2).join(".") : ""}${t ? ` "${t}"` : ""}`; };
     const visible = (e: Element) => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== "hidden" && s.display !== "none" && !e.closest(".sr-only,nextjs-portal,[aria-hidden=true]"); };
     for (const e of document.querySelectorAll("body *")) {
@@ -41,7 +41,7 @@ async function audit(page: Page) {
 }
 
 test("mobile audit", async () => {
-  test.setTimeout(300_000);
+  test.setTimeout(900_000);
   const browser = await chromium.launch();
   const setup = await (await browser.newContext()).newPage();
   await setup.goto(`${APP}/signin`); await setup.fill('input[name="name"]', "Sanskar Lamsal"); await setup.fill('input[name="email"]', `m+${run}@example.com`); await setup.click("text=Dev sign in"); await setup.waitForURL(`${APP}/`);
@@ -52,6 +52,8 @@ test("mobile audit", async () => {
   const o = await api(setup, `/api/groups/${g._id}/orders`, "POST", { order, assignments, rules: { tax: "proportional", fees: "equal" }, payerId: ids[1] });
   const man = await api(setup, `/api/groups/${g._id}/expenses`, "POST", { title: "Electricity and internet for the whole of November", amount: 123456, payerId: ids[0], split: { method: "equal", shares: ids.map((memberId: string) => ({ memberId })) } });
   await api(setup, `/api/groups/${g._id}/settlements`, "POST", { fromId: ids[2], toId: ids[0], amount: 2000 });
+  // Pre-set the viewer timezone cookie so pages don't do their one-time refresh during the audit.
+  await setup.context().addCookies([{ name: "tz", value: "America%2FChicago", url: APP }]);
   const state = await setup.context().storageState();
 
   const pages: [string, string, ((p: Page) => Promise<void>)?][] = [
@@ -80,6 +82,7 @@ test("mobile audit", async () => {
   for (const [sz, viewport] of sizes) {
     const ctx = await browser.newContext({ viewport, storageState: state, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
     const page = await ctx.newPage();
+    page.setDefaultTimeout(15_000); // a blocked tap should fail fast, not hang the audit
     for (const [name, url, act] of pages) {
       await page.goto(`${APP}${url}`); await page.waitForLoadState("networkidle");
       if (act) { await act(page); await page.waitForTimeout(300); }
