@@ -64,23 +64,31 @@ wait_enter() {
   exec 3<&-
 }
 
-if [[ -n "$INSTALLED" ]]; then
-  echo "✓ Updated Bill Split ${INSTALLED} → ${VERSION} in $EXT"
-  echo
-  echo "  In chrome://extensions, click ↻ on Bill Split (or restart Chrome)."
+# Has Chrome already loaded this folder? Chrome records unpacked extensions' folders in each
+# profile's preferences file, so a plain text search answers it without touching Chrome.
+loaded_in_chrome() {
+  grep -qsF "\"$EXT\"" "$HOME/Library/Application Support/Google/Chrome/"*/{Preferences,"Secure Preferences"}
+}
+
+if [[ "$INSTALLED" == "$VERSION" ]]; then echo "✓ Bill Split $VERSION is up to date in $EXT"
+elif [[ -n "$INSTALLED" ]]; then echo "✓ Updated Bill Split ${INSTALLED} → ${VERSION} in $EXT"
+else echo "✓ Bill Split $VERSION downloaded to $EXT"; fi
+echo
+
+if loaded_in_chrome; then
+  echo "  Bill Split is already in Chrome. In chrome://extensions, click ↻ on it to use the new version."
   wait_enter
   open_chrome || true
 else
-  echo "✓ Bill Split $VERSION downloaded to $EXT"
-  echo
-  echo "  One-time setup in Chrome:"
-  echo "    1. Turn on Developer mode (top right of chrome://extensions)"
-  echo "    2. Drag the 'Bill Split Extension' folder from the Finder window onto the page"
-  echo "       (or click Load unpacked, press ⌘⇧G and paste the path; it's on your clipboard)"
+  echo "  Now add it to Chrome (one time only):"
+  echo "    1. Chrome opens on chrome://extensions. Turn on Developer mode (switch at the top right)."
+  echo "    2. A Finder window shows the 'Bill Split Extension' folder. Drag it onto the Chrome page."
+  echo "       Or click Load unpacked, press ⌘⇧G, paste (the path is on your clipboard) and press Enter."
+  echo "    3. Bill Split appears in the list. Pin it from the puzzle-piece menu if you like."
   echo
   echo "  To update later, run this command again."
   printf %s "$EXT" | pbcopy 2>/dev/null || true
   wait_enter
   open -R "$EXT" 2>/dev/null || true
-  open_chrome || echo "  (Couldn't find Google Chrome. Open chrome://extensions in Chrome yourself.)"
+  open_chrome || echo "  Couldn't find Google Chrome. Install it, then open chrome://extensions yourself."
 fi
