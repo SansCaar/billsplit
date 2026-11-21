@@ -1,7 +1,7 @@
 name: Something's not working
 description: Report a problem with the website or the extension
 title: "Bug: "
-labels: ["bug"]
+labels: ["bug", "status: needs triage"]
 body:
   - type: textarea
     id: what
@@ -22,4 +22,8 @@ body:
       options:
         - Website on a phone
         - Website on a computer
-        - Chrome extension
+        - Chrome extension (the splitter)
+        - Reading a Walmart order (wrong items or totals)
+        - Signing in or joining a group
+        - Installing the extension
+        - Something else

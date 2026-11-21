@@ -1,7 +1,7 @@
 name: Feature request or suggestion
 description: Something Bill Split should do, or do better
 title: "Suggestion: "
-labels: ["enhancement"]
+labels: ["enhancement", "status: needs triage"]
 body:
   - type: markdown
     attributes:
@@ -23,6 +23,9 @@ body:
     attributes:
       label: Where in Bill Split?
       options:
-        - Website (groups, expenses, balances)
-        - Chrome extension (splitting Walmart orders)
+        - Website (groups, expenses, balances, settling up)
+        - Chrome extension (the splitter)
+        - Reading a Walmart order
+        - Signing in or joining a group
+        - Installing the extension
         - Something else

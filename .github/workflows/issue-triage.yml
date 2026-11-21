@@ -1,0 +1,52 @@
+# Keeps issue labels tidy: triage on open, area from the form, one status and one priority at a time.
+name: Issue triage
+
+on:
+  issues:
+    types: [opened, labeled, closed]
+
+permissions:
+  issues: write
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const has = (n) => issue.labels.some((l) => l.name === n);
+            const add = (labels) => labels.length && github.rest.issues.addLabels({ ...context.repo, issue_number: issue.number, labels });
+            const remove = async (name) => { if (has(name)) await github.rest.issues.removeLabel({ ...context.repo, issue_number: issue.number, name }).catch(() => {}); };
+
+            if (context.payload.action === "opened") {
+              // The issue forms ask "Where?"; turn the answer into an area label.
+              const areas = {
+                "Website": "area: website", "Chrome extension": "area: extension", "Installing the extension": "area: installer",
+                "Signing in or joining a group": "area: sign-in", "Reading a Walmart order": "area: walmart orders",
+              };
+              const answer = (issue.body ?? "").match(/### Where[^\n]*\n+([^\n]+)/)?.[1]?.trim() ?? "";
+              const area = Object.entries(areas).find(([k]) => answer.startsWith(k))?.[1];
+              const labels = [];
+              if (area && !has(area)) labels.push(area);
+              if (!issue.labels.some((l) => l.name.startsWith("status: "))) labels.push("status: needs triage");
+              await add(labels);
+            }
+
+            if (context.payload.action === "labeled") {
+              // Status and priority are single-choice: a new one replaces the old one.
+              const added = context.payload.label.name;
+              for (const group of ["status: ", "priority: "]) {
+                if (!added.startsWith(group)) continue;
+                for (const l of issue.labels) if (l.name.startsWith(group) && l.name !== added) await remove(l.name);
+              }
+              if (["duplicate", "invalid", "wontfix"].includes(added) && issue.state === "open") {
+                await github.rest.issues.update({ ...context.repo, issue_number: issue.number, state: "closed", state_reason: "not_planned" });
+              }
+            }
+
+            if (context.payload.action === "closed") {
+              await remove("status: needs triage");
+              await remove("status: in progress");
+            }

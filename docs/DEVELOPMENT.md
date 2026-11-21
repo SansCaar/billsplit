@@ -79,6 +79,26 @@ no names, addresses or card details. To add one, save the order's `__NEXT_DATA__
 map it to a fixture name in `proof/raw/fixture-map.json`, and run `node tools/make-fixtures.mjs` from the repo root.
 Never commit anything from `proof/raw`.
 
+## Issues and labels
+
+People file issues from the landing page's footer, which opens the forms in `.github/ISSUE_TEMPLATE`. Labels are defined in
+`.github/labels.yml`; the **Sync labels** workflow applies that file whenever it changes on `main`.
+
+| Group | Labels |
+|---|---|
+| Type | `bug`, `enhancement`, `question`, `documentation`, `accessibility` |
+| Area | `area: website`, `area: extension`, `area: walmart orders`, `area: sign-in`, `area: installer` |
+| Status (one at a time) | `status: needs triage` → `status: confirmed` → `status: in progress`; `status: blocked` |
+| Priority (one at a time) | `priority: high`, `priority: medium`, `priority: low` |
+
+Automation (`.github/workflows/issue-triage.yml`, `pr-labels.yml`):
+- New issues get `status: needs triage`, and the form's "Where?" answer becomes an `area:` label.
+- Adding a status or priority label removes the previous one in that group.
+- `duplicate`, `invalid` or `wontfix` closes the issue as not planned; closing clears "needs triage" and "in progress".
+- Pull requests get `area:` labels from the files they change (`.github/labeler.yml`).
+
+Triage: set a priority, then swap `status: needs triage` for `status: confirmed` (or close it).
+
 ## Tests
 
 ```sh

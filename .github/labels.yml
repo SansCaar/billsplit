@@ -1,0 +1,28 @@
+# Issue and PR labels. Edit here; the "Sync labels" workflow applies changes when this file lands on main.
+# Type
+- { name: bug, color: d73a4a, description: "Something isn't working" }
+- { name: enhancement, color: a2eeef, description: "New feature or improvement" }
+- { name: question, color: d876e3, description: "Needs an answer, not a code change" }
+- { name: documentation, color: 0075ca, description: "README, guides and other docs" }
+- { name: accessibility, color: f143ab, description: "Barrier for people with disabilities" }
+# Area: which part of Bill Split
+- { name: "area: website", color: 245b47, description: "Groups, expenses, balances, activity" }
+- { name: "area: extension", color: 2e7d5b, description: "Chrome extension and the splitter" }
+- { name: "area: walmart orders", color: 4f9a6e, description: "Reading and parsing Walmart orders" }
+- { name: "area: sign-in", color: 7bb48f, description: "Signing in, invites and joining groups" }
+- { name: "area: installer", color: a8cfb4, description: "tools/install-extension.sh and releases" }
+# Status: one at a time
+- { name: "status: needs triage", color: fbca04, description: "New; not looked at yet" }
+- { name: "status: confirmed", color: f9d0c4, description: "Reproduced or agreed; ready to pick up" }
+- { name: "status: in progress", color: 0e8a16, description: "Someone is working on it" }
+- { name: "status: blocked", color: b60205, description: "Waiting on something else" }
+# Priority: one at a time
+- { name: "priority: high", color: b60205, description: "Breaks something people rely on" }
+- { name: "priority: medium", color: d93f0b, description: "Worth doing soon" }
+- { name: "priority: low", color: fef2c0, description: "Nice to have" }
+# Other
+- { name: "good first issue", color: 7057ff, description: "Small and well-defined; good for newcomers" }
+- { name: "help wanted", color: 008672, description: "Extra hands welcome" }
+- { name: duplicate, color: cfd3d7, description: "Already reported" }
+- { name: invalid, color: e4e669, description: "Not a real problem or not reproducible" }
+- { name: wontfix, color: ffffff, description: "Out of scope; won't be worked on" }

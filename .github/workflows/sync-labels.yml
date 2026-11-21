@@ -1,0 +1,33 @@
+# Applies .github/labels.yml to the repo's labels (creates and updates; never deletes).
+name: Sync labels
+
+on:
+  push:
+    branches: [main]
+    paths: [.github/labels.yml]
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+            // labels.yml is a flat list of { name, color, description } flow maps; parse without extra dependencies.
+            const want = fs.readFileSync(".github/labels.yml", "utf8").split("\n")
+              .map((l) => l.match(/^- \{ name: "?([^",]+)"?, color: ([0-9a-f]{6}), description: "([^"]*)" \}/i)).filter(Boolean)
+              .map(([, name, color, description]) => ({ name, color, description }));
+            const have = await github.paginate(github.rest.issues.listLabelsForRepo, { ...context.repo, per_page: 100 });
+            for (const l of want) {
+              const cur = have.find((h) => h.name.toLowerCase() === l.name.toLowerCase());
+              if (!cur) await github.rest.issues.createLabel({ ...context.repo, ...l });
+              else if (cur.color !== l.color || (cur.description ?? "") !== l.description) await github.rest.issues.updateLabel({ ...context.repo, name: cur.name, new_name: l.name, color: l.color, description: l.description });
+            }
+            core.info(`Synced ${want.length} labels`);
