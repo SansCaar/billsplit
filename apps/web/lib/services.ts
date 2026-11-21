@@ -205,7 +205,7 @@ export async function setInvite(db: Db, actor: Actor, groupId: string, input: { 
 export async function previewInvite(db: Db, inviteToken: string) {
   const group = await cols(db).groups.findOne({ "invite.token": inviteToken });
   if (!group || !group.invite.enabled) throw new ServiceError("This invite link is not valid or has been turned off", 404);
-  return { groupId: group._id, name: group.name, placeholders: activeMembers(group).filter((m) => !m.userId).map((m) => ({ id: m.id, name: m.name })) };
+  return { groupId: group._id, name: group.name, memberNames: activeMembers(group).map((m) => m.name), placeholders: activeMembers(group).map((m, index) => ({ id: m.id, name: m.name, index, joined: !!m.userId })).filter((m) => !m.joined).map(({ id, name, index }) => ({ id, name, index })) };
 }
 
 /** Join through an Invite Link, optionally claiming a placeholder Member. */

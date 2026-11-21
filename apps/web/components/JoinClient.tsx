@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Avatar } from "@billsplit/assign-ui";
 import { api } from "@/lib/client";
-export function JoinClient({ token, placeholders }: { token: string; groupId: string; placeholders: { id: string; name: string }[] }) {
+export function JoinClient({ token, placeholders }: { token: string; groupId: string; placeholders: { id: string; name: string; index?: number }[] }) {
   const r = useRouter();
   const [claim, setClaim] = useState<string>("");
   const [err, setErr] = useState<string | null>(null);
@@ -12,16 +12,16 @@ export function JoinClient({ token, placeholders }: { token: string; groupId: st
     <div>
       {placeholders.length > 0 && (
         <>
-          <h3 style={{ marginBottom: 6 }}>Which one is you?</h3>
+          <div className="auth-label">Which one is you?</div>
           {/* Hidden select keeps a simple, testable control alongside the tap targets. */}
           <select className="sr-only" value={claim} onChange={(e) => setClaim(e.target.value)} data-testid="claim" aria-label="Which one is you?">
             <option value="">I'm someone new</option>
             {placeholders.map((p) => <option key={p.id} value={p.id}>I'm {p.name}</option>)}
           </select>
-          {[...placeholders.map((p, i) => ({ id: p.id, label: p.name, i: i + 1 })), { id: "", label: "I'm someone new", i: -1 }].map((o) => (
+          {[...placeholders.map((p, i) => ({ id: p.id, label: p.name, i: p.index ?? i + 1 })), { id: "", label: "I'm someone new", i: -1 }].map((o) => (
             <button key={o.id || "new"} type="button" className={`person ${claim === o.id ? "on" : ""}`} onClick={() => setClaim(o.id)}>
               <span className="box">{claim === o.id ? "✓" : ""}</span>
-              {o.i >= 0 ? <Avatar name={o.label} size={30} /> : <span className="tile" style={{ width: 30, height: 30, fontSize: 14 }}>+</span>}
+              {o.i >= 0 ? <Avatar name={o.label} index={o.i} size={30} /> : <span className="tile" style={{ width: 30, height: 30, fontSize: 14 }}>+</span>}
               <span className="grow">{o.label}</span>
             </button>
           ))}

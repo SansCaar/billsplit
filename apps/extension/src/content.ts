@@ -35,8 +35,8 @@ function ensureButton() {
   b.textContent = "🧾 Split this order";
   Object.assign(b.style, {
     position: "fixed", right: "22px", bottom: "22px", zIndex: "2147483647", padding: "14px 20px", borderRadius: "999px",
-    border: "0", background: "linear-gradient(135deg,#5b5bf7,#b26bff)", color: "#fff", font: "700 15px system-ui,sans-serif",
-    boxShadow: "0 10px 30px -8px rgba(60,40,200,.6)", cursor: "pointer",
+    border: "0", background: "#245b47", color: "#f7faf5", font: "700 15px system-ui,sans-serif",
+    boxShadow: "0 12px 30px -10px rgba(27,69,54,.65)", cursor: "pointer",
   } as CSSStyleDeclaration);
   b.addEventListener("click", () => processCurrentOrder(b));
   document.body.appendChild(b);

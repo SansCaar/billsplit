@@ -20,7 +20,7 @@ function Brand() {
   return (
     <Link href="/" className="brand">
       <span className="brand-mark">b</span>
-      <span className="brand-name"><span>Bill</span><span>Split</span></span>
+      <span className="brand-name">Bill Split</span>
     </Link>
   );
 }
@@ -37,19 +37,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <aside className="side">
               <div className="side-in">
                 <Brand />
-                <div className="side-head"><span className="eyebrow">Your groups</span><Link href="/#new-group" aria-label="New group">+</Link></div>
+                <div className="side-head"><span className="eyebrow">Your groups</span><Link href="/?new=1" aria-label="New group" title="New group">+</Link></div>
                 <SideGroups groups={groups} />
-                <div className="side-foot"><b>Made for sharing</b>Groceries, bills, and the little things in between.</div>
               </div>
             </aside>
           )}
           <div className="main">
-            <header className="topbar">
+            {actor && <header className="topbar">
               <Brand />
-              <span className="status">{process.env.NODE_ENV === "production" ? "Shared workspace" : "Local workspace"}</span>
               <span className="spacer" />
-              {actor ? <AccountMenu name={actor.name} /> : <Link href="/signin" className="btn secondary sm">Sign in</Link>}
-            </header>
+              <AccountMenu name={actor.name} />
+            </header>}
             {children}
           </div>
         </div>

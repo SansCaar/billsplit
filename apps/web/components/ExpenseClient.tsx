@@ -7,9 +7,9 @@ import { api } from "@/lib/client";
 import type { ExpenseDoc, GroupDoc } from "@/lib/model";
 import { ManualExpenseForm } from "./ManualExpenseForm";
 
-export function ExpenseClient({ expense: e, group, meId }: { expense: ExpenseDoc; group: GroupDoc; meId: string }) {
+export function ExpenseClient({ expense: e, group, meId, startEditing = false }: { expense: ExpenseDoc; group: GroupDoc; meId: string; startEditing?: boolean }) {
   const r = useRouter();
-  const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useState(startEditing);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "mine">("all");

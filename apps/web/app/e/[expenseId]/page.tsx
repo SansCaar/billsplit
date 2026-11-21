@@ -5,6 +5,7 @@ import { Avatar } from "@billsplit/assign-ui";
 import { getDb } from "@/lib/db";
 import { currentActor } from "@/lib/session";
 import { getExpense, listActivity, listSnapshots } from "@/lib/services";
+import { orNotFound } from "@/lib/notFound";
 import { plain } from "@/lib/plain";
 import { viewerTz } from "@/lib/time";
 import { dayLabel, displayTitle, memberIndex, memberName, shortOrder } from "@/lib/format";
@@ -13,12 +14,13 @@ import { ExpenseClient } from "@/components/ExpenseClient";
 
 export const dynamic = "force-dynamic";
 
-export default async function ExpensePage({ params }: { params: Promise<{ expenseId: string }> }) {
+export default async function ExpensePage({ params, searchParams }: { params: Promise<{ expenseId: string }>; searchParams: Promise<{ edit?: string }> }) {
   const { expenseId } = await params;
+  const { edit } = await searchParams;
   const actor = await currentActor();
   if (!actor) redirect(`/signin?callbackUrl=/e/${expenseId}`);
   const db = await getDb();
-  const { expense: e, group: g } = plain(await getExpense(db, actor, expenseId));
+  const { expense: e, group: g } = plain(await orNotFound(getExpense(db, actor, expenseId)));
   const [activity, snapshots] = plain(await Promise.all([listActivity(db, actor, g._id, { expenseId }), listSnapshots(db, actor, expenseId)]));
   const me = g.members.find((m) => m.userId === actor.userId)!;
   const name = (id: string) => (id === me.id ? "You" : memberName(g, id));
@@ -27,7 +29,7 @@ export default async function ExpensePage({ params }: { params: Promise<{ expens
 
   return (
     <main className="page">
-      <div className="crumb"><Link href="/">Your groups</Link><span>/</span><Link href={`/g/${g._id}?tab=expenses`}>{g.name}</Link><span>/</span></div>
+      <nav className="crumb" aria-label="Breadcrumb"><Link href="/">Your groups</Link><span aria-hidden>/</span><Link href={`/g/${g._id}?tab=expenses`}>{g.name}</Link></nav>
       <header className={`page-head hide-when-editing ${e.deleted ? "deleted" : ""}`}>
         <div>
           <span className="eyebrow">{e.kind === "walmart" ? "Walmart order" : "Expense"}{e.deleted ? " · deleted" : ""}</span>
@@ -65,7 +67,7 @@ export default async function ExpensePage({ params }: { params: Promise<{ expens
         </section>
       </div>
 
-      <ExpenseClient expense={e} group={g} meId={me.id} />
+      <ExpenseClient expense={e} group={g} meId={me.id} startEditing={edit === "1" && !e.deleted} />
 
       <section className="card list-card hide-when-editing">
         <div className="card-head"><h2>Activity</h2><span className="note">Every change to this expense</span></div>

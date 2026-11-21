@@ -25,7 +25,7 @@ pnpm --filter extension build:local   # same, pointed at http://localhost:3000
 Load the extension: `chrome://extensions` → Developer mode → **Load unpacked** → `apps/extension/dist`.
 Open any order at walmart.com/orders → click **🧾 Split this order**.
 
-Sign-in: locally there is a dev sign-in (name + email). For Google, set `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET`
+Sign-in: locally there is a dev sign-in (name + email) at `/signin?dev=1`. For Google, set `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET`
 (redirect URI `http://localhost:3000/api/auth/callback/google`). Set `MONGODB_URI` to use a real MongoDB.
 
 ## Extension releases

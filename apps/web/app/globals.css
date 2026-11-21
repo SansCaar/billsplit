@@ -338,3 +338,136 @@ h1 { overflow-wrap: anywhere; }
 .impact-chip { max-width: 100%; min-width: 0; }
 .impact-chip .bs-avatar, .impact-chip b { flex: none; }
 .impact-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ---------- UI pass (Nov 2026) ---------- */
+/* Brand reads on one line */
+.brand-name { white-space: nowrap; font-size: 16px; letter-spacing: -.01em; }
+
+/* Breadcrumb: a quiet back link on group pages, a trail elsewhere */
+.crumb { align-items: center; flex-wrap: wrap; }
+.crumb a { color: var(--muted); }
+.crumb [aria-hidden] { color: var(--faint); }
+
+/* Home */
+.home-col { max-width: 720px; }
+.new-group { padding: 0; }
+.new-group > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 16px 20px; font-family: var(--font-head); font-weight: 700; font-size: 16px; color: var(--ink-strong); min-height: 60px; }
+.new-group > summary::-webkit-details-marker { display: none; }
+.new-group > summary .plus { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; background: var(--green-soft); color: var(--green); font-size: 20px; line-height: 1; flex: none; }
+.new-group[open] > summary { border-bottom: 1px solid var(--line); }
+.new-group-body { padding: 18px 20px 20px; }
+
+/* Your balance: a figure plus who you settle with */
+.me-card { gap: 12px; }
+.me-pays { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.me-pays li { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 14px; border-top: 1px solid #dde7d6; }
+.me-pays li:first-child { border-top: 0; }
+.me-pays b { font-weight: 650; color: var(--ink-strong); }
+@media (min-width: 760px) {
+  .me-card { grid-template-columns: minmax(0, 1fr) minmax(0, 340px); align-items: center; }
+  .me-pays li:first-child { border-top: 0; }
+}
+
+/* Tabs fit on a phone: settings collapses to a gear */
+.tabs a.tab-settings svg { display: none; }
+@media (max-width: 759px) {
+  .tabs { gap: 0; justify-content: space-between; }
+  .tabs a { padding-left: 2px; padding-right: 2px; }
+  .tabs a.tab-settings svg { display: block; }
+  .tabs a.tab-settings .tab-label { display: none; }
+}
+
+/* Activity filters: one scrollable row on phones */
+@media (max-width: 759px) {
+  .filter-bar { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-left: -18px; margin-right: -18px; padding: 0 18px; }
+  .filter-bar::-webkit-scrollbar { display: none; }
+  .filter-bar a { flex: none; }
+  .filter-bar .spacer { flex: 0 0 4px; }
+}
+.impact-chip.mine { padding: 3px 10px; color: var(--muted); }
+.chg-val.pos { color: var(--green); } .chg-val.neg { color: var(--owes); }
+
+/* Settle up: both buttons on one line, equal width */
+.pay-actions { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.pay-actions .btn { white-space: nowrap; padding: 0 12px; }
+@media (max-width: 339px) { .pay-actions { grid-template-columns: minmax(0, 1fr); } }
+
+/* Expense list rows: keep the meta line to one line */
+.li-sub.ellipsis, .li .li-sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 479px) { .hide-xs { display: none !important; } }
+/* Comfortable tap height for the brand and breadcrumb links */
+.brand { min-height: 44px; }
+.crumb a { display: inline-flex; align-items: center; min-height: 44px; }
+.crumb { margin-top: -10px; margin-bottom: 0; }
+
+/* ---------- UI audit fixes (Nov 2026) ---------- */
+/* The two-column balance card is only for the group page, where it lists who you settle with */
+@media (min-width: 760px) { .me-card { grid-template-columns: minmax(0, 1fr); } .me-card:has(.me-pays) { grid-template-columns: minmax(0, 1fr) minmax(0, 340px); } }
+/* Segmented controls: equal columns, labels on one line */
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; }
+.seg button { white-space: nowrap; padding: 7px 10px; }
+.link { white-space: nowrap; }
+@media (max-width: 379px) {
+  /* Tabs: smaller type so all five fit at 320px */
+  .tabs { gap: 0; justify-content: space-between; }
+  .tabs a { font-size: 13px; gap: 4px; }
+  .tabs .count { padding: 0 5px; font-size: 10px; }
+  /* Settle-up cards stack: the avatars, then who pays whom */
+  .pay-card { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .seg button { padding: 7px 6px; font-size: 12px; }
+  .field-row { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---------- Sign-in & joining screens ---------- */
+.auth-page { min-height: 100vh; min-height: 100dvh; display: grid; grid-template-columns: minmax(0, 1fr); background: var(--cream); }
+.auth-hero { background: radial-gradient(120% 90% at 0% 0%, #2e6b54 0%, var(--green) 45%, var(--green-dark) 100%); color: #eef4ec; padding: 22px 20px 54px; position: relative; overflow: hidden; }
+.auth-hero::after { content: ""; position: absolute; right: -80px; bottom: -120px; width: 320px; height: 320px; border-radius: 50%; background: rgba(255, 255, 255, .05); pointer-events: none; }
+.auth-hero-in { position: relative; z-index: 1; max-width: 520px; }
+.auth-brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-head); font-weight: 700; font-size: 16px; color: #fff; margin-bottom: 26px; min-height: 44px; }
+.auth-brand .brand-mark { background: #f3f6ef; color: var(--green); width: 34px; height: 34px; font-size: 19px; }
+.auth-eyebrow { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #bcd5c2; margin-bottom: 10px; }
+.auth-title { font-family: var(--font-head); font-size: clamp(28px, 7vw, 46px); line-height: 1.08; letter-spacing: -.04em; font-weight: 800; color: #fff; margin: 0; overflow-wrap: anywhere; }
+.auth-lead { color: #cfe0d3; font-size: 15px; line-height: 1.55; margin: 12px 0 0; max-width: 440px; }
+.auth-points { list-style: none; padding: 0; margin: 30px 0 0; display: none; gap: 18px; }
+.auth-points li { display: flex; gap: 14px; align-items: flex-start; }
+.auth-points b { display: block; color: #fff; font-weight: 650; font-size: 15px; }
+.auth-points span:not(.auth-icon) { color: #bcd2c1; font-size: 14px; }
+.auth-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(255, 255, 255, .1); display: grid; place-items: center; color: #e4efe6; flex: none; }
+.auth-receipt { display: none; margin-top: 34px; max-width: 380px; background: #fff; color: var(--ink); border-radius: 14px; padding: 14px 16px; box-shadow: 0 24px 50px -24px rgba(0, 0, 0, .45); transform: rotate(-1.5deg); }
+.auth-receipt-head, .auth-receipt-foot { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+.auth-receipt-head { padding-bottom: 8px; border-bottom: 1px dashed var(--line-strong); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
+.auth-receipt-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; font-size: 14px; border-bottom: 1px solid var(--line); }
+.auth-receipt-row .amt { min-width: 52px; text-align: right; }
+.auth-receipt-foot { padding-top: 10px; font-size: 13px; }
+.auth-receipt-foot b { color: var(--green); font-size: 15px; }
+.auth-members { display: flex; align-items: center; gap: 12px; margin-top: 22px; color: #dbe8de; font-size: 14px; }
+.auth-members .avatars .bs-avatar { box-shadow: 0 0 0 2px var(--green); }
+.auth-main { display: flex; justify-content: center; align-items: flex-start; padding: 0 16px 40px; margin-top: -30px; position: relative; z-index: 2; }
+.auth-card { width: 100%; max-width: 420px; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 26px 22px 22px; box-shadow: 0 20px 50px -30px rgba(36, 59, 52, .35); }
+.auth-card h2 { font-size: 22px; letter-spacing: -.03em; overflow-wrap: anywhere; }
+.auth-card-sub { color: var(--muted); font-size: 14px; margin: 6px 0 20px; }
+.auth-card .google { min-height: 50px; font-size: 15px; border-radius: 12px; box-shadow: 0 1px 2px rgba(36, 59, 52, .08); }
+.auth-card .google:hover:not(:disabled) { background: #fbfcf9; border-color: #b9c6b4; }
+.auth-fine { margin: 18px 0 0; font-size: 12px; line-height: 1.5; color: var(--faint); text-align: center; }
+.auth-label { font-size: 13px; font-weight: 650; color: var(--ink); margin-bottom: 4px; }
+.auth-check { width: 48px; height: 48px; border-radius: 50%; background: var(--green-soft); color: var(--green); display: grid; place-items: center; font-size: 22px; font-weight: 800; margin-bottom: 16px; }
+.auth-card .person { padding-left: 4px; padding-right: 4px; }
+.auth-card .divider { margin: 20px 0 14px; }
+@media (min-width: 900px) {
+  .auth-page { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
+  .auth-hero { padding: 40px 56px; display: flex; align-items: center; min-height: 100vh; }
+  .auth-hero-in { width: 100%; }
+  .auth-brand { margin-bottom: 44px; }
+  .auth-points { display: grid; }
+  .auth-receipt { display: block; }
+  .auth-main { align-items: center; margin: 0; padding: 40px; }
+  .auth-card { padding: 34px 32px 28px; }
+}
+@media (min-width: 900px) and (max-height: 760px) { .auth-receipt { display: none; } }
+/* The sidebar column only exists when there is a sidebar (signed-out pages have none) */
+@media (min-width: 1000px) { .shell:not(:has(> .side)) { display: block; } }
+/* Signed in (top bar or sidebar already shows the brand): no second logo in the green panel */
+.shell:has(.topbar) .auth-brand { display: none; }
+.shell:has(.topbar) .auth-page { min-height: calc(100vh - 60px); }
+@media (min-width: 900px) { .shell:has(.topbar) .auth-hero { min-height: calc(100vh - 72px); } }
+.auth-page { align-content: start; } @media (min-width: 900px) { .auth-page { align-content: stretch; } }

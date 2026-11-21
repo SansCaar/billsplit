@@ -6,6 +6,7 @@ import { getDb } from "@/lib/db";
 import type { Actor, GroupDoc } from "@/lib/model";
 import { currentActor } from "@/lib/session";
 import { groupSummary, listActivity } from "@/lib/services";
+import { orNotFound } from "@/lib/notFound";
 import { viewerTz } from "@/lib/time";
 import { plain } from "@/lib/plain";
 import { memberIndex, memberName } from "@/lib/format";
@@ -24,7 +25,7 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
   const actor = await currentActor();
   if (!actor) redirect(`/signin?callbackUrl=/g/${groupId}`);
   const db = await getDb();
-  const s = plain(await groupSummary(db, actor, groupId));
+  const s = plain(await orNotFound(groupSummary(db, actor, groupId)));
   const g = s.group;
   const members = g.members.filter((m) => !m.leftAt);
   const live = s.expenses.filter((e) => !e.deleted);
@@ -41,11 +42,11 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
 
   return (
     <main className="page">
-      <div className="crumb"><Link href="/">Your groups</Link><span>/</span></div>
+      <nav className="crumb" aria-label="Breadcrumb"><Link href="/">← Your groups</Link></nav>
       <header className="page-head">
         <div>
           <h1 data-testid="group-name">{g.name}</h1>
-          <p className="sub">{members.length} housemate{members.length === 1 ? "" : "s"} · {live.length} expense{live.length === 1 ? "" : "s"}</p>
+          <p className="sub">{members.length} {members.length === 1 ? "person" : "people"} · {live.length} expense{live.length === 1 ? "" : "s"}</p>
         </div>
         <div className="actions">
           <Link className="btn secondary" href={`/g/${groupId}?tab=settle`}>Settle up</Link>
@@ -53,21 +54,10 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
         </div>
       </header>
 
-      <section className="me-card" data-testid="my-summary">
-        <div>
-          <span className="eyebrow">Your balance</span>
-          <div className={`figure ${myBal > 0 ? "pos" : myBal < 0 ? "neg" : ""}`} data-testid="my-balance">{myBal === 0 ? "Settled up" : fmtMoney(Math.abs(myBal))}</div>
-          <div className="line">
-            {myBal > 0 ? "is owed to you" : myBal < 0 ? "you owe the group" : "Nothing to pay or collect right now."}
-            {mine.length > 0 && <> · {mine.map((x) => (x.fromId === s.me.id ? `you → ${memberName(g, x.toId)} ${fmtMoney(x.amount)}` : `${memberName(g, x.fromId)} → you ${fmtMoney(x.amount)}`)).join(" · ")}</>}
-          </div>
-        </div>
-      </section>
-
       <nav className="tabs" aria-label="Group sections">
         {tabs.map(([k, label, n]) => (
-          <Link key={k} href={`/g/${groupId}?tab=${k}`} className={tab === k ? "on" : ""} aria-current={tab === k ? "page" : undefined} scroll={false}>
-            {label}{n ? <span className="count">{n}</span> : null}
+          <Link key={k} href={`/g/${groupId}?tab=${k}`} className={`${tab === k ? "on" : ""} tab-${k}`} aria-label={label} aria-current={tab === k ? "page" : undefined} scroll={false}>
+            {k === "settings" ? <><GearIcon /><span className="tab-label">{label}</span></> : label}{n ? <span className="count">{n}</span> : null}
           </Link>
         ))}
       </nav>
@@ -75,6 +65,27 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
 
       {tab === "balances" && (
         <>
+          <section className="me-card" data-testid="my-summary">
+            <div>
+              <span className="eyebrow">{myBal > 0 ? "You're owed" : myBal < 0 ? "You owe" : "Your balance"}</span>
+              <div className={`figure ${myBal > 0 ? "pos" : myBal < 0 ? "neg" : ""}`} data-testid="my-balance">{myBal === 0 ? "Settled up" : fmtMoney(Math.abs(myBal))}</div>
+              {myBal === 0 && <div className="line">Nothing to pay or collect right now.</div>}
+            </div>
+            {mine.length > 0 && (
+              <ul className="me-pays">
+                {mine.map((x, i) => {
+                  const other = x.fromId === s.me.id ? x.toId : x.fromId;
+                  return (
+                    <li key={i}>
+                      <Avatar name={memberName(g, other)} index={memberIndex(g, other)} size={24} />
+                      <span className="grow">{x.fromId === s.me.id ? <>You owe <b>{memberName(g, other)}</b></> : <><b>{memberName(g, other)}</b> owes you</>}</span>
+                      <span className={`amt ${x.fromId === s.me.id ? "neg" : "pos"}`}>{fmtMoney(x.amount)}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </section>
           <div className="section-head">
             <div><span className="eyebrow">{allSettled ? "All settled, all visible" : "Who owes whom"}</span><h2>Group balances</h2></div>
             <span className="aside">Positive amounts are owed to that person.</span>
@@ -129,5 +140,14 @@ async function ActivityTab({ groupId, actor, group, meId, f: rawF, mine }: { gro
       </nav>
       <section className="card list-card"><ActivityFeed items={shown} group={group} meId={meId} meUserId={actor.userId} tz={await viewerTz()} linkExpenses /></section>
     </>
+  );
+}
+
+function GearIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+    </svg>
   );
 }

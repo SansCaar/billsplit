@@ -44,7 +44,7 @@ test("mobile audit", async () => {
   test.setTimeout(900_000);
   const browser = await chromium.launch();
   const setup = await (await browser.newContext()).newPage();
-  await setup.goto(`${APP}/signin`); await setup.fill('input[name="name"]', "Sanskar Lamsal"); await setup.fill('input[name="email"]', `m+${run}@example.com`); await setup.click("text=Dev sign in"); await setup.waitForURL(`${APP}/`);
+  await setup.goto(`${APP}/signin?dev=1`); await setup.fill('input[name="name"]', "Sanskar Lamsal"); await setup.fill('input[name="email"]', `m+${run}@example.com`); await setup.click("text=Dev sign in"); await setup.waitForURL(`${APP}/`);
   const g = await api(setup, "/api/groups", "POST", { name: "Apartment 4B with a fairly long name", placeholderNames: ["Alexandria Featherstonehaugh", "Nishant", "Priya", "Christopher Montgomery"] });
   const ids = g.members.map((m: { id: string }) => m.id);
   const order = parseWalmartOrder(loadFixture("shipped-plus-store-delivery"));

@@ -101,7 +101,7 @@ export function SettleUp({ groupId, members, suggestions, meId, settlements }: {
             {others.map((s, i) => (
               <li key={i} className="li">
                 <span className="pay-flow sm">{av(s.fromId, 28)}<span className="pay-arrow" aria-hidden>→</span>{av(s.toId, 28)}</span>
-                <div className="grow"><div className="li-title ellipsis">{name(s.fromId)} pays {name(s.toId)}</div><div className="li-sub amt">{fmtMoney(s.amount)}</div></div>
+                <div className="grow"><div className="li-title">{name(s.fromId)} pays {name(s.toId)}</div><div className="li-sub amt">{fmtMoney(s.amount)}</div></div>
                 <button className="btn secondary sm" disabled={busy !== null} onClick={() => record(`o${i}`, s, `Recorded: ${name(s.fromId)} paid ${name(s.toId)} ${fmtMoney(s.amount)}`)}>{busy === `o${i}` ? "Saving…" : "Mark paid"}</button>
               </li>
             ))}

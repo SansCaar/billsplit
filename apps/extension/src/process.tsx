@@ -35,15 +35,19 @@ function App() {
   const [groupId, setGroupId] = useState<string>("");
   const [preview, setPreview] = useState<Preview | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [failure, setFailure] = useState<{ title: string; text: string; retry: boolean } | null>(null);
+  const [signinTab, setSigninTab] = useState<number | null>(null);
+  const [waiting, setWaiting] = useState(false);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<{ url: string; created: boolean } | null>(null);
 
   const load = useCallback(async () => {
     setError(null);
+    setFailure(null);
     const appUrl = await getAppUrl();
     setApp(appUrl);
     const stored = (await chrome.storage.local.get(`order:${orderNumber}`))[`order:${orderNumber}`] as ParsedOrder | undefined;
-    if (!stored) return setError("Order data not found. Go back to the Walmart order page and click “Split this order” again.");
+    if (!stored) return setFailure({ title: "Open the order again", text: "This tab lost the order it was splitting. Go back to the order on walmart.com and click “Split this order” again.", retry: false });
     setOrder(stored);
     try {
       const m = await call<Me>(appUrl, "/api/me");
@@ -54,52 +58,103 @@ function App() {
       if (g) setGroupId(g.id);
     } catch (e) {
       if ((e as { signin?: boolean }).signin) setNeedSignin(true);
-      else setError(`Can't reach Bill Split at ${appUrl}: ${(e as Error).message}`);
+      else setFailure({ title: "Can't reach Bill Split", text: `Bill Split at ${appUrl.replace(/^https?:\/\//, "")} didn't answer (${(e as Error).message}). Check your connection and try again.`, retry: true });
     }
   }, [orderNumber]);
 
   useEffect(() => { load(); }, [load]);
-  // Re-check sign-in when the user comes back from the sign-in tab.
+  // Re-check when the user comes back from the sign-in (or create-a-group) tab, and poll while they're over there.
+  const blocked = needSignin || (!!me && !me.groups.length);
   useEffect(() => {
-    const f = () => needSignin && load();
+    if (!blocked) return;
+    const f = () => load();
     window.addEventListener("focus", f);
-    return () => window.removeEventListener("focus", f);
-  }, [needSignin, load]);
+    const t = waiting ? setInterval(f, 2500) : undefined;
+    return () => { window.removeEventListener("focus", f); if (t) clearInterval(t); };
+  }, [blocked, waiting, load]);
+  // Signed in: close the sign-in tab we opened and bring this one back to the front.
+  useEffect(() => {
+    if (!me || signinTab === null) return;
+    chrome.tabs.remove(signinTab).catch(() => {});
+    chrome.tabs.getCurrent((t) => { if (t?.id) chrome.tabs.update(t.id, { active: true }); });
+    setSigninTab(null);
+    setWaiting(false);
+  }, [me, signinTab]);
+  const openTab = async (path: string) => {
+    const t = await chrome.tabs.create({ url: app + path });
+    setSigninTab(t.id ?? null);
+    setWaiting(true);
+  };
 
   useEffect(() => {
     if (!groupId || !order) return;
     setPreview(null);
     chrome.storage.local.set({ lastGroupId: groupId });
-    call<Preview>(app, `/api/groups/${groupId}/orders/preview`, "POST", { order }).then(setPreview).catch((e) => setError((e as Error).message));
+    call<Preview>(app, `/api/groups/${groupId}/orders/preview`, "POST", { order }).then(setPreview).catch((e) => setFailure({ title: "Couldn't load this group", text: (e as Error).message, retry: true }));
   }, [groupId, order, app]);
 
   const group = me?.groups.find((g) => g.id === groupId);
 
-  if (error) return <Shell><div className="bs-error">{error}</div></Shell>;
-  if (!order) return <Shell><p>Loading…</p></Shell>;
+  if (failure)
+    return (
+      <Shell order={order ?? undefined}>
+        <Gate icon="!" tone="warn" title={failure.title}>
+          <p>{failure.text}</p>
+          {failure.retry && <button className="bs-btn primary block" onClick={load}>Try again</button>}
+          {failure.retry && <Settings app={app} onSave={load} />}
+        </Gate>
+      </Shell>
+    );
+  if (error && !order) return <Shell><Gate icon="!" tone="warn" title="Something went wrong"><p>{error}</p><button className="bs-btn primary block" onClick={load}>Try again</button></Gate></Shell>;
+  if (!order) return <Shell><Gate spinner title="Loading the order…" /></Shell>;
   if (needSignin)
     return (
       <Shell order={order}>
-        <div className="panel">
-          <h2>Sign in to Bill Split</h2>
-          <p>Sign in once, then come back to this tab.</p>
-          <button className="bs-btn primary" onClick={() => chrome.tabs.create({ url: `${app}/signin?callbackUrl=/` })}>Open sign-in</button>
-          <button className="bs-btn ghost" style={{ marginLeft: 8 }} onClick={load}>I've signed in</button>
+        <Gate icon="b" title="Connect to Bill Split" testId="signin">
+          <p>Sign in to send this order to your group. You only need to do this once.</p>
+          <OrderChip order={order} />
+          {waiting ? (
+            <div className="gate-wait" role="status">
+              <span className="spinner" aria-hidden="true" />
+              <div><b>Waiting for you to sign in…</b><span>Finish in the tab that just opened. This page continues by itself.</span></div>
+            </div>
+          ) : (
+            <button className="bs-btn primary block" data-testid="open-signin" onClick={() => openTab("/signin?callbackUrl=/connected")}><GoogleMark /> Sign in with Google</button>
+          )}
+          {waiting && (
+            <div className="gate-links">
+              <button className="bs-link" onClick={() => openTab("/signin?callbackUrl=/connected")}>Open sign-in again</button>
+              <button className="bs-link" onClick={load}>I've signed in</button>
+            </div>
+          )}
           <Settings app={app} onSave={load} />
-        </div>
+        </Gate>
       </Shell>
     );
-  if (!me) return <Shell order={order}><p>Connecting to Bill Split…</p></Shell>;
+  if (!me) return <Shell order={order}><Gate spinner title="Connecting to Bill Split…" /></Shell>;
   if (!me.groups.length)
-    return <Shell order={order}><div className="panel"><p>You're not in any group yet.</p><a className="bs-btn primary" href={app} target="_blank" rel="noreferrer">Create a group</a></div></Shell>;
+    return (
+      <Shell order={order}>
+        <Gate icon="+" title="Create a group first">
+          <p>Orders are split inside a group. Make one for your household, then come back to this tab.</p>
+          <OrderChip order={order} />
+          {waiting ? (
+            <div className="gate-wait" role="status"><span className="spinner" aria-hidden="true" /><div><b>Waiting for your new group…</b><span>Create it in the other tab. This page continues by itself.</span></div></div>
+          ) : (
+            <button className="bs-btn primary block" onClick={() => openTab("/?new=1")}>Create a group</button>
+          )}
+          <div className="gate-links"><span className="mute">Signed in as {me.user.name}</span></div>
+        </Gate>
+      </Shell>
+    );
   if (done)
     return (
       <Shell order={order}>
-        <div className="panel done" data-testid="done">
-          <div className="confetti">🎉</div>
-          <h2>{done.created ? "Order sent to" : "Order updated in"} {group?.name}</h2>
-          <p>Everyone in the group can now see it and fix their own items.</p>
-          <a className="bs-btn primary" href={app + done.url} target="_blank" rel="noreferrer" data-testid="open-expense">Open in Bill Split</a>
+        <div data-testid="done">
+          <Gate icon="✓" tone="ok" title={`${done.created ? "Order sent to" : "Order updated in"} ${group?.name ?? "your group"}`}>
+            <p>Everyone in the group can see it now and fix their own items.</p>
+            <a className="bs-btn primary block" href={app + done.url} target="_blank" rel="noreferrer" data-testid="open-expense">Open in Bill Split</a>
+          </Gate>
         </div>
       </Shell>
     );
@@ -180,12 +235,40 @@ function Shell({ order, children }: { order?: ParsedOrder; children: React.React
 function Settings({ app, onSave }: { app: string; onSave: () => void }) {
   const [v, setV] = useState(app);
   return (
-    <details style={{ marginTop: 16 }}>
-      <summary className="mute">Bill Split address</summary>
-      <input value={v} onChange={(e) => setV(e.target.value)} style={{ width: 320 }} />
-      <button className="bs-btn ghost" onClick={async () => { await chrome.storage.sync.set({ appUrl: v.replace(/\/$/, "") }); onSave(); }}>Save</button>
+    <details className="gate-settings">
+      <summary>Connection settings</summary>
+      <label>Bill Split address
+        <span className="gate-settings-row">
+          <input value={v} onChange={(e) => setV(e.target.value)} spellCheck={false} />
+          <button className="bs-btn ghost" onClick={async () => { await chrome.storage.sync.set({ appUrl: v.replace(/\/$/, "") }); onSave(); }}>Save</button>
+        </span>
+      </label>
     </details>
   );
+}
+
+function Gate({ icon, title, tone, spinner, testId, children }: { icon?: string; title: string; tone?: "ok" | "warn"; spinner?: boolean; testId?: string; children?: React.ReactNode }) {
+  return (
+    <section className="gate" data-testid={testId}>
+      {spinner ? <span className="spinner big" aria-hidden="true" /> : <div className={`gate-icon ${tone ?? ""}`}>{icon}</div>}
+      <h2>{title}</h2>
+      {children}
+    </section>
+  );
+}
+
+function OrderChip({ order }: { order: ParsedOrder }) {
+  const n = order.items.filter((i) => i.amount > 0).length;
+  return (
+    <div className="order-chip">
+      <span className="order-chip-mark">W</span>
+      <div><b>Walmart order #…{order.orderNumber.slice(-4)}</b><span>{n} item{n === 1 ? "" : "s"}{order.total !== null ? ` · ${fmtMoney(order.total)}` : ""}</span></div>
+    </div>
+  );
+}
+
+function GoogleMark() {
+  return <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true" style={{ background: "#fff", borderRadius: 4, padding: 1, marginRight: 8 }}><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>;
 }
 
 createRoot(document.getElementById("root")!).render(<App />);

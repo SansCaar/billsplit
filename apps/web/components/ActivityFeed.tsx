@@ -82,22 +82,19 @@ export function ActivityFeed({
     return <>{actor}{tidy(rest)}</>;
   };
 
+  // Only the viewer's own balance change is shown inline; everyone's changes live in the details.
   const impactRow = (a: ActivityDoc) => {
-    if (!a.impact) return null;
-    const list = Object.entries(a.impact).sort(([x, xv], [y, yv]) => (x === meId ? -1 : y === meId ? 1 : Math.abs(yv) - Math.abs(xv)));
-    const shown = list.slice(0, compact ? 3 : 5);
+    const v = a.impact?.[meId];
+    if (!v) return null;
     return (
-      <div className="impact" aria-label="Balance changes">
-        <span className="impact-label">Balances</span>
-        {shown.map(([id, v]) => (
-          <span key={id} className={`impact-chip ${v > 0 ? "up" : "down"}`} title={`${who(id, true)}: balance ${v > 0 ? "up" : "down"} ${fmtMoney(Math.abs(v))}`}>
-            <Avatar name={member(id)?.name ?? "?"} index={colour(id)} size={18} />
-            <span className="impact-name">{who(id, true)}</span> <b>{v > 0 ? "+" : "−"}{fmtMoney(Math.abs(v))}</b>
-          </span>
-        ))}
-        {list.length > shown.length && <span className="impact-more">+{list.length - shown.length} more</span>}
+      <div className="impact" aria-label="Your balance change">
+        <span className={`impact-chip mine ${v > 0 ? "up" : "down"}`}>Your balance <b>{v > 0 ? "+" : "−"}{fmtMoney(Math.abs(v))}</b></span>
       </div>
     );
+  };
+  const impactList = (a: ActivityDoc) => {
+    if (!a.impact) return [];
+    return Object.entries(a.impact).filter(([, v]) => v).sort(([x], [y]) => (x === meId ? -1 : y === meId ? 1 : 0));
   };
 
   const names = (s: unknown) => String(s ?? "").split(",").map((x) => x.trim().replace(/ (×\d+|\$[\d.,]+)$/, "")).filter((x) => x && x !== "nobody" && x !== "—");
@@ -113,15 +110,24 @@ export function ActivityFeed({
     const shares = a.impact ? [] : a.changes.filter((c) => c.path.startsWith("shares."));
     const fields = a.changes.filter((c) => !c.path.startsWith("items.") && !c.path.startsWith("order.") && !c.path.startsWith("shares.") || /^items\..*\.(amount|name)$/.test(c.path) || (c.path.startsWith("items.") && c.after === "removed"));
     if (walmart.length) for (let i = fields.length - 1; i >= 0; i--) if (/^items\./.test(fields[i]!.path)) fields.splice(i, 1);
-    if (!items.length && !walmart.length && !fields.length && !shares.length) return null;
+    const bal = impactList(a);
+    if (!items.length && !walmart.length && !fields.length && !shares.length && !bal.length) return null;
     const n = items.length + walmart.length + fields.length + shares.length;
     const row = (c: FieldChange, i: number) => (
       <div key={i} className="chg-row"><span className="chg-label">{c.label}</span><span className="chg-val"><s>{String(c.before ?? "—")}</s><span className="arrow">→</span>{String(c.after ?? "—")}</span></div>
     );
     return (
       <details className="ledger-details">
-        <summary>{n} change{n === 1 ? "" : "s"}</summary>
+        <summary>{n ? `${n} change${n === 1 ? "" : "s"}` : "Balance changes"}</summary>
         <div className="ledger-detail-body">
+          {bal.length > 0 && (
+            <div className="chg-group">
+              <div className="chg-head">Balances</div>
+              {bal.map(([id, v]) => (
+                <div key={id} className="chg-row"><span className="chg-label row" style={{ gap: 8 }}><Avatar name={member(id)?.name ?? "?"} index={colour(id)} size={20} />{who(id, true)}</span><span className={`chg-val amt ${v > 0 ? "pos" : "neg"}`}>{v > 0 ? "+" : "−"}{fmtMoney(Math.abs(v))}</span></div>
+              ))}
+            </div>
+          )}
           {walmart.length > 0 && <div className="chg-group"><div className="chg-head">From Walmart</div><ul>{walmart.map((c, i) => <li key={i}>{String(c.after)}</li>)}</ul></div>}
           {items.length > 0 && (
             <div className="chg-group">
