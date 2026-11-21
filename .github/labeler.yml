@@ -8,6 +8,6 @@
 "area: sign-in":
   - changed-files: [{ any-glob-to-any-file: ["apps/web/auth.ts", "apps/web/app/signin/**", "apps/web/app/join/**", "apps/web/components/AuthShell.tsx", "apps/web/components/SignInClient.tsx"] }]
 "area: installer":
-  - changed-files: [{ any-glob-to-any-file: ["tools/install-extension.sh", ".github/workflows/release-extension.yml"] }]
+  - changed-files: [{ any-glob-to-any-file: ["tools/install-extension.sh", "tools/install-extension.ps1", ".github/workflows/release-extension.yml"] }]
 documentation:
   - changed-files: [{ any-glob-to-any-file: ["**/*.md", "docs/**"] }]

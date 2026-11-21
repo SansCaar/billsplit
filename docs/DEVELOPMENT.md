@@ -32,9 +32,11 @@ Sign-in: locally there is a dev sign-in (name + email) at `/signin?dev=1`. For G
 Publish: bump `version` in `apps/extension/public/manifest.json`, then `git tag ext-v<version> && git push origin ext-v<version>`.
 The GitHub Action builds the extension and attaches `billsplit-extension-<version>.zip` to a release.
 
-Users install it with `tools/install-extension.sh` (the one-liner in the README). It downloads the latest release into
-`~/Bill Split Extension`; the first time, they load that folder in Chrome themselves. To test an unreleased build, pass
-a zip: `tools/install-extension.sh --zip billsplit-extension-x.y.z.zip`.
+Users install it with `tools/install-extension.sh` (macOS and Linux, plain POSIX sh) or `tools/install-extension.ps1`
+(Windows PowerShell 5.1+); the one-liners are in the README. Both download the latest release into
+`~/Bill Split Extension`; the first time, users load that folder in Chrome themselves. To test an unreleased build, pass
+a zip: `tools/install-extension.sh --zip billsplit-extension-x.y.z.zip` (same flag for the `.ps1`). Keep the `.ps1`
+ASCII-only: Windows PowerShell 5.1 misreads UTF-8 files without a BOM.
 
 ## Deploy (Vercel)
 

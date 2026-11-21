@@ -184,6 +184,11 @@
 .lp-install p { color: var(--lp-mute); font-size: 16px; margin: 12px auto 20px; max-width: 520px; }
 .lp-install .lp-small { font-size: 13px; margin: 16px 0 0; }
 .lp-install a { color: var(--green); font-weight: 600; }
+.lp-cmd-wrap { text-align: left; }
+.lp-cmd-tabs { display: inline-flex; gap: 4px; padding: 4px; border-radius: 12px; background: #eef4ef; }
+.lp-cmd-tabs button { min-height: 36px; padding: 0 16px; border-radius: 9px; color: var(--lp-mute); font-weight: 700; font-size: 13px; }
+.lp-cmd-tabs button.on { background: #fff; color: var(--lp-ink); box-shadow: 0 1px 3px rgba(19, 38, 31, .14); }
+.lp-install .lp-cmd-where { margin: 12px 0 8px; font-size: 14px; max-width: none; }
 .lp-cmd { display: flex; align-items: center; gap: 10px; background: #13261f; color: #d7ead9; border-radius: 14px; padding: 10px 10px 10px 16px; text-align: left; }
 .lp-cmd code { flex: 1; min-width: 0; font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
 .lp-cmd button { flex: none; min-height: 40px; padding: 0 16px; border-radius: 10px; background: #2f6b55; color: #fff; font-weight: 700; font-size: 13px; }

@@ -2,11 +2,16 @@ import "./landing.css";
 import Link from "next/link";
 import { Avatar } from "@billsplit/assign-ui";
 import { Story } from "./Story";
-import { CopyCommand } from "./CopyCommand";
+import { CopyCommand, type InstallOption } from "./CopyCommand";
 
 const REPO = "https://github.com/SansCaar/billsplit";
 const COFFEE = "https://buymeacoffee.com/sanscar";
-const INSTALL = "curl -fsSL https://raw.githubusercontent.com/SansCaar/billsplit/main/tools/install-extension.sh | zsh";
+const RAW = "https://raw.githubusercontent.com/SansCaar/billsplit/main/tools";
+const INSTALL: InstallOption[] = [
+  { os: "Mac", where: "Terminal", command: `curl -fsSL ${RAW}/install-extension.sh | sh`, detect: "Macintosh|Mac OS X" },
+  { os: "Windows", where: "PowerShell", command: `irm ${RAW}/install-extension.ps1 | iex`, detect: "Windows" },
+  { os: "Linux", where: "a terminal", command: `curl -fsSL ${RAW}/install-extension.sh | sh`, detect: "Linux|X11" },
+];
 
 export function Landing() {
   return (
@@ -68,10 +73,10 @@ export function Landing() {
 
       <section className="lp-install" id="install">
         <div>
-          <span className="lp-kicker">Chrome extension · Mac</span>
+          <span className="lp-kicker">Chrome extension · Mac, Windows, Linux</span>
           <h2>Install in one line</h2>
-          <p>Paste this into Terminal. It downloads the extension and opens Chrome with the two clicks left to do.</p>
-          <CopyCommand command={INSTALL} />
+          <p>It downloads the extension and opens Chrome with the two clicks left to do.</p>
+          <CopyCommand options={INSTALL} />
           <p className="lp-small">Only the person splitting Walmart orders needs it. Open source on <a href={REPO}>GitHub</a>.</p>
         </div>
       </section>
