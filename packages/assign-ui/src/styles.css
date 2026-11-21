@@ -82,3 +82,59 @@
 .bs-zero-row .bs-td-people { text-decoration: none; }
 .bs-notice { background: #fff8e6; border: 1px solid #ffe2a8; border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; font-size: 14px; }
 .bs-notice ul { margin: 6px 0 0; padding-left: 18px; }
+
+/* ---------- Layout v2: card | people, nav under card; phones stack with sticky nav ---------- */
+.bs-card-wrap { grid-template-columns: 1fr 230px; grid-template-areas: "card people" "nav people"; row-gap: 0; }
+.bs-card { grid-area: card; }
+.bs-people { grid-area: people; }
+.bs-nav-card { grid-area: nav; align-items: center; }
+.bs-nav-count { color: var(--bs-mute); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.bs-progress { position: sticky; top: 64px; z-index: 6; }
+.bs-item-name { overflow-wrap: anywhere; }
+.bs-person { min-height: 52px; }
+.bs-review-controls select { min-height: 44px; }
+.bs-totals { scroll-snap-type: x mandatory; }
+.bs-total-card { scroll-snap-align: start; }
+@media (hover: none) { .bs-person kbd { display: none; } }
+
+@media (max-width: 720px) {
+  .bs-flow { font-size: 15px; }
+  .bs-progress { top: 60px; height: 24px; margin-bottom: 12px; }
+  .bs-progress-label { line-height: 24px; font-size: 12px; }
+  .bs-card-wrap { display: grid; grid-template-columns: 1fr; grid-template-areas: "card" "people" "nav"; gap: 12px; }
+  .bs-card { padding: 14px; border-radius: 18px; }
+  .bs-card-top { margin-bottom: 10px; }
+  .bs-card-body { gap: 14px; align-items: flex-start; }
+  .bs-img { width: 84px; height: 84px; border-radius: 12px; }
+  .bs-item-name { font-size: 16px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .bs-item-price { font-size: 24px; margin-top: 4px; }
+  .bs-split { margin-top: 12px; padding-top: 12px; min-height: 0; }
+  .bs-tabs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; width: 100%; }
+  .bs-tab { padding: 8px 6px; font-size: 13px; }
+  .bs-hint { padding: 6px 0; font-size: 14px; }
+  .bs-people { display: grid !important; grid-template-columns: 1fr 1fr; gap: 8px; order: 0; }
+  .bs-person { flex: none; padding: 8px; gap: 8px; border-radius: 14px; }
+  .bs-person .bs-avatar { width: 32px !important; height: 32px !important; font-size: 13px !important; }
+  .bs-person-name { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bs-all, .bs-same { grid-column: span 1; }
+  .bs-nav-card, .bs-nav-review { position: sticky; bottom: 0; z-index: 8; margin: 0 -4px; padding: 10px 4px calc(10px + env(safe-area-inset-bottom)); background: linear-gradient(to bottom, rgba(247,247,252,0), rgba(247,247,252,.96) 30%); }
+  .bs-nav-card .bs-btn, .bs-nav-review .bs-btn { min-height: 48px; }
+  .bs-nav-card .bs-btn.primary, .bs-nav-review .bs-btn.primary { flex: 1; }
+  .bs-review { padding: 14px; border-radius: 18px; }
+  .bs-review-head h2 { font-size: 18px; }
+  .bs-review-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .bs-review-controls label:first-child { grid-column: span 2; }
+  .bs-review-controls select { width: 100%; }
+  .bs-totals { display: flex; overflow-x: auto; gap: 8px; margin: 0 -14px 10px; padding: 0 14px; scrollbar-width: none; }
+  .bs-totals::-webkit-scrollbar { display: none; }
+  .bs-total-card { flex: 0 0 150px; padding: 10px; }
+  .bs-total-amt { font-size: 18px; }
+  .bs-table { font-size: 13px; }
+  .bs-table td { padding: 8px 4px; }
+  .bs-td-img { width: 36px; }
+  .bs-td-img img { width: 30px; height: 30px; }
+  .bs-td-people { white-space: normal; }
+  .bs-td-people .bs-avatar { width: 20px !important; height: 20px !important; font-size: 9px !important; }
+}
+
+.bs-flow { scroll-margin-top: 64px; }

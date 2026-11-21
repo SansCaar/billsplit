@@ -74,6 +74,15 @@ export function AssignFlow(props: AssignFlowProps) {
 
   // Members/reviewing are read through a ref so the key listener is registered once and never stale;
   // the state changes themselves go through dispatch, which always applies to the latest state.
+  // Bring the card/review into view whenever the step changes (e.g. jumping from the review list).
+  const rootRef = useRef<HTMLDivElement>(null);
+  const firstStep = useRef(true);
+  useEffect(() => {
+    if (firstStep.current) { firstStep.current = false; return; }
+    const el = rootRef.current;
+    if (el && el.getBoundingClientRect().top < 0) el.scrollIntoView({ block: "start", behavior: "smooth" });
+  }, [step]);
+
   const live = useRef({ members, reviewing });
   live.current = { members, reviewing };
   useEffect(() => {
@@ -103,7 +112,7 @@ export function AssignFlow(props: AssignFlowProps) {
   const progress = assignable.length ? assignedCount / assignable.length : 1;
 
   return (
-    <div className="bs-flow">
+    <div className="bs-flow" ref={rootRef}>
       <div className="bs-progress" title={`${assignedCount}/${assignable.length} assigned`}>
         <div className="bs-progress-bar" style={{ width: `${progress * 100}%` }} />
         <span className="bs-progress-label">{assignedCount}/{assignable.length} assigned</span>
@@ -234,12 +243,6 @@ function ItemCard(p: {
           )}
           {p.error && <div className="bs-error">{p.error}</div>}
         </div>
-        <div className="bs-nav">
-          <button className="bs-btn ghost" onClick={onBack} disabled={p.position === 0}>← Back</button>
-          <button className="bs-btn primary" onClick={onNext} disabled={!p.canNext} data-testid="next">
-            {p.position + 1 === p.total ? "Review →" : "Next →"}
-          </button>
-        </div>
       </div>
       <aside className="bs-people" aria-label="Members">
         <button className={`bs-person bs-all ${selected.size === p.members.length ? "on" : ""}`} onClick={() => p.dispatch({ type: "all", memberIds: p.members.map((m) => m.id) })} data-testid="all">
@@ -260,6 +263,13 @@ function ItemCard(p: {
           <kbd>S</kbd>
         </button>
       </aside>
+      <div className="bs-nav bs-nav-card">
+        <button className="bs-btn ghost" onClick={onBack} disabled={p.position === 0}>← Back</button>
+        <span className="bs-nav-count">{p.position + 1} / {p.total}</span>
+        <button className="bs-btn primary" onClick={onNext} disabled={!p.canNext} data-testid="next">
+          {p.position + 1 === p.total ? "Review →" : "Next →"}
+        </button>
+      </div>
     </div>
   );
 }
@@ -292,7 +302,7 @@ function Review(p: {
       <div className="bs-review-head">
         <h2>{missing.length === 0 ? "🎉 All assigned — review & send" : `${missing.length} item(s) still need someone`}</h2>
         <div className="bs-review-sub">
-          Walmart #{p.order.orderNumber}
+          Walmart #…{p.order.orderNumber.slice(-4)}
           {card?.last4 ? ` · paid with ${card.brand} •••• ${card.last4}` : ""}
           {p.order.total !== null ? ` · total ${fmtMoney(p.order.total)}` : ""}
         </div>
@@ -381,7 +391,7 @@ function Review(p: {
       </table>
 
       {p.error && <div className="bs-error" role="alert">{p.error}</div>}
-      <div className="bs-nav">
+      <div className="bs-nav bs-nav-review">
         <button className="bs-btn ghost" onClick={p.onBack} disabled={!p.assignable.length}>← Back</button>
         <button className="bs-btn primary big" disabled={!ready || p.busy} onClick={p.onSubmit} data-testid="submit">
           {p.busy ? "Sending…" : p.submitLabel}
