@@ -82,6 +82,8 @@ This is what Bill Split is built for. A 40-item grocery order becomes a fair spl
 
 You need **Google Chrome** on a Mac.
 
+▶️ [Watch the install guide video](docs/demo/install-guide.mp4)
+
 1. Open **Terminal** and paste:
 
    ```sh
