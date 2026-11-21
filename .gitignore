@@ -1,0 +1,11 @@
+node_modules
+.next
+dist
+.env*.local
+.data
+test-results
+proof/raw
+proof/e2e-report
+tools/dist
+next-env.d.ts
+*.tsbuildinfo

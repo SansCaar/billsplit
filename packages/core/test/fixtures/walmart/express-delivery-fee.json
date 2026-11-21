@@ -1,0 +1,678 @@
+{
+ "id": "900000000000006",
+ "orderDate": "2026-10-30T16:44:06-05:00",
+ "tippableGroup": null,
+ "paymentMethods": [
+  {
+   "title": null,
+   "cardType": "MASTERCARD",
+   "paymentType": "CREDITCARD",
+   "description": "Ending in 4242",
+   "displayValues": null
+  }
+ ],
+ "priceDetails": {
+  "subTotal": {
+   "label": "Subtotal",
+   "value": 124.03,
+   "displayValue": "$124.03"
+  },
+  "taxTotal": {
+   "label": "Taxes",
+   "value": 7.12,
+   "displayValue": "$7.12"
+  },
+  "grandTotal": {
+   "label": "Total",
+   "value": 136.15,
+   "displayValue": "$136.15"
+  },
+  "grandTotalWithTips": {
+   "label": "Total",
+   "value": 136.15,
+   "displayValue": "$136.15"
+  },
+  "driverTip": {
+   "label": "Driver tip",
+   "value": 0,
+   "displayValue": "$0.00"
+  },
+  "belowMinimumFee": null,
+  "fees": [
+   {
+    "label": "Free delivery from store",
+    "value": 0,
+    "displayValue": "$0"
+   },
+   {
+    "label": "3 hours or less",
+    "value": 5,
+    "displayValue": "$5.00"
+   }
+  ],
+  "discounts": [],
+  "refund": null
+ },
+ "groups_2101": [
+  {
+   "id": "group-1",
+   "purchaseOrderId": "po-1",
+   "fulfillmentType": "SC_DELIVERY",
+   "detailedGroupType": "DFS",
+   "deliveryMessage": "Delivery from store",
+   "seller": {
+    "name": "Walmart.com"
+   },
+   "items": [
+    {
+     "id": "12",
+     "quantity": 1,
+     "productInfo": {
+      "name": "Bounty Paper Towels Select-A-Size White, 6 Triple Rolls, 123 Sheets Per Roll",
+      "usItemId": "14580219389",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/seo/Bounty-Paper-Towels-Select-a-Size-6-Triple-Rolls_2c98d732-5f3b-4e8e-9c1f-cfe6c5eb50e3.2d910fb37aad5e93a770c393395cc97b.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$16.97",
+       "value": 16.97
+      }
+     }
+    },
+    {
+     "id": "13",
+     "quantity": 2,
+     "productInfo": {
+      "name": "Scott ComfortPlus Toilet Paper, 12 Mega Rolls",
+      "usItemId": "14944866035",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/seo/Scott-ComfortPlus-Toilet-Paper-12-Mega-Rolls_f8cd4b30-85a1-4e70-bd99-40361f63a5c2.8361543fb2e50d48731f3bb98e166ce1.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$14.94",
+       "value": 14.94
+      }
+     }
+    },
+    {
+     "id": "3",
+     "quantity": 1,
+     "productInfo": {
+      "name": "Softsoap Aquarium Liquid Hand Soap, Kitchen and Bathroom Hand Soap, 7.5 Fluid Ounce Bottle",
+      "usItemId": "10323297",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/seo/Softsoap-Aquarium-Liquid-Hand-Soap-Kitchen-and-Bathroom-Hand-Soap-7-5-Fluid-Ounce-Bottle_1ff40bf6-0e4a-41b5-b235-9278846c1fd2.ec41339fdf9724ed2627892bad20d5bc.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$1.24",
+       "value": 1.24
+      }
+     }
+    },
+    {
+     "id": "6",
+     "quantity": 3,
+     "productInfo": {
+      "name": "Fresh Bulk Yellow Lemons",
+      "usItemId": "41752773",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/seo/Fresh-Bulk-Yellow-Lemons_f025c57c-13e1-4a1a-ac81-0695aaf2473d.7f3c9f067735c2730223c9147a646f7c.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$2.04",
+       "value": 2.04
+      }
+     }
+    },
+    {
+     "id": "8",
+     "quantity": 1,
+     "productInfo": {
+      "name": "Sweet'N Low, Zero Calorie Sweetener Packets, 100 Count, Kosher & Gluten Free",
+      "usItemId": "733236202",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/seo/Sweet-N-Low-Zero-Calorie-Sweetener-100-count-3-5-oz_bdfd46c7-f951-43af-965d-371cedbe896b.9a2bd89ce469c8bb7f3e1c5b423427b5.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$2.72",
+       "value": 2.72
+      }
+     }
+    },
+    {
+     "id": "12001",
+     "quantity": 1,
+     "productInfo": {
+      "name": "Fresh Yellow Onions, 3 lb Bag",
+      "usItemId": "10447842",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/asr/77a8ef80-e2cc-4062-a87a-4673cfaf10f2.768d6312632f7da7e1b5e8ce3d8c5391.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$3.16",
+       "value": 3.16
+      }
+     }
+    },
+    {
+     "id": "12003",
+     "quantity": 2,
+     "productInfo": {
+      "name": "Fresh Serrano Pepper, 4 oz Bag",
+      "usItemId": "592682060",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/asr/71784258-8461-44ee-9ef1-04e1e012413b.3e7b782e9e363172a67e961a4a9fcc5a.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$3.16",
+       "value": 3.16
+      }
+     }
+    },
+    {
+     "id": "12004",
+     "quantity": 1,
+     "productInfo": {
+      "name": "Sanderson Farms Fresh Chicken Thighs, Family Pack, 22g Protein, 4oz 112g, 4.7 - 5.2 lb",
+      "usItemId": "193413277",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/asr/a9cc3005-4427-4eef-98c0-771cad3adde2.fe56ab16efd3f4497698ea9fe42fc604.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$8.76",
+       "value": 8.76
+      }
+     }
+    },
+    {
+     "id": "12005",
+     "quantity": 1,
+     "productInfo": {
+      "name": "Sanderson Farms Fresh Chicken Thighs, Family Pack, 22g Protein, 4oz 112g, 4.7 - 5.2 lb",
+      "usItemId": "193413277",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/asr/a9cc3005-4427-4eef-98c0-771cad3adde2.fe56ab16efd3f4497698ea9fe42fc604.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$11.35",
+       "value": 11.35
+      }
+     }
+    },
+    {
+     "id": "12006",
+     "quantity": 1,
+     "productInfo": {
+      "name": "Sanderson Farms Fresh Chicken Thighs, Family Pack, 22g Protein, 4oz 112g, 4.7 - 5.2 lb",
+      "usItemId": "193413277",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/asr/a9cc3005-4427-4eef-98c0-771cad3adde2.fe56ab16efd3f4497698ea9fe42fc604.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$10.44",
+       "value": 10.44
+      }
+     }
+    },
+    {
+     "id": "12007",
+     "quantity": 1,
+     "productInfo": {
+      "name": "Sanderson Farms Fresh Chicken Thighs, Family Pack, 22g Protein, 4oz 112g, 4.7 - 5.2 lb",
+      "usItemId": "193413277",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/asr/a9cc3005-4427-4eef-98c0-771cad3adde2.fe56ab16efd3f4497698ea9fe42fc604.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$10.09",
+       "value": 10.09
+      }
+     }
+    },
+    {
+     "id": "12008",
+     "quantity": 1,
+     "productInfo": {
+      "name": "Great Value Sugar Free French Vanilla Coffee Creamer, 32 fl oz",
+      "usItemId": "151333804",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/asr/40194bd6-db25-4b64-b9d0-0ba1d7af2ee3.c62e3dac269b938c46b65a3f1de72c32.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$2.78",
+       "value": 2.78
+      }
+     }
+    },
+    {
+     "id": "11",
+     "quantity": 1,
+     "productInfo": {
+      "name": "(3 pack) Great Value Long Grain Enriched Rice, 20 lb",
+      "usItemId": "10315883",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/seo/Great-Value-Long-Grain-Enriched-Rice-20-lb_a0114454-20b8-42e9-bce3-86bfa0763a79.af0001b1f6dd32a979c54d5501f5afd8.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$34.71",
+       "value": 34.71
+      }
+     }
+    },
+    {
+     "id": "12002",
+     "quantity": 8,
+     "productInfo": {
+      "name": "Fresh Banana, Each",
+      "usItemId": "44390948",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/asr/5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$1.67",
+       "value": 1.67
+      }
+     }
+    },
+    {
+     "id": "5",
+     "quantity": 2,
+     "productInfo": {
+      "name": "Fresh Whole Green Cilantro Bunch, 1 Bunch, Fresh Produce",
+      "usItemId": "160597260",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/seo/Fresh-Whole-Green-Cilantro-Bunch-1-Bunch-Fresh-Produce_3c692ae5-58c5-4e87-abf7-1ff4c79cce8c.e8683ca8b44b72dab407cb5784864404.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$1.94",
+       "value": 1.94
+      }
+     }
+    }
+   ],
+   "categories": [
+    {
+     "type": "UNAVAILABLE",
+     "name": "Unavailable",
+     "items": [
+      {
+       "id": "5",
+       "quantity": 2,
+       "statusCode": "9000.450",
+       "productInfo": {
+        "name": "Fresh Whole Green Cilantro Bunch, 1 Bunch, Fresh Produce",
+        "usItemId": "160597260",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/seo/Fresh-Whole-Green-Cilantro-Bunch-1-Bunch-Fresh-Produce_3c692ae5-58c5-4e87-abf7-1ff4c79cce8c.e8683ca8b44b72dab407cb5784864404.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$0.97 ea",
+         "value": 0.97
+        },
+        "linePrice": {
+         "displayValue": "$1.94",
+         "value": 1.94
+        }
+       }
+      }
+     ],
+     "substitutions": null
+    },
+    {
+     "type": "REGULAR",
+     "name": "17 shopped",
+     "items": [
+      {
+       "id": "12",
+       "quantity": 1,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Bounty Paper Towels Select-A-Size White, 6 Triple Rolls, 123 Sheets Per Roll",
+        "usItemId": "14580219389",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/seo/Bounty-Paper-Towels-Select-a-Size-6-Triple-Rolls_2c98d732-5f3b-4e8e-9c1f-cfe6c5eb50e3.2d910fb37aad5e93a770c393395cc97b.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$16.97 ea",
+         "value": 16.97
+        },
+        "linePrice": {
+         "displayValue": "$16.97",
+         "value": 16.97
+        }
+       }
+      },
+      {
+       "id": "13",
+       "quantity": 2,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Scott ComfortPlus Toilet Paper, 12 Mega Rolls",
+        "usItemId": "14944866035",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/seo/Scott-ComfortPlus-Toilet-Paper-12-Mega-Rolls_f8cd4b30-85a1-4e70-bd99-40361f63a5c2.8361543fb2e50d48731f3bb98e166ce1.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$7.47 ea",
+         "value": 7.47
+        },
+        "linePrice": {
+         "displayValue": "$14.94",
+         "value": 14.94
+        }
+       }
+      },
+      {
+       "id": "3",
+       "quantity": 1,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Softsoap Aquarium Liquid Hand Soap, Kitchen and Bathroom Hand Soap, 7.5 Fluid Ounce Bottle",
+        "usItemId": "10323297",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/seo/Softsoap-Aquarium-Liquid-Hand-Soap-Kitchen-and-Bathroom-Hand-Soap-7-5-Fluid-Ounce-Bottle_1ff40bf6-0e4a-41b5-b235-9278846c1fd2.ec41339fdf9724ed2627892bad20d5bc.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$1.24 ea",
+         "value": 1.24
+        },
+        "linePrice": {
+         "displayValue": "$1.24",
+         "value": 1.24
+        }
+       }
+      },
+      {
+       "id": "6",
+       "quantity": 3,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Fresh Bulk Yellow Lemons",
+        "usItemId": "41752773",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/seo/Fresh-Bulk-Yellow-Lemons_f025c57c-13e1-4a1a-ac81-0695aaf2473d.7f3c9f067735c2730223c9147a646f7c.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$0.68 ea",
+         "value": 0.68
+        },
+        "linePrice": {
+         "displayValue": "$2.04",
+         "value": 2.04
+        }
+       }
+      },
+      {
+       "id": "8",
+       "quantity": 1,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Sweet'N Low, Zero Calorie Sweetener Packets, 100 Count, Kosher & Gluten Free",
+        "usItemId": "733236202",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/seo/Sweet-N-Low-Zero-Calorie-Sweetener-100-count-3-5-oz_bdfd46c7-f951-43af-965d-371cedbe896b.9a2bd89ce469c8bb7f3e1c5b423427b5.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$2.72 ea",
+         "value": 2.72
+        },
+        "linePrice": {
+         "displayValue": "$2.72",
+         "value": 2.72
+        }
+       }
+      },
+      {
+       "id": "12001",
+       "quantity": 1,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Fresh Yellow Onions, 3 lb Bag",
+        "usItemId": "10447842",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/asr/77a8ef80-e2cc-4062-a87a-4673cfaf10f2.768d6312632f7da7e1b5e8ce3d8c5391.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$3.16 ea",
+         "value": 3.16
+        },
+        "linePrice": {
+         "displayValue": "$3.16",
+         "value": 3.16
+        }
+       }
+      },
+      {
+       "id": "12003",
+       "quantity": 2,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Fresh Serrano Pepper, 4 oz Bag",
+        "usItemId": "592682060",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/asr/71784258-8461-44ee-9ef1-04e1e012413b.3e7b782e9e363172a67e961a4a9fcc5a.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$1.58 ea",
+         "value": 1.58
+        },
+        "linePrice": {
+         "displayValue": "$3.16",
+         "value": 3.16
+        }
+       }
+      },
+      {
+       "id": "12004",
+       "quantity": 1,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Sanderson Farms Fresh Chicken Thighs, Family Pack, 22g Protein, 4oz 112g, 4.7 - 5.2 lb",
+        "usItemId": "193413277",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/asr/a9cc3005-4427-4eef-98c0-771cad3adde2.fe56ab16efd3f4497698ea9fe42fc604.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$8.76 ea",
+         "value": 8.76
+        },
+        "linePrice": {
+         "displayValue": "$8.76",
+         "value": 8.76
+        }
+       }
+      },
+      {
+       "id": "12005",
+       "quantity": 1,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Sanderson Farms Fresh Chicken Thighs, Family Pack, 22g Protein, 4oz 112g, 4.7 - 5.2 lb",
+        "usItemId": "193413277",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/asr/a9cc3005-4427-4eef-98c0-771cad3adde2.fe56ab16efd3f4497698ea9fe42fc604.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$11.35 ea",
+         "value": 11.35
+        },
+        "linePrice": {
+         "displayValue": "$11.35",
+         "value": 11.35
+        }
+       }
+      },
+      {
+       "id": "12006",
+       "quantity": 1,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Sanderson Farms Fresh Chicken Thighs, Family Pack, 22g Protein, 4oz 112g, 4.7 - 5.2 lb",
+        "usItemId": "193413277",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/asr/a9cc3005-4427-4eef-98c0-771cad3adde2.fe56ab16efd3f4497698ea9fe42fc604.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$10.44 ea",
+         "value": 10.44
+        },
+        "linePrice": {
+         "displayValue": "$10.44",
+         "value": 10.44
+        }
+       }
+      },
+      {
+       "id": "12007",
+       "quantity": 1,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Sanderson Farms Fresh Chicken Thighs, Family Pack, 22g Protein, 4oz 112g, 4.7 - 5.2 lb",
+        "usItemId": "193413277",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/asr/a9cc3005-4427-4eef-98c0-771cad3adde2.fe56ab16efd3f4497698ea9fe42fc604.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$10.09 ea",
+         "value": 10.09
+        },
+        "linePrice": {
+         "displayValue": "$10.09",
+         "value": 10.09
+        }
+       }
+      },
+      {
+       "id": "12008",
+       "quantity": 1,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Great Value Sugar Free French Vanilla Coffee Creamer, 32 fl oz",
+        "usItemId": "151333804",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/asr/40194bd6-db25-4b64-b9d0-0ba1d7af2ee3.c62e3dac269b938c46b65a3f1de72c32.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$2.78 ea",
+         "value": 2.78
+        },
+        "linePrice": {
+         "displayValue": "$2.78",
+         "value": 2.78
+        }
+       }
+      },
+      {
+       "id": "11",
+       "quantity": 1,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "(3 pack) Great Value Long Grain Enriched Rice, 20 lb",
+        "usItemId": "10315883",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/seo/Great-Value-Long-Grain-Enriched-Rice-20-lb_a0114454-20b8-42e9-bce3-86bfa0763a79.af0001b1f6dd32a979c54d5501f5afd8.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$11.57 ea",
+         "value": 11.57
+        },
+        "linePrice": {
+         "displayValue": "$34.71",
+         "value": 34.71
+        }
+       }
+      }
+     ],
+     "substitutions": null
+    },
+    {
+     "type": "WEIGHT_ADJUSTED",
+     "name": "8 weight adjusted",
+     "items": [
+      {
+       "id": "12002",
+       "quantity": 8,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Fresh Banana, Each",
+        "usItemId": "44390948",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/asr/5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$0.21 ea",
+         "value": 0.21
+        },
+        "linePrice": {
+         "displayValue": "$1.67",
+         "value": 1.67
+        }
+       }
+      }
+     ],
+     "substitutions": null
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Bill Split — Walmart orders",
+  "version": "0.1.0",
+  "description": "Split a Walmart order item by item with your group.",
+  "permissions": ["storage", "tabs"],
+  "host_permissions": ["https://www.walmart.com/*", "http://localhost/*", "https://*.vercel.app/*"],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [{ "matches": ["https://www.walmart.com/*"], "js": ["content.js"], "run_at": "document_idle" }],
+  "action": { "default_title": "Split this Walmart order" },
+  "icons": { "128": "icon128.png" }
+}

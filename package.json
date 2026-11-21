@@ -1,0 +1,16 @@
+{
+  "name": "billsplit",
+  "private": true,
+  "packageManager": "pnpm@11.9.0",
+  "scripts": {
+    "test": "pnpm -r --if-present test",
+    "dev": "pnpm --filter web dev",
+    "build:ext": "pnpm --filter extension build",
+    "typecheck": "pnpm -r --if-present typecheck"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.1"
+  }
+}

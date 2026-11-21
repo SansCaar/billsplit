@@ -1,0 +1,694 @@
+{
+ "id": "900000000000001",
+ "orderDate": "2026-11-20T00:13:42-06:00",
+ "tippableGroup": {
+  "id": "group-1"
+ },
+ "paymentMethods": [
+  {
+   "title": "OnePay CashRewards",
+   "cardType": "WMB2CMC",
+   "paymentType": "CREDITCARD",
+   "description": "Ending in 4242",
+   "displayValues": [
+    "$53.22"
+   ]
+  }
+ ],
+ "priceDetails": {
+  "subTotal": {
+   "label": "Subtotal",
+   "value": 50.69,
+   "displayValue": "$50.69"
+  },
+  "taxTotal": {
+   "label": "Taxes",
+   "value": 2.53,
+   "displayValue": "$2.53"
+  },
+  "grandTotal": {
+   "label": "Total",
+   "value": 53.22,
+   "displayValue": "$53.22"
+  },
+  "grandTotalWithTips": {
+   "label": "Total",
+   "value": 53.22,
+   "displayValue": "$53.22"
+  },
+  "driverTip": {
+   "label": "Driver tip",
+   "value": 0,
+   "displayValue": "$0.00"
+  },
+  "belowMinimumFee": null,
+  "fees": [],
+  "discounts": [],
+  "refund": null
+ },
+ "groups_2101": [
+  {
+   "id": "group-1",
+   "purchaseOrderId": "po-1",
+   "fulfillmentType": "SC_DELIVERY",
+   "detailedGroupType": "DFS",
+   "deliveryMessage": "Delivery from store",
+   "seller": {
+    "name": "Walmart.com"
+   },
+   "items": [
+    {
+     "id": "12005",
+     "quantity": 4,
+     "productInfo": {
+      "name": "Fresh Honeycrisp Apple, Each",
+      "usItemId": "44390950",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/asr/fdffb720-8b75-43df-bffe-4ffc4e9369d8_3.d4460fa9146eb9716b5804d61d4b26b9.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$8.72",
+       "value": 8.72
+      }
+     }
+    },
+    {
+     "id": "1",
+     "quantity": 1,
+     "productInfo": {
+      "name": "Fresh Hass Avocados, Each",
+      "usItemId": "44390949",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/seo/Fresh-Hass-Avocados-Each_af510d27-f416-4691-99fa-0943d730f8d2.8607ec56ce71993860620dc4c8ca9cd6.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$0.56",
+       "value": 0.56
+      }
+     }
+    },
+    {
+     "id": "4",
+     "quantity": 4,
+     "productInfo": {
+      "name": "Fresh Green Bell Pepper, Each",
+      "usItemId": "44390945",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/seo/Fresh-Green-Bell-Pepper-Each_3671a259-ff3d-425b-a9f7-5f467431b0b7.33f893b7fba8deea9c6a1f391da98f9f.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$3.44",
+       "value": 3.44
+      }
+     }
+    },
+    {
+     "id": "6",
+     "quantity": 1,
+     "productInfo": {
+      "name": "Great Value Penne Pasta, 16 oz",
+      "usItemId": "10534084",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/seo/Great-Value-Penne-Pasta-16-oz-Box-Shelf-Stable_44255c22-1361-4b4b-9a70-c7a87bd101b6.861d9b1f2947a2832aeb17a37d85ba31.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$1.36",
+       "value": 1.36
+      }
+     }
+    },
+    {
+     "id": "8",
+     "quantity": 1,
+     "productInfo": {
+      "name": "Coffee Mate Non Dairy Zero Sugar Italian Sweet Creme Liquid Coffee Creamer, 32 fl oz Bottle",
+      "usItemId": "23591195",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/seo/Nestle-Coffee-Mate-Non-Dairy-Zero-Sugar-Italian-Sweet-Creme-Liquid-Coffee-Creamer-Sugar-Free-32-fl-oz-Bottle_cee0c40d-499d-4b92-95e1-150382ab20e2.01decb2bffc6124e9f7a5fea348ffef8.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$3.98",
+       "value": 3.98
+      }
+     }
+    },
+    {
+     "id": "12",
+     "quantity": 3,
+     "productInfo": {
+      "name": "Fresh Garlic Sleeve, 3 Count",
+      "usItemId": "55014398",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/seo/Spice-World-Fresh-Garlic-Sleeve-3-Count_1987f303-5f7b-4250-a4be-15735b797999.ee158276b27318447e0e876cc3b1291b.png"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$5.22",
+       "value": 5.22
+      }
+     }
+    },
+    {
+     "id": "13",
+     "quantity": 2,
+     "productInfo": {
+      "name": "Great Value Paprika, 2.5 oz",
+      "usItemId": "559839182",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/seo/Great-Value-Paprika-2-5-oz_71f4982c-fbed-4c0c-a9da-0841f69a866b.2d7f4209a0419dd2b89031d12a576a7c.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$2.00",
+       "value": 2
+      }
+     }
+    },
+    {
+     "id": "12001",
+     "quantity": 3,
+     "productInfo": {
+      "name": "Fresh Whole Green Cilantro Bunch, 1 Bunch, Fresh Produce",
+      "usItemId": "160597260",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/asr/3c692ae5-58c5-4e87-abf7-1ff4c79cce8c.e8683ca8b44b72dab407cb5784864404.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$2.91",
+       "value": 2.91
+      }
+     }
+    },
+    {
+     "id": "12003",
+     "quantity": 2,
+     "productInfo": {
+      "name": "Fresh Yellow Onions, 3 lb Bag",
+      "usItemId": "10447842",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/asr/77a8ef80-e2cc-4062-a87a-4673cfaf10f2.768d6312632f7da7e1b5e8ce3d8c5391.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$6.48",
+       "value": 6.48
+      }
+     }
+    },
+    {
+     "id": "12004",
+     "quantity": 1,
+     "productInfo": {
+      "name": "Butterball All Natural Fresh Ground Turkey, 93/7%, Tray, 1 Pound, 22 Grams of Protein",
+      "usItemId": "19593628",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/asr/a43fbc4f-b43a-4a70-98ad-ac47f1614185.90896ad2a9cc670c36c7fd44f29d549a.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$5.56",
+       "value": 5.56
+      }
+     }
+    },
+    {
+     "id": "12007",
+     "quantity": 2,
+     "productInfo": {
+      "name": "Fresh Serrano Pepper, 4 oz Bag",
+      "usItemId": "592682060",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/asr/71784258-8461-44ee-9ef1-04e1e012413b.3e7b782e9e363172a67e961a4a9fcc5a.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$3.16",
+       "value": 3.16
+      }
+     }
+    },
+    {
+     "id": "12009",
+     "quantity": 2,
+     "productInfo": {
+      "name": "Fresh Whole Green Onion 1 Bunch, Fresh Produce",
+      "usItemId": "51259361",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/asr/e3e6b87a-735c-4e00-b35b-c566d3f56ff3.e7440b87be49eb20ac956d0a2690822e.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$2.20",
+       "value": 2.2
+      }
+     }
+    },
+    {
+     "id": "12002",
+     "quantity": 0.198,
+     "productInfo": {
+      "name": "Fresh Ginger Root, Each",
+      "usItemId": "44391005",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/asr/19b5b581-826c-4d16-9a51-4260b57d15a4.262bf459282bb9c9d6e73db2d0db0cfa.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$0.79",
+       "value": 0.79
+      }
+     }
+    },
+    {
+     "id": "12006",
+     "quantity": 12,
+     "productInfo": {
+      "name": "Fresh Banana, Each",
+      "usItemId": "44390948",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/asr/5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$2.34",
+       "value": 2.34
+      }
+     }
+    },
+    {
+     "id": "12008",
+     "quantity": 10,
+     "productInfo": {
+      "name": "Fresh Roma Tomato, Each",
+      "usItemId": "44390944",
+      "imageInfo": {
+       "thumbnailUrl": "https://i5.walmartimages.com/asr/ecef8a3e-ab96-445e-a16a-d639b40eb5fb.93fcc627f542f02488e5ee9d8e26f152.jpeg"
+      }
+     },
+     "priceInfo": {
+      "linePrice": {
+       "displayValue": "$1.97",
+       "value": 1.97
+      }
+     }
+    }
+   ],
+   "categories": [
+    {
+     "type": "SUBSTITUTED",
+     "name": "4 substituted",
+     "items": [
+      {
+       "id": "12005",
+       "quantity": 4,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Fresh Honeycrisp Apple, Each",
+        "usItemId": "44390950",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/asr/fdffb720-8b75-43df-bffe-4ffc4e9369d8_3.d4460fa9146eb9716b5804d61d4b26b9.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$2.18 ea",
+         "value": 2.18
+        },
+        "linePrice": {
+         "displayValue": "$8.72",
+         "value": 8.72
+        }
+       }
+      }
+     ],
+     "substitutions": [
+      {
+       "id": "2",
+       "quantity": 4,
+       "statusCode": "9000.9020",
+       "productInfo": {
+        "name": "Fresh Red Mango, Each",
+        "usItemId": "994998279",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/seo/Fresh-Mangoes-Each-Sweet_09d273cd-53bd-4032-986d-91fe7288dacc.e0dcc59a6684bf9185479666d60e65f3.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$1.27 ea",
+         "value": 1.27
+        },
+        "linePrice": {
+         "displayValue": "$5.08",
+         "value": 5.08
+        }
+       }
+      }
+     ]
+    },
+    {
+     "type": "REGULAR",
+     "name": "22 shopped",
+     "items": [
+      {
+       "id": "1",
+       "quantity": 1,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Fresh Hass Avocados, Each",
+        "usItemId": "44390949",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/seo/Fresh-Hass-Avocados-Each_af510d27-f416-4691-99fa-0943d730f8d2.8607ec56ce71993860620dc4c8ca9cd6.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$0.56 ea",
+         "value": 0.56
+        },
+        "linePrice": {
+         "displayValue": "$0.56",
+         "value": 0.56
+        }
+       }
+      },
+      {
+       "id": "4",
+       "quantity": 4,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Fresh Green Bell Pepper, Each",
+        "usItemId": "44390945",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/seo/Fresh-Green-Bell-Pepper-Each_3671a259-ff3d-425b-a9f7-5f467431b0b7.33f893b7fba8deea9c6a1f391da98f9f.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$0.86 ea",
+         "value": 0.86
+        },
+        "linePrice": {
+         "displayValue": "$3.44",
+         "value": 3.44
+        }
+       }
+      },
+      {
+       "id": "6",
+       "quantity": 1,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Great Value Penne Pasta, 16 oz",
+        "usItemId": "10534084",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/seo/Great-Value-Penne-Pasta-16-oz-Box-Shelf-Stable_44255c22-1361-4b4b-9a70-c7a87bd101b6.861d9b1f2947a2832aeb17a37d85ba31.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$1.36 ea",
+         "value": 1.36
+        },
+        "linePrice": {
+         "displayValue": "$1.36",
+         "value": 1.36
+        }
+       }
+      },
+      {
+       "id": "8",
+       "quantity": 1,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Coffee Mate Non Dairy Zero Sugar Italian Sweet Creme Liquid Coffee Creamer, 32 fl oz Bottle",
+        "usItemId": "23591195",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/seo/Nestle-Coffee-Mate-Non-Dairy-Zero-Sugar-Italian-Sweet-Creme-Liquid-Coffee-Creamer-Sugar-Free-32-fl-oz-Bottle_cee0c40d-499d-4b92-95e1-150382ab20e2.01decb2bffc6124e9f7a5fea348ffef8.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$3.98 ea",
+         "value": 3.98
+        },
+        "linePrice": {
+         "displayValue": "$3.98",
+         "value": 3.98
+        }
+       }
+      },
+      {
+       "id": "12",
+       "quantity": 3,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Fresh Garlic Sleeve, 3 Count",
+        "usItemId": "55014398",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/seo/Spice-World-Fresh-Garlic-Sleeve-3-Count_1987f303-5f7b-4250-a4be-15735b797999.ee158276b27318447e0e876cc3b1291b.png"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$1.74 ea",
+         "value": 1.74
+        },
+        "linePrice": {
+         "displayValue": "$5.22",
+         "value": 5.22
+        }
+       }
+      },
+      {
+       "id": "13",
+       "quantity": 2,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Great Value Paprika, 2.5 oz",
+        "usItemId": "559839182",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/seo/Great-Value-Paprika-2-5-oz_71f4982c-fbed-4c0c-a9da-0841f69a866b.2d7f4209a0419dd2b89031d12a576a7c.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$1.00 ea",
+         "value": 1
+        },
+        "linePrice": {
+         "displayValue": "$2.00",
+         "value": 2
+        }
+       }
+      },
+      {
+       "id": "12001",
+       "quantity": 3,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Fresh Whole Green Cilantro Bunch, 1 Bunch, Fresh Produce",
+        "usItemId": "160597260",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/asr/3c692ae5-58c5-4e87-abf7-1ff4c79cce8c.e8683ca8b44b72dab407cb5784864404.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$0.97 ea",
+         "value": 0.97
+        },
+        "linePrice": {
+         "displayValue": "$2.91",
+         "value": 2.91
+        }
+       }
+      },
+      {
+       "id": "12003",
+       "quantity": 2,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Fresh Yellow Onions, 3 lb Bag",
+        "usItemId": "10447842",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/asr/77a8ef80-e2cc-4062-a87a-4673cfaf10f2.768d6312632f7da7e1b5e8ce3d8c5391.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$3.24 ea",
+         "value": 3.24
+        },
+        "linePrice": {
+         "displayValue": "$6.48",
+         "value": 6.48
+        }
+       }
+      },
+      {
+       "id": "12004",
+       "quantity": 1,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Butterball All Natural Fresh Ground Turkey, 93/7%, Tray, 1 Pound, 22 Grams of Protein",
+        "usItemId": "19593628",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/asr/a43fbc4f-b43a-4a70-98ad-ac47f1614185.90896ad2a9cc670c36c7fd44f29d549a.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$5.56 ea",
+         "value": 5.56
+        },
+        "linePrice": {
+         "displayValue": "$5.56",
+         "value": 5.56
+        }
+       }
+      },
+      {
+       "id": "12007",
+       "quantity": 2,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Fresh Serrano Pepper, 4 oz Bag",
+        "usItemId": "592682060",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/asr/71784258-8461-44ee-9ef1-04e1e012413b.3e7b782e9e363172a67e961a4a9fcc5a.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$1.58 ea",
+         "value": 1.58
+        },
+        "linePrice": {
+         "displayValue": "$3.16",
+         "value": 3.16
+        }
+       }
+      },
+      {
+       "id": "12009",
+       "quantity": 2,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Fresh Whole Green Onion 1 Bunch, Fresh Produce",
+        "usItemId": "51259361",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/asr/e3e6b87a-735c-4e00-b35b-c566d3f56ff3.e7440b87be49eb20ac956d0a2690822e.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$1.10 ea",
+         "value": 1.1
+        },
+        "linePrice": {
+         "displayValue": "$2.20",
+         "value": 2.2
+        }
+       }
+      }
+     ],
+     "substitutions": null
+    },
+    {
+     "type": "WEIGHT_ADJUSTED",
+     "name": "23 weight adjusted",
+     "items": [
+      {
+       "id": "12002",
+       "quantity": 0.198,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Fresh Ginger Root, Each",
+        "usItemId": "44391005",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/asr/19b5b581-826c-4d16-9a51-4260b57d15a4.262bf459282bb9c9d6e73db2d0db0cfa.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$3.99 ea",
+         "value": 3.99
+        },
+        "linePrice": {
+         "displayValue": "$0.79",
+         "value": 0.79
+        }
+       }
+      },
+      {
+       "id": "12006",
+       "quantity": 12,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Fresh Banana, Each",
+        "usItemId": "44390948",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/asr/5939a6fa-a0d6-431c-88c6-b4f21608e4be.f7cd0cc487761d74c69b7731493c1581.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$0.19 ea",
+         "value": 0.19
+        },
+        "linePrice": {
+         "displayValue": "$2.34",
+         "value": 2.34
+        }
+       }
+      },
+      {
+       "id": "12008",
+       "quantity": 10,
+       "statusCode": "3700.0031",
+       "productInfo": {
+        "name": "Fresh Roma Tomato, Each",
+        "usItemId": "44390944",
+        "imageInfo": {
+         "thumbnailUrl": "https://i5.walmartimages.com/asr/ecef8a3e-ab96-445e-a16a-d639b40eb5fb.93fcc627f542f02488e5ee9d8e26f152.jpeg"
+        }
+       },
+       "priceInfo": {
+        "itemPrice": {
+         "displayValue": "$0.20 ea",
+         "value": 0.2
+        },
+        "linePrice": {
+         "displayValue": "$1.97",
+         "value": 1.97
+        }
+       }
+      }
+     ],
+     "substitutions": null
+    }
+   ]
+  }
+ ]
+}
