@@ -51,8 +51,10 @@ test("process a Walmart order through the extension, fix it as another member, t
   await app.fill('input[placeholder="Ayush, Nishant"]', "Ayush, Nishant");
   await app.click("text=Create group");
   await app.waitForURL(/\/g\//);
-  const groupUrl = app.url();
+  const groupUrl = app.url().split("?")[0];
   await expect(app.getByTestId("group-name")).toHaveText(`Apartment ${run}`);
+  await app.goto(`${groupUrl}?tab=group`);
+  await expect(app.getByTestId("invite-link")).toContainText("/join/");
   const invite = (await app.getByTestId("invite-link").innerText()).trim();
   await shot(app, "group-created");
 
@@ -124,11 +126,11 @@ test("process a Walmart order through the extension, fix it as another member, t
 
   // 4) The expense is in the web app with correct totals.
   await app.goto(groupUrl);
-  await expect(app.getByTestId("expenses")).toContainText(`Walmart #${walmartOrder.id}`);
-  await expect(app.getByTestId("expenses")).toContainText("$53.22");
-  await expect(app.getByTestId("expenses")).toContainText("paid by Ayush");
+  await expect(app.getByTestId("expenses")).toContainText("Walmart order");
+  await expect(app.getByTestId("expenses")).toContainText(`#…${walmartOrder.id.slice(-4)}`);
+  await expect(app.getByTestId("expenses")).toContainText("Ayush paid");
   await shot(app, "group-with-walmart-expense");
-  await app.getByText(`Walmart #${walmartOrder.id}`).click();
+  await app.getByText("Walmart order").first().click();
   await app.waitForURL(/\/e\//);
   const expenseUrl = app.url();
   const shares = await app.getByTestId("shares").innerText();
@@ -149,8 +151,8 @@ test("process a Walmart order through the extension, fix it as another member, t
   await phone.getByTestId("claim").selectOption({ label: "I'm Ayush" });
   await phone.getByTestId("join").click();
   await phone.waitForURL(/\/g\//);
-  await expect(phone.getByTestId("balances")).toContainText("Ayush");
-  await expect(phone.getByTestId("balances")).not.toContainText("not joinedAyush");
+  await phone.goto(phone.url().split("?")[0] + "?tab=balances");
+  await expect(phone.getByTestId("balances")).toContainText("Ayush (you)");
   await shot(phone, "ayush-joined-on-phone");
   await phone.goto(expenseUrl);
   await phone.getByTestId("edit").click();
@@ -188,6 +190,7 @@ test("process a Walmart order through the extension, fix it as another member, t
   await expect(app.getByTestId("expenses").locator("li")).toHaveCount(1); // never duplicated
   await app.goto(expenseUrl);
   await expect(app.getByTestId("expense-amount")).not.toHaveText("$53.22");
+  await expect(app.getByTestId("expense-amount")).toHaveText("$51.79");
   await expect(app.getByTestId("activity")).toContainText("re-processed Walmart order");
   await expect(app.getByTestId("activity")).toContainText("Ayush edited");
   await expect(app.getByTestId("activity")).toContainText("processed Walmart order");

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
 import { currentActor } from "@/lib/session";
@@ -13,8 +14,10 @@ export default async function NewExpense({ params }: { params: Promise<{ groupId
   const members = group.members.filter((m) => !m.leftAt).map((m) => ({ id: m.id, name: m.name }));
   return (
     <main className="page">
-      <h1>Add expense · {group.name}</h1>
+      <Link href={`/g/${groupId}`} className="back">← {group.name}</Link>
+      <h1 style={{ margin: "4px 4px 14px" }}>Add expense</h1>
       <ManualExpenseForm groupId={groupId} members={members} allMembers={all} meId={me.id} />
+      <p className="note" style={{ textAlign: "center" }}>Walmart order? Open it on walmart.com and click “Split this order”.</p>
     </main>
   );
 }
