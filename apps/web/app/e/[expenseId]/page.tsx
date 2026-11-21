@@ -6,6 +6,7 @@ import { getDb } from "@/lib/db";
 import { currentActor } from "@/lib/session";
 import { getExpense, listActivity, listSnapshots } from "@/lib/services";
 import { plain } from "@/lib/plain";
+import { viewerTz } from "@/lib/time";
 import { dayLabel, displayTitle, memberIndex, memberName, shortOrder } from "@/lib/format";
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { ExpenseClient } from "@/components/ExpenseClient";
@@ -68,7 +69,7 @@ export default async function ExpensePage({ params }: { params: Promise<{ expens
 
       <section className="card list-card hide-when-editing">
         <div className="card-head"><h2>Activity</h2><span className="note">Every change to this expense</span></div>
-        <ActivityFeed items={activity} group={g} />
+        <ActivityFeed items={activity} group={g} meId={me.id} meUserId={actor.userId} tz={await viewerTz()} compact />
       </section>
     </main>
   );

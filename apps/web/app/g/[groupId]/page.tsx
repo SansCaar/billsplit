@@ -3,23 +3,28 @@ import { redirect } from "next/navigation";
 import { fmtMoney } from "@billsplit/core";
 import { Avatar } from "@billsplit/assign-ui";
 import { getDb } from "@/lib/db";
+import type { Actor, GroupDoc } from "@/lib/model";
 import { currentActor } from "@/lib/session";
-import { groupSummary } from "@/lib/services";
+import { groupSummary, listActivity } from "@/lib/services";
+import { viewerTz } from "@/lib/time";
 import { plain } from "@/lib/plain";
 import { memberIndex, memberName } from "@/lib/format";
-import { ActivityFeed } from "@/components/ActivityFeed";
+import { ActivityFeed, activityKind, involves, type LedgerFilter } from "@/components/ActivityFeed";
 import { ExpenseList } from "@/components/ExpenseList";
 import { SettleUp } from "@/components/SettleUp";
 import { GroupSettings } from "@/components/GroupSettings";
+import { ActiveTabIntoView } from "@/components/ActiveTabIntoView";
 
 export const dynamic = "force-dynamic";
 
-export default async function GroupPage({ params, searchParams }: { params: Promise<{ groupId: string }>; searchParams: Promise<{ tab?: string }> }) {
+export default async function GroupPage({ params, searchParams }: { params: Promise<{ groupId: string }>; searchParams: Promise<{ tab?: string; f?: string; mine?: string }> }) {
   const { groupId } = await params;
-  const tab = (await searchParams).tab ?? "balances";
+  const sp = await searchParams;
+  const tab = sp.tab ?? "balances";
   const actor = await currentActor();
   if (!actor) redirect(`/signin?callbackUrl=/g/${groupId}`);
-  const s = plain(await groupSummary(await getDb(), actor, groupId));
+  const db = await getDb();
+  const s = plain(await groupSummary(db, actor, groupId));
   const g = s.group;
   const members = g.members.filter((m) => !m.leftAt);
   const live = s.expenses.filter((e) => !e.deleted);
@@ -66,6 +71,7 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
           </Link>
         ))}
       </nav>
+      <ActiveTabIntoView tab={tab} />
 
       {tab === "balances" && (
         <>
@@ -99,9 +105,29 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
 
       {tab === "expenses" && <ExpenseList group={g} meId={s.me.id} expenses={s.expenses} settlements={s.settlements} />}
 
-      {tab === "activity" && <section className="card list-card"><div className="card-head"><h2>Activity</h2><span className="note">Every change, by everyone</span></div><ActivityFeed items={s.activity} group={g} linkExpenses /></section>}
+      {tab === "activity" && <ActivityTab groupId={groupId} actor={actor} group={g} meId={s.me.id} f={sp.f} mine={sp.mine === "1"} />}
 
       {tab === "settings" && <GroupSettings group={g} isCreator={g.createdBy === actor.userId} meId={s.me.id} />}
     </main>
+  );
+}
+
+async function ActivityTab({ groupId, actor, group, meId, f: rawF, mine }: { groupId: string; actor: Actor; group: GroupDoc; meId: string; f?: string; mine: boolean }) {
+  const f = (["expenses", "payments", "people"].includes(rawF ?? "") ? rawF : "all") as LedgerFilter;
+  const all = plain(await listActivity(await getDb(), actor, groupId, { limit: 300 }));
+  const shown = all.filter((a) => (f === "all" || activityKind(a) === f) && (!mine || involves(a, meId, actor.userId)));
+  const href = (nf: string, nm: boolean) => `/g/${groupId}?tab=activity${nf !== "all" ? `&f=${nf}` : ""}${nm ? "&mine=1" : ""}`;
+  const label = { all: "All", expenses: "Expenses", payments: "Payments", people: "People" } as const;
+  return (
+    <>
+      <nav className="filter-bar" aria-label="Filter activity">
+        {(["all", "expenses", "payments", "people"] as const).map((k) => (
+          <Link key={k} href={href(k, mine)} className={f === k ? "on" : ""} scroll={false} aria-current={f === k ? "true" : undefined}>{label[k]}</Link>
+        ))}
+        <span className="spacer" />
+        <Link href={href(f, !mine)} className={`toggle ${mine ? "on" : ""}`} scroll={false} data-testid="involving-me">{mine ? "✓ " : ""}Involving me</Link>
+      </nav>
+      <section className="card list-card"><ActivityFeed items={shown} group={group} meId={meId} meUserId={actor.userId} tz={await viewerTz()} linkExpenses /></section>
+    </>
   );
 }

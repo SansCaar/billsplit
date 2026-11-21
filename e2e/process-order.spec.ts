@@ -164,8 +164,9 @@ test("process a Walmart order through the extension, fix it as another member, t
   await phone.getByTestId("next").click();
   for (let i = 1; i < cards; i++) await phone.keyboard.press("Enter");
   await phone.getByTestId("submit").click();
-  await expect(phone.getByTestId("activity")).toContainText("Ayush edited");
-  await expect(phone.getByTestId("activity")).toContainText("Sanskar, Ayush → Ayush");
+  await expect(phone.getByTestId("activity")).toContainText("You changed who shares items in");
+  await expect(phone.getByTestId("activity")).toContainText("Fresh Honeycrisp Apple");
+  await expect(phone.locator(".impact").first()).toContainText("You");
   await shot(phone, "activity-after-ayush-edit");
 
   // 6) Walmart refunds an item later; re-processing shows the changes and keeps assignments.
@@ -192,9 +193,10 @@ test("process a Walmart order through the extension, fix it as another member, t
   await app.goto(expenseUrl);
   await expect(app.getByTestId("expense-amount")).not.toHaveText("$53.22");
   await expect(app.getByTestId("expense-amount")).toHaveText("$51.79");
-  await expect(app.getByTestId("activity")).toContainText("re-processed Walmart order");
-  await expect(app.getByTestId("activity")).toContainText("Ayush edited");
-  await expect(app.getByTestId("activity")).toContainText("processed Walmart order");
+  await expect(app.getByTestId("activity")).toContainText("You re-processed Walmart order");
+  await expect(app.getByTestId("activity")).toContainText("Ayush changed who shares items in");
+  await expect(app.getByTestId("activity")).toContainText("You split Walmart order");
+  await expect(app.getByTestId("activity")).toContainText("was refunded");
   await shot(app, "expense-after-reprocess-with-activity");
   await ayushCtx.close();
 });

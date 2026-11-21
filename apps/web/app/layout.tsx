@@ -8,6 +8,7 @@ import { getDb } from "@/lib/db";
 import { listGroups } from "@/lib/services";
 import { AccountMenu } from "@/components/AccountMenu";
 import { SideGroups } from "@/components/SideGroups";
+import { TzCookie } from "@/components/TzCookie";
 
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans", display: "swap" });
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope", display: "swap" });
@@ -30,6 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" className={`${dmSans.variable} ${manrope.variable}`}>
       <body>
+        <TzCookie />
         <div className="shell">
           {actor && (
             <aside className="side">

@@ -56,8 +56,14 @@ export function describeChange(c: OrderChange, money: (c: Cents) => string = fmt
       return `New item: ${c.item.name} (${money(c.item.amount)})`;
     case "item-removed":
       return `Removed item: ${c.item.name}`;
-    case "item-changed":
-      return `${c.name}: ` + c.fields.map((f) => `${f.field} ${fmt(f.field, f.before, money)} → ${fmt(f.field, f.after, money)}`).join(", ");
+    case "item-changed": {
+      const st = c.fields.find((f) => f.field === "status");
+      const amt = c.fields.find((f) => f.field === "amount");
+      if (st && (st.after === "refunded" || st.after === "unavailable")) return `${c.name} was ${st.after === "refunded" ? "refunded" : "marked unavailable"}${amt ? ` (${money(Number(amt.before))})` : ""}`;
+      const parts = c.fields.filter((f) => f.field !== "fulfillmentId").map((f) =>
+        f.field === "amount" ? `price ${money(Number(f.before))} → ${money(Number(f.after))}` : f.field === "quantity" ? `quantity ${f.before} → ${f.after}` : f.field === "name" ? `now “${f.after}”` : `${f.field} ${f.before} → ${f.after}`);
+      return `${c.name}: ${parts.join(", ") || "updated"}`;
+    }
     case "fee-added":
       return `New fee: ${c.fee.label} (${money(c.fee.amount)})`;
     case "fee-removed":
