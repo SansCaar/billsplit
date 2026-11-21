@@ -53,20 +53,24 @@ mkdir -p "$EXT"
 rsync -a --delete "$TMP/unpacked/" "$EXT/"
 VERSION=$(json version "$EXT/manifest.json")
 
-# 3. Tell the user how to load it
+# 3. Open Chrome's extensions page and tell the user what to click
+open_chrome() { open -Ra "Google Chrome" 2>/dev/null && open -a "Google Chrome" "chrome://extensions" 2>/dev/null; }
+
 if [[ -n "$INSTALLED" ]]; then
   echo "✓ Updated Bill Split ${INSTALLED} → ${VERSION} in $EXT"
   echo
-  echo "  In Chrome, open chrome://extensions and click ↻ on Bill Split (or restart Chrome)."
+  echo "  In chrome://extensions, click ↻ on Bill Split (or restart Chrome)."
+  open_chrome || true
 else
   echo "✓ Bill Split $VERSION downloaded to $EXT"
   echo
-  echo "  One-time setup in Chrome:"
-  echo "    1. Open chrome://extensions"
-  echo "    2. Turn on Developer mode (top right)"
-  echo "    3. Click Load unpacked and choose: $EXT"
-  echo "       (in the folder picker, press ⌘⇧G and paste the path; it's on your clipboard)"
+  echo "  One-time setup in Chrome (opening it now):"
+  echo "    1. Turn on Developer mode (top right of chrome://extensions)"
+  echo "    2. Drag the 'extension' folder from the Finder window onto the page"
+  echo "       (or click Load unpacked, press ⌘⇧G and paste the path; it's on your clipboard)"
   echo
   echo "  To update later, run this command again."
   printf %s "$EXT" | pbcopy 2>/dev/null || true
+  open -R "$EXT" 2>/dev/null || true
+  open_chrome || echo "  (Couldn't find Google Chrome. Open chrome://extensions in Chrome yourself.)"
 fi
