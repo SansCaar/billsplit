@@ -28,6 +28,14 @@ Open any order at walmart.com/orders → click **🧾 Split this order**.
 Sign-in: locally there is a dev sign-in (name + email). For Google, set `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET`
 (redirect URI `http://localhost:3000/api/auth/callback/google`). Set `MONGODB_URI` to use a real MongoDB.
 
+## Extension releases
+
+Publish: bump `version` in `apps/extension/public/manifest.json`, then `git tag ext-v<version> && git push origin ext-v<version>`.
+The GitHub Action builds the extension and attaches `billsplit-extension-<version>.zip` to a release.
+
+Install or update: `tools/install-extension.sh` (needs `gh` logged in). It downloads the latest release into
+`~/.billsplit/extension` and loads it into Chrome. On later runs it reloads the extension in place.
+
 ## Deploy (Vercel)
 
 Hosted at https://billsplit-indol.vercel.app (Vercel project `billsplit`, root directory `apps/web`, MongoDB Atlas).

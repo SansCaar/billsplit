@@ -1,0 +1,36 @@
+# Push a tag like ext-v0.1.0 to publish a Bill Split extension release.
+# The tag version must match "version" in apps/extension/public/manifest.json.
+name: Release extension
+
+on:
+  push:
+    tags: ["ext-v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:ext
+      - name: Check tag matches manifest version
+        run: |
+          v=$(node -p "require('./apps/extension/dist/manifest.json').version")
+          [ "ext-v$v" = "$GITHUB_REF_NAME" ] || { echo "Tag $GITHUB_REF_NAME != manifest version $v"; exit 1; }
+          echo "VERSION=$v" >> "$GITHUB_ENV"
+      - name: Zip
+        run: cd apps/extension/dist && zip -r "$GITHUB_WORKSPACE/billsplit-extension-$VERSION.zip" .
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" "billsplit-extension-$VERSION.zip" \
+            --title "Bill Split extension $VERSION" --generate-notes
