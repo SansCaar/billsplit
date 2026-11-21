@@ -19,7 +19,8 @@ TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 
 TOKEN=${GITHUB_TOKEN:-$(gh auth token 2>/dev/null || true)}
-gh_api() { curl -fsSL ${TOKEN:+-H "Authorization: Bearer $TOKEN"} -H "X-GitHub-Api-Version: 2022-11-28" "$@"; }
+AUTH=(); [[ -n "$TOKEN" ]] && AUTH=(-H "Authorization: Bearer $TOKEN")
+gh_api() { curl -fsSL "${AUTH[@]}" -H "X-GitHub-Api-Version: 2022-11-28" "$@"; }
 manifest_version() { plutil -extract version raw -o - "$1" 2>/dev/null || true; }
 
 # 1. Get the zip
@@ -42,7 +43,8 @@ function run(argv) {
 JS
 )"
   [[ -n "${ASSET:-}" ]] || { echo "✗ No ext-v* release with a billsplit-extension zip in $REPO"; exit 1; }
-  echo "› Release $TAG (installed: $(manifest_version "$EXT/manifest.json" | sed 's/^$/none/'))"
+  INSTALLED=$(manifest_version "$EXT/manifest.json")
+  echo "› Release $TAG (installed: ${INSTALLED:-none})"
   gh_api -H "Accept: application/octet-stream" "$ASSET" -o "$TMP/ext.zip"
 fi
 
