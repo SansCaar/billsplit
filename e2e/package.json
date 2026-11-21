@@ -1,0 +1,1 @@
+{"name":"e2e","private":true,"type":"module","scripts":{"test":"playwright test"},"devDependencies":{"@billsplit/core":"workspace:*","@playwright/test":"1.65.1"}}
