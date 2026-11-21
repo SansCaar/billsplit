@@ -50,7 +50,7 @@ test("ui screenshots", async () => {
     await page.goto(`${APP}/g/${g._id}?tab=settle`); await shot("02a-settle");
     await page.goto(`${APP}/g/${g._id}?tab=expenses`); await shot("02b-expenses");
     await page.goto(`${APP}/g/${g._id}?tab=activity`); await shot("02c-activity");
-    await page.goto(`${APP}/g/${g._id}?tab=settings`); await shot("02d-group-settings");
+    await page.goto(`${APP}/g/${g._id}?tab=members`); await shot("02d-group-settings");
     await page.goto(`${APP}/g/${g._id}/new`); await shot("03-new-expense");
     await page.goto(`${APP}${o.url}`); await shot("04-walmart-expense");
     if (await page.getByTestId("filter-mine").count()) { await page.getByTestId("filter-mine").click(); await shot("04b-mine"); await page.getByText(/^All \d+/).click(); }

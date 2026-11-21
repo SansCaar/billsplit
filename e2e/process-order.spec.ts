@@ -53,7 +53,7 @@ test("process a Walmart order through the extension, fix it as another member, t
   await app.waitForURL(/\/g\//);
   const groupUrl = app.url().split("?")[0];
   await expect(app.getByTestId("group-name")).toHaveText(`Apartment ${run}`);
-  await app.goto(`${groupUrl}?tab=settings`);
+  await app.goto(`${groupUrl}?tab=members`);
   await expect(app.getByTestId("invite-link")).toContainText("/join/");
   const invite = (await app.getByTestId("invite-link").innerText()).trim();
   await shot(app, "group-created");
@@ -94,18 +94,18 @@ test("process a Walmart order through the extension, fix it as another member, t
   await proc.getByTestId("next").click();
   // Card 3: "Same as last" (everyone), then switch to By parts and give Nishant 2 parts.
   await proc.getByTestId("same-as-last").click();
-  await proc.getByRole("tab", { name: "By parts" }).click();
+  await proc.getByRole("radio", { name: "By parts" }).click();
   await proc.getByLabel("more parts for Nishant").click();
   await shot(proc, "card-by-parts");
   await proc.getByTestId("next").click();
   // Card 4: By amount — exceeding the price blocks Next.
   await proc.getByTestId("member-Nishant").click();
   await proc.getByTestId("member-Sanskar").click();
-  await proc.getByRole("tab", { name: "By amount" }).click();
+  await proc.getByRole("radio", { name: "By amount" }).click();
   await proc.getByLabel("amount for Nishant").fill("999");
   await expect(proc.locator(".bs-error")).toBeVisible();
   await expect(proc.getByTestId("next")).toBeDisabled();
-  await proc.getByRole("tab", { name: "Equal" }).click();
+  await proc.getByRole("radio", { name: "Equally" }).click();
   await proc.getByTestId("next").click();
   // Remaining cards via keyboard: 1..3 toggle members, Enter = next.
   for (let i = 4; i < cards; i++) {
@@ -148,7 +148,8 @@ test("process a Walmart order through the extension, fix it as another member, t
   const phone = await ayushCtx.newPage();
   await devSignIn(phone, ayush);
   await phone.goto(invite);
-  await phone.getByTestId("claim").selectOption({ label: "I'm Ayush" });
+  await expect(phone.getByTestId("join")).toBeDisabled(); // nothing preselected
+  await phone.getByTestId("claim-Ayush").click();
   await phone.getByTestId("join").click();
   await phone.waitForURL(/\/g\//);
   await phone.goto(phone.url().split("?")[0] + "?tab=balances");
@@ -161,8 +162,8 @@ test("process a Walmart order through the extension, fix it as another member, t
   await phone.locator(".bs-table tr").first().click(); // jump straight to item 1
   await phone.getByTestId("member-Sanskar").click(); // remove Sanskar from item 1 → only Ayush
   await shot(phone, "ayush-fixing-assignment");
-  await phone.getByTestId("next").click();
-  for (let i = 1; i < cards; i++) await phone.keyboard.press("Enter");
+  await phone.getByTestId("back-to-review").click(); // one tap back to Review after a jump
+  await expect(phone.getByTestId("review")).toBeVisible();
   await phone.getByTestId("submit").click();
   await expect(phone.getByTestId("activity")).toContainText("You changed who shares items in");
   await expect(phone.getByTestId("activity")).toContainText("Fresh Honeycrisp Apple");

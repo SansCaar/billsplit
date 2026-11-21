@@ -7,6 +7,7 @@
  */
 export const BTN_ID = "billsplit-process-btn";
 const STYLE_ID = "billsplit-process-style";
+const TOAST_ID = "billsplit-toast";
 export const BTN_LABEL = "Split this order";
 /** Wait for Walmart's page to settle so the entrance isn't lost in its own loading jank. */
 const START_DELAY_MS = 450;
@@ -97,6 +98,15 @@ ${GO} .bs-burst>*{animation:bs-pop 1.05s cubic-bezier(.12,.75,.3,1) both}
   100%{opacity:0;transform:translate(calc(var(--x) - 50%),calc(var(--y) - 50% + 26px)) scale(.6) rotate(var(--r))}}
 @keyframes bs-shine-busy{from{background-position:160% 0}to{background-position:-60% 0}}
 @keyframes bs-fade{from{opacity:0}to{opacity:1}}
+/* After the first visit the button just appears: the big entrance is for discovery, not every order. */
+#${BTN_ID}.bs-quiet{opacity:1;animation:bs-fade .2s both}
+/* Error toast above the button (replaces window.alert) */
+#${TOAST_ID}{all:initial;box-sizing:border-box;position:fixed;right:22px;bottom:84px;z-index:2147483647;max-width:360px;display:flex;gap:10px;align-items:flex-start;
+  padding:14px 14px 14px 16px;border-radius:14px;background:#fff;color:#243b34;border:1px solid #efd3d1;box-shadow:0 16px 36px -14px rgba(0,0,0,.35);
+  font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;animation:bs-fade .2s both}
+#${TOAST_ID} b{display:block;font-weight:700;color:#a43f3d;margin-bottom:2px}
+#${TOAST_ID} button{all:initial;cursor:pointer;font:700 18px/1 system-ui,sans-serif;color:#5f6b64;padding:2px 4px;border-radius:6px}
+#${TOAST_ID} button:focus-visible{outline:2px solid #245b47}
 @media (prefers-reduced-motion:reduce){
   ${GO},${GO} .bs-ico,${GO}::after{animation:bs-fade .3s both!important}
   ${B} .bs-ring,${B} .bs-burst{display:none}}
@@ -110,7 +120,7 @@ function ensureStyle() {
   (document.head ?? document.documentElement).appendChild(s);
 }
 
-export function createSplitButton(onClick: (b: HTMLButtonElement) => void): HTMLButtonElement {
+export function createSplitButton(onClick: (b: HTMLButtonElement) => void, opts: { quiet?: boolean } = {}): HTMLButtonElement {
   ensureStyle();
   const b = document.createElement("button");
   b.id = BTN_ID;
@@ -120,8 +130,30 @@ export function createSplitButton(onClick: (b: HTMLButtonElement) => void): HTML
     `<span class="bs-burst" aria-hidden="true">${particles()}</span>` +
     `<span class="bs-ico" aria-hidden="true">🧾</span><span class="bs-label">${BTN_LABEL}</span>`;
   b.addEventListener("click", () => onClick(b));
-  setTimeout(() => b.classList.add("bs-go"), START_DELAY_MS);
+  if (opts.quiet) b.classList.add("bs-quiet");
+  else setTimeout(() => b.classList.add("bs-go"), START_DELAY_MS);
   return b;
+}
+
+/** Show an error next to the button, in the page, instead of a browser alert(). */
+export function showButtonError(title: string, text: string) {
+  ensureStyle();
+  document.getElementById(TOAST_ID)?.remove();
+  const t = document.createElement("div");
+  t.id = TOAST_ID;
+  t.setAttribute("role", "alert");
+  const body = document.createElement("div");
+  const b = document.createElement("b");
+  b.textContent = title;
+  body.append(b, document.createTextNode(text));
+  const close = document.createElement("button");
+  close.type = "button";
+  close.setAttribute("aria-label", "Dismiss");
+  close.textContent = "×";
+  close.addEventListener("click", () => t.remove());
+  t.append(body, close);
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 15000);
 }
 
 export function setButtonBusy(b: HTMLButtonElement, busy: boolean) {

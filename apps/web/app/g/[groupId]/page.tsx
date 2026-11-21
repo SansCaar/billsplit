@@ -15,13 +15,18 @@ import { ExpenseList } from "@/components/ExpenseList";
 import { SettleUp } from "@/components/SettleUp";
 import { GroupSettings } from "@/components/GroupSettings";
 import { ActiveTabIntoView } from "@/components/ActiveTabIntoView";
+import { InviteBox } from "@/components/InviteBox";
+import { ExtensionCard } from "@/components/ExtensionCard";
+import { QuickSettle } from "@/components/QuickSettle";
+import { AddedBanner } from "@/components/AddedBanner";
 
 export const dynamic = "force-dynamic";
 
-export default async function GroupPage({ params, searchParams }: { params: Promise<{ groupId: string }>; searchParams: Promise<{ tab?: string; f?: string; mine?: string }> }) {
+export default async function GroupPage({ params, searchParams }: { params: Promise<{ groupId: string }>; searchParams: Promise<{ tab?: string; f?: string; mine?: string; added?: string; joined?: string }> }) {
   const { groupId } = await params;
   const sp = await searchParams;
-  const tab = sp.tab ?? "balances";
+  // "settings" is the old name of the Members tab; keep old links working.
+  const tab = sp.tab === "settings" ? "members" : sp.tab ?? "balances";
   const actor = await currentActor();
   if (!actor) redirect(`/signin?callbackUrl=/g/${groupId}`);
   const db = await getDb();
@@ -32,12 +37,17 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
   const myBal = s.balances[s.me.id] ?? 0;
   const mine = s.suggestions.filter((x) => x.fromId === s.me.id || x.toId === s.me.id);
   const allSettled = members.every((m) => (s.balances[m.id] ?? 0) === 0);
+  const waiting = members.filter((m) => !m.userId);
+  // A group is "set up" once someone else has joined and there's at least one expense.
+  const othersJoined = members.some((m) => m.userId && m.id !== s.me.id);
+  const settingUp = live.length === 0;
+  const added = sp.added ? live.find((e) => e._id === sp.added) : undefined;
   const tabs = [
     ["balances", "Balances", null],
     ["settle", "Settle up", mine.length || null],
     ["expenses", "Expenses", live.length || null],
     ["activity", "Activity", null],
-    ["settings", "Settings", null],
+    ["members", "Members", waiting.length && g.invite.enabled ? waiting.length : null],
   ] as const;
 
   return (
@@ -48,8 +58,8 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
           <h1 data-testid="group-name">{g.name}</h1>
           <p className="sub">{members.length} {members.length === 1 ? "person" : "people"} · {live.length} expense{live.length === 1 ? "" : "s"}</p>
         </div>
-        <div className="actions">
-          <Link className="btn secondary" href={`/g/${groupId}?tab=settle`}>Settle up</Link>
+        <div className={`actions ${live.length ? "" : "single"}`}>
+          {live.length > 0 && <Link className="btn secondary" href={`/g/${groupId}?tab=settle`}>Settle up</Link>}
           <Link className="btn primary" href={`/g/${groupId}/new`}>Add expense</Link>
         </div>
       </header>
@@ -57,13 +67,48 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
       <nav className="tabs" aria-label="Group sections">
         {tabs.map(([k, label, n]) => (
           <Link key={k} href={`/g/${groupId}?tab=${k}`} className={`${tab === k ? "on" : ""} tab-${k}`} aria-label={label} aria-current={tab === k ? "page" : undefined} scroll={false}>
-            {k === "settings" ? <><GearIcon /><span className="tab-label">{label}</span></> : label}{n ? <span className="count">{n}</span> : null}
+            {label}{n ? <span className="count" aria-label={k === "members" ? `${n} not joined yet` : undefined}>{n}</span> : null}
           </Link>
         ))}
       </nav>
       <ActiveTabIntoView tab={tab} />
+      {sp.joined === "1" && (
+        <div className="ok added" role="status" data-testid="joined-banner">
+          <span className="grow">You&apos;re in <b>{g.name}</b>. {myBal > 0 ? <>You get back <b>{fmtMoney(myBal)}</b> so far.</> : myBal < 0 ? <>You owe <b>{fmtMoney(-myBal)}</b> from expenses already added.</> : live.length ? "You're settled up." : "No expenses yet."}</span>
+          <Link className="link small" href={`/g/${groupId}`}>Dismiss</Link>
+        </div>
+      )}
+      {added && <AddedBanner groupId={groupId} expenseId={added._id} title={added.title} amount={added.amount} />}
 
-      {tab === "balances" && (
+      {tab === "balances" && settingUp && (
+        <section className="card setup" data-testid="setup">
+          <div className="card-head"><div><span className="eyebrow">Get {g.name} going</span><h2 style={{ marginTop: 6 }}>Finish setting up</h2></div><span className="note">{othersJoined ? 2 : 1} of 3 done</span></div>
+          <ol className="setup-steps">
+            <li className="done"><span className="setup-mark" aria-hidden="true">✓</span><div><b>Create the group</b></div></li>
+            <li className={othersJoined ? "done" : "now"}>
+              <span className="setup-mark" aria-hidden="true">{othersJoined ? "✓" : "2"}</span>
+              <div className="grow">
+                <b>Invite your housemates</b>
+                {othersJoined ? <p className="note" style={{ margin: "2px 0 0" }}>{waiting.length ? <>Still waiting for {waiting.map((m) => m.name).join(", ")}. The link is in <Link className="link small" href={`/g/${groupId}?tab=members`}>Members</Link>.</> : "Everyone's here."}</p> : <>
+                <p className="note" style={{ margin: "2px 0 10px" }}>{waiting.length ? <>Send this link to {waiting.map((m) => m.name).join(", ")}. They sign in with Google and pick their name.</> : "Send this link to everyone who shares costs."}</p>
+                {g.invite.enabled ? <InviteBox token={g.invite.token} groupName={g.name} /> : <p className="note">The invite link is off. Turn it on in <Link className="link small" href={`/g/${groupId}?tab=members`}>Members</Link>.</p>}
+                </>}
+              </div>
+            </li>
+            <li className={live.length ? "done" : "now"}>
+              <span className="setup-mark" aria-hidden="true">{live.length ? "✓" : "3"}</span>
+              <div className="grow">
+                <b>Add your first expense</b>
+                <p className="note" style={{ margin: "2px 0 10px" }}>Rent, internet, a grocery run. Split it equally, by parts or by exact amounts.</p>
+                {!live.length && <Link className="btn primary sm" href={`/g/${groupId}/new`} data-testid="first-expense">Add an expense</Link>}
+              </div>
+            </li>
+          </ol>
+        </section>
+      )}
+      {tab === "balances" && live.length === 0 && <ExtensionCard />}
+
+      {tab === "balances" && live.length > 0 && (
         <>
           <section className="me-card" data-testid="my-summary">
             <div>
@@ -80,6 +125,7 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
                       <Avatar name={memberName(g, other)} index={memberIndex(g, other)} size={24} />
                       <span className="grow">{x.fromId === s.me.id ? <>You owe <b>{memberName(g, other)}</b></> : <><b>{memberName(g, other)}</b> owes you</>}</span>
                       <span className={`amt ${x.fromId === s.me.id ? "neg" : "pos"}`}>{fmtMoney(x.amount)}</span>
+                      <QuickSettle groupId={groupId} fromId={x.fromId} toId={x.toId} amount={x.amount} iPay={x.fromId === s.me.id} otherName={memberName(g, other)} />
                     </li>
                   );
                 })}
@@ -88,7 +134,7 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
           </section>
           <div className="section-head">
             <div><span className="eyebrow">{allSettled ? "All settled, all visible" : "Who owes whom"}</span><h2>Group balances</h2></div>
-            <span className="aside">Positive amounts are owed to that person.</span>
+            <span className="aside">+ means they get money back, − means they owe.</span>
           </div>
           <div className="bal-grid" data-testid="balances">
             {members.map((m) => {
@@ -96,16 +142,20 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
               return (
                 <div key={m.id} className={`bal-card ${m.id === s.me.id ? "me" : ""}`}>
                   <div className="who"><Avatar name={m.name} index={memberIndex(g, m.id)} size={36} /><span className="ellipsis">{m.name}</span></div>
-                  <div className={`figure ${b > 0 ? "pos" : b < 0 ? "neg" : ""}`} data-testid={`balance-${m.name}`}>{fmtMoney(Math.abs(b))}</div>
+                  <div className={`figure ${b > 0 ? "pos" : b < 0 ? "neg" : ""}`} data-testid={`balance-${m.name}`}>{b > 0 ? "+" : b < 0 ? "−" : ""}{fmtMoney(Math.abs(b))}</div>
                   <div className="cap">{b > 0 ? "is owed" : b < 0 ? "owes the group" : "settled up"}{m.id === s.me.id ? " · you" : m.userId ? "" : " · hasn't joined"}</div>
                 </div>
               );
             })}
           </div>
-          <div className="bal-cta">
-            <div><h3>{s.suggestions.length ? `${s.suggestions.length} payment${s.suggestions.length === 1 ? "" : "s"} would settle everyone` : "Everyone is settled up"}</h3><p className="note" style={{ margin: "2px 0 0" }}>Record payments made outside the app to keep balances right.</p></div>
-            <Link className="btn primary" href={`/g/${groupId}?tab=settle`}>Settle up</Link>
-          </div>
+          {!othersJoined && g.invite.enabled && (
+            <section className="card invite-nudge" data-testid="invite-nudge">
+              <div className="card-head"><h2>Nobody else has joined yet</h2></div>
+              <p className="note" style={{ marginTop: -6 }}>Send the invite so {waiting.length ? waiting.map((m) => m.name).join(", ") : "your housemates"} can see what they owe and add expenses too.</p>
+              <InviteBox token={g.invite.token} groupName={g.name} />
+            </section>
+          )}
+          <p className="note bal-foot">{s.suggestions.length ? <>{s.suggestions.length} payment{s.suggestions.length === 1 ? "" : "s"} would settle everyone. <Link className="link small" href={`/g/${groupId}?tab=settle`}>See all payments</Link></> : "Everyone is settled up."}</p>
         </>
       )}
 
@@ -118,7 +168,7 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
 
       {tab === "activity" && <ActivityTab groupId={groupId} actor={actor} group={g} meId={s.me.id} f={sp.f} mine={sp.mine === "1"} />}
 
-      {tab === "settings" && <GroupSettings group={g} isCreator={g.createdBy === actor.userId} meId={s.me.id} />}
+      {tab === "members" && <GroupSettings group={g} isCreator={g.createdBy === actor.userId} meId={s.me.id} balances={s.balances} />}
     </main>
   );
 }
@@ -140,14 +190,5 @@ async function ActivityTab({ groupId, actor, group, meId, f: rawF, mine }: { gro
       </nav>
       <section className="card list-card"><ActivityFeed items={shown} group={group} meId={meId} meUserId={actor.userId} tz={await viewerTz()} linkExpenses /></section>
     </>
-  );
-}
-
-function GearIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-    </svg>
   );
 }

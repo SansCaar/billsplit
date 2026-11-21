@@ -46,4 +46,14 @@ describe("assignment flow state", () => {
     s = run([{ type: "jump", key: "i5" }, { type: "back" }], s);
     expect(s.step).toBe(3);
   });
+  it("after jumping from Review to one item, Next and Do later return straight to Review", () => {
+    const all = run([1, 2, 3, 4, 5].flatMap(() => [{ type: "toggle", memberId: "S" }, { type: "next" }] as FlowAction[]));
+    expect(all.step).toBe(5);
+    const fixed = run([{ type: "jump", key: "i2" }, { type: "toggle", memberId: "A" }, { type: "next" }], all);
+    expect(fixed.step).toBe(5);
+    expect(who(fixed, "i2")).toEqual(["S", "A"]);
+    expect(run([{ type: "jump", key: "i3" }, { type: "skip" }], all).step).toBe(5);
+    // Normal stepping resumes afterwards.
+    expect(run([{ type: "jump", key: "i1" }, { type: "back" }, { type: "next" }], all).step).toBe(1);
+  });
 });

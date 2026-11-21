@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
-import { useCallback, useEffect, useState } from "react";
-import { DEFAULT_SPLIT_RULES, fmtMoney, type Assignments, type ParsedOrder, type SplitRules } from "@billsplit/core";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { DEFAULT_SPLIT_RULES, fmtMoney, splitOrder, type Assignments, type ParsedOrder, type SplitRules } from "@billsplit/core";
 import { AssignFlow } from "@billsplit/assign-ui";
 import "@billsplit/assign-ui/styles.css";
 import "./process.css";
@@ -16,6 +16,20 @@ const DEFAULT_APP = __APP_URL__;
 async function getAppUrl(): Promise<string> {
   const { appUrl } = await chrome.storage.sync.get("appUrl");
   return (appUrl as string) || DEFAULT_APP;
+}
+
+/** Move assignments to another group by matching people by name (case-insensitive). Items whose people don't all exist there are dropped. */
+function carryAssignments(a: Assignments, from: MeGroup, to: MeGroup): { assignments: Assignments; kept: number; dropped: number } {
+  const byName = new Map(to.members.map((m) => [m.name.trim().toLowerCase(), m.id]));
+  const map = new Map(from.members.map((m) => [m.id, byName.get(m.name.trim().toLowerCase())]));
+  const out: Assignments = {};
+  let kept = 0, dropped = 0;
+  for (const [key, split] of Object.entries(a)) {
+    if (!split.shares.length) continue;
+    if (split.shares.every((x) => map.get(x.memberId))) { out[key] = { ...split, shares: split.shares.map((x) => ({ ...x, memberId: map.get(x.memberId)! })) }; kept++; }
+    else dropped++;
+  }
+  return { assignments: out, kept, dropped };
 }
 
 async function call<T>(app: string, path: string, method = "GET", body?: unknown): Promise<T> {
@@ -39,7 +53,10 @@ function App() {
   const [signinTab, setSigninTab] = useState<number | null>(null);
   const [waiting, setWaiting] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [done, setDone] = useState<{ url: string; created: boolean } | null>(null);
+  const [done, setDone] = useState<{ url: string; created: boolean; myShare: number | null } | null>(null);
+  /** Latest assignments from the flow, so switching groups can carry them over instead of starting again. */
+  const latest = useRef<Assignments>({});
+  const [carried, setCarried] = useState<{ assignments: Assignments; kept: number; dropped: number; from: string } | null>(null);
 
   const load = useCallback(async () => {
     setError(null);
@@ -94,6 +111,14 @@ function App() {
   }, [groupId, order, app]);
 
   const group = me?.groups.find((g) => g.id === groupId);
+  const switchGroup = (id: string) => {
+    const to = me?.groups.find((g) => g.id === id);
+    if (group && to && Object.values(latest.current).some((x) => x.shares.length)) setCarried({ ...carryAssignments(latest.current, group, to), from: group.name });
+    else setCarried(null);
+    latest.current = {};
+    setError(null);
+    setGroupId(id);
+  };
 
   if (failure)
     return (
@@ -152,13 +177,22 @@ function App() {
       <Shell order={order}>
         <div data-testid="done">
           <Gate icon="✓" tone="ok" title={`${done.created ? "Order sent to" : "Order updated in"} ${group?.name ?? "your group"}`}>
+            {done.myShare !== null && <div className="done-share"><span>Your share</span><b>{fmtMoney(done.myShare)}</b></div>}
             <p>Everyone in the group can see it now and fix their own items.</p>
             <a className="bs-btn primary block" href={app + done.url} target="_blank" rel="noreferrer" data-testid="open-expense">Open in Bill Split</a>
+            <button className="bs-btn ghost block" style={{ marginTop: 10 }} onClick={() => window.close()} data-testid="close-tab">Close this tab</button>
           </Gate>
         </div>
       </Shell>
     );
 
+  const useCarried = !!carried && !preview?.exists;
+  const carriedNotice = useCarried && carried ? (
+    <div className="bs-notice" data-testid="carried-over">
+      <b>Switched to {group?.name}.</b> Kept {carried.kept} assignment{carried.kept === 1 ? "" : "s"} from {carried.from} by matching people by name
+      {carried.dropped ? <>; {carried.dropped} item{carried.dropped === 1 ? "" : "s"} had someone who isn't in {group?.name} and need{carried.dropped === 1 ? "s" : ""} assigning again.</> : "."}
+    </div>
+  ) : null;
   const notice = preview?.exists ? (
     <div className="bs-notice" data-testid="already-processed">
       <b>This order was already processed in {group?.name}.</b> Existing assignments are filled in — sending again will update it.
@@ -174,8 +208,8 @@ function App() {
   return (
     <Shell order={order}>
       <div className="toolbar">
-        <label>Group
-          <select value={groupId} onChange={(e) => setGroupId(e.target.value)} data-testid="group">
+        <label>Splitting into
+          <select value={groupId} onChange={(e) => switchGroup(e.target.value)} data-testid="group">
             {me.groups.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
           </select>
         </label>
@@ -189,20 +223,25 @@ function App() {
           key={`${groupId}:${preview.exists}`}
           order={order}
           members={group.members}
-          initialAssignments={preview.assignments ?? {}}
+          initialAssignments={useCarried ? carried!.assignments : preview.assignments ?? {}}
+          resumeAtFirstUnassigned={useCarried}
+          onAssignmentsChange={(a) => { latest.current = a; }}
           rules={preview.rules ?? group.defaults.splitRules ?? DEFAULT_SPLIT_RULES}
           payerId={preview.payerId ?? group.me ?? null}
-          notice={notice}
+          notice={notice ?? carriedNotice}
           submitLabel={preview.exists ? "Update in group" : "Send to group"}
           busy={busy}
           error={error}
           onSubmit={async ({ assignments, rules, payerId }) => {
             setBusy(true);
+            setError(null);
             try {
               const r = await call<{ url: string; created: boolean }>(app, `/api/groups/${groupId}/orders`, "POST", { order, assignments, rules, payerId });
-              setDone(r);
+              const mine = group.me ? splitOrder(order, assignments, rules).members[group.me]?.total ?? 0 : null;
+              setDone({ ...r, myShare: mine });
             } catch (e) {
-              alert((e as Error).message);
+              const msg = (e as { signin?: boolean }).signin ? "you were signed out" : (e as Error).message;
+              setError(`Couldn't send this order: ${msg}. Your assignments are still here, so nothing is lost. Press “${preview.exists ? "Update in group" : "Send to group"}” to try again.`);
             } finally {
               setBusy(false);
             }

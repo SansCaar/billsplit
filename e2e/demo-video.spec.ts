@@ -125,7 +125,7 @@ test("record the demo", async () => {
   await tap(app.getByText("Create group"));
   await app.waitForURL(/\/g\//);
   const groupUrl = app.url().split("?")[0];
-  await app.goto(`${groupUrl}?tab=settings`);
+  await app.goto(`${groupUrl}?tab=members`);
   await expect(app.getByTestId("invite-link")).toContainText("/join/");
   await say(app, "Share the invite link", "When Sam and Priya open it, they pick their name and join", 3000);
 
@@ -159,7 +159,7 @@ test("record the demo", async () => {
   await tap(proc.getByTestId("next"));
   await say(proc, "Uneven? Split by parts or by amount", "", 400);
   await tap(proc.getByTestId("same-as-last"));
-  await tap(proc.getByRole("tab", { name: "By parts" }));
+  await tap(proc.getByRole("radio", { name: "By parts" }));
   await tap(proc.getByLabel("more parts for Priya"), 1200);
   await tap(proc.getByTestId("next"));
   await say(proc, "Or fly through with the keyboard", "1, 2, 3 pick people · Enter goes to the next item", 500);
