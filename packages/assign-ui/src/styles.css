@@ -134,3 +134,26 @@ button.bs-btn.ghost { background: #fff; border: 1px solid #d3dccf; color: #1d3a3
   .bs-table { font-size: 13px; }
   .bs-td-people { white-space: normal; }
 }
+
+/* ---------- Mobile compatibility fixes ---------- */
+.bs-item { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); }
+.bs-product, .bs-editor, .bs-review { min-width: 0; }
+.bs-editor-head { flex-wrap: wrap; row-gap: 4px; }
+.bs-eyebrow { overflow-wrap: anywhere; }
+.bs-money, .bs-review-controls select { font-size: 16px; }
+.bs-review-controls select { min-width: 0; max-width: 100%; width: 100%; }
+.bs-table { table-layout: fixed; }
+.bs-table td:nth-child(2) { overflow-wrap: anywhere; }
+.bs-td-img { width: 44px; } .bs-td-people { width: 30%; } .bs-td-amt { width: 72px; }
+@media (max-width: 760px) {
+  .bs-item { grid-template-columns: minmax(0, 1fr); }
+  .bs-product-body { grid-template-columns: 64px minmax(0, 1fr); }
+  .bs-td-img { width: 38px; } .bs-td-people { width: 34%; } .bs-td-amt { width: 64px; }
+}
+@media (pointer: coarse) {
+  .bs-shortcuts button { min-height: 40px; padding: 0 2px; }
+  .bs-seg button { min-height: 40px; }
+  .bs-money { min-height: 40px; }
+  .bs-flow .bs-stepper button { width: 40px; height: 40px; }
+  .bs-person { min-height: 56px; }
+}
