@@ -108,6 +108,12 @@ export interface ActivityDoc {
   summary: string;
   /** Human-readable before/after lines. */
   changes: FieldChange[];
+  /** What the entry is about (expense title, "Nishant → Sanskar" for payments). Newer entries only. */
+  subjectTitle?: string;
+  /** Money involved (expense total or payment amount). */
+  amount?: number;
+  /** How much each Member's balance moved because of this change, in cents (+ = owed more). */
+  impact?: Record<string, number>;
   at: Date;
 }
 

@@ -87,7 +87,7 @@ async function log(
   groupId: string,
   action: ActivityAction,
   summary: string,
-  extra: { expenseId?: string; settlementId?: string; changes?: FieldChange[] } = {},
+  extra: { expenseId?: string; settlementId?: string; changes?: FieldChange[]; subjectTitle?: string; amount?: number; impact?: Record<string, number> } = {},
 ) {
   await cols(db).activity.insertOne({
     _id: id(),
@@ -99,8 +99,31 @@ async function log(
     action,
     summary,
     changes: extra.changes ?? [],
+    ...(extra.subjectTitle !== undefined ? { subjectTitle: extra.subjectTitle } : {}),
+    ...(extra.amount !== undefined ? { amount: extra.amount } : {}),
+    ...(extra.impact && Object.keys(extra.impact).length ? { impact: extra.impact } : {}),
     at: new Date(),
   });
+}
+
+/** Each Member's balance contribution from one Expense (payer credited the sum of shares). */
+function contribution(e: Pick<ExpenseDoc, "payerId" | "shares" | "deleted"> | null): Record<string, number> {
+  const out: Record<string, number> = {};
+  if (!e || e.deleted) return out;
+  let sum = 0;
+  for (const [id, c] of Object.entries(e.shares)) { out[id] = (out[id] ?? 0) - c; sum += c; }
+  out[e.payerId] = (out[e.payerId] ?? 0) + sum;
+  return out;
+}
+/** Balance change per Member between two states of an Expense. */
+export function balanceImpact(before: Parameters<typeof contribution>[0], after: Parameters<typeof contribution>[0]): Record<string, number> {
+  const a = contribution(after), b = contribution(before);
+  const out: Record<string, number> = {};
+  for (const id of new Set([...Object.keys(a), ...Object.keys(b)])) {
+    const d = (a[id] ?? 0) - (b[id] ?? 0);
+    if (d !== 0) out[id] = d;
+  }
+  return out;
 }
 
 export async function listActivity(db: Db, actor: Actor, groupId: string, opts: { expenseId?: string; limit?: number } = {}) {
@@ -322,7 +345,7 @@ export async function createManualExpense(db: Db, actor: Actor, groupId: string,
     deleted: false, createdBy: actor.userId, createdAt: now, updatedAt: now,
   };
   await cols(db).expenses.insertOne(e);
-  await log(db, actor, groupId, "expense.created", `${actor.name} added "${e.title}" (${fmtMoney(e.amount)}), paid by ${memberName(group, e.payerId)}`, { expenseId: e._id });
+  await log(db, actor, groupId, "expense.created", `${actor.name} added "${e.title}" (${fmtMoney(e.amount)}), paid by ${memberName(group, e.payerId)}`, { expenseId: e._id, subjectTitle: e.title, amount: e.amount, impact: balanceImpact(null, e) });
   return e;
 }
 
@@ -381,7 +404,7 @@ export async function updateExpense(db: Db, actor: Actor, expenseId: string, pat
   if (!changes.length) return before;
   after.updatedAt = new Date();
   await cols(db).expenses.replaceOne({ _id: expenseId }, after);
-  await log(db, actor, group._id, "expense.updated", `${actor.name} edited "${after.title}"`, { expenseId, changes });
+  await log(db, actor, group._id, "expense.updated", `${actor.name} edited "${after.title}"`, { expenseId, changes, subjectTitle: after.title, amount: after.amount, impact: balanceImpact(before, after) });
   return after;
 }
 
@@ -389,7 +412,7 @@ export async function setExpenseDeleted(db: Db, actor: Actor, expenseId: string,
   const { expense, group } = await getExpense(db, actor, expenseId);
   if (expense.deleted === deleted) return;
   await cols(db).expenses.updateOne({ _id: expenseId }, { $set: { deleted, updatedAt: new Date() } });
-  await log(db, actor, group._id, deleted ? "expense.deleted" : "expense.restored", `${actor.name} ${deleted ? "deleted" : "restored"} "${expense.title}"`, { expenseId });
+  await log(db, actor, group._id, deleted ? "expense.deleted" : "expense.restored", `${actor.name} ${deleted ? "deleted" : "restored"} "${expense.title}"`, { expenseId, subjectTitle: expense.title, amount: expense.amount, impact: deleted ? balanceImpact(expense, null) : balanceImpact(null, { ...expense, deleted: false }) });
 }
 
 /* ---------------- Walmart Orders ---------------- */
@@ -447,7 +470,7 @@ export async function processOrder(db: Db, actor: Actor, groupId: string, input:
     const orderChanges = diffOrders(existing.walmart!.order, order).map((c): FieldChange => ({ path: `order.${c.type}`, label: "Walmart", before: null, after: describeChange(c) }));
     const changes = [...orderChanges, ...describeExpenseChanges(group, existing, expense)];
     await cols(db).expenses.replaceOne({ _id: existing._id }, expense);
-    await log(db, actor, groupId, "order.reprocessed", `${actor.name} re-processed Walmart order #${order.orderNumber}`, { expenseId: expense._id, changes });
+    await log(db, actor, groupId, "order.reprocessed", `${actor.name} re-processed Walmart order #${order.orderNumber}`, { expenseId: expense._id, changes, subjectTitle: expense.title, amount, impact: balanceImpact(existing, expense) });
   } else {
     expense = {
       _id: id(), groupId, kind: "walmart", title: input.title?.trim() || `Walmart #${order.orderNumber}`,
@@ -455,7 +478,7 @@ export async function processOrder(db: Db, actor: Actor, groupId: string, input:
       deleted: false, createdBy: actor.userId, createdAt: now, updatedAt: now,
     };
     await cols(db).expenses.insertOne(expense);
-    await log(db, actor, groupId, "order.processed", `${actor.name} processed Walmart order #${order.orderNumber} (${fmtMoney(amount)}), paid by ${memberName(group, input.payerId)}`, { expenseId: expense._id });
+    await log(db, actor, groupId, "order.processed", `${actor.name} processed Walmart order #${order.orderNumber} (${fmtMoney(amount)}), paid by ${memberName(group, input.payerId)}`, { expenseId: expense._id, subjectTitle: expense.title, amount, impact: balanceImpact(null, expense) });
   }
   await cols(db).snapshots.insertOne({ _id: id(), groupId, expenseId: expense._id, orderNumber: order.orderNumber, parsed: order, processedBy: actor.userId, at: now });
   return { expense, created: !existing };
@@ -479,7 +502,7 @@ export async function recordSettlement(db: Db, actor: Actor, groupId: string, in
     deleted: false, createdBy: actor.userId, createdAt: new Date(),
   };
   await cols(db).settlements.insertOne(s);
-  await log(db, actor, groupId, "settlement.created", `${actor.name} recorded: ${memberName(group, s.fromId)} paid ${memberName(group, s.toId)} ${fmtMoney(s.amount)}`, { settlementId: s._id });
+  await log(db, actor, groupId, "settlement.created", `${actor.name} recorded: ${memberName(group, s.fromId)} paid ${memberName(group, s.toId)} ${fmtMoney(s.amount)}`, { settlementId: s._id, subjectTitle: `${memberName(group, s.fromId)} → ${memberName(group, s.toId)}`, amount: s.amount, impact: { [s.fromId]: s.amount, [s.toId]: -s.amount } });
   return s;
 }
 
@@ -488,7 +511,7 @@ export async function setSettlementDeleted(db: Db, actor: Actor, settlementId: s
   if (!s) throw new ServiceError("Settlement not found", 404);
   const { group } = await requireGroup(db, actor, s.groupId);
   await cols(db).settlements.updateOne({ _id: settlementId }, { $set: { deleted } });
-  await log(db, actor, group._id, deleted ? "settlement.deleted" : "settlement.updated", `${actor.name} ${deleted ? "deleted" : "restored"} the payment ${memberName(group, s.fromId)} → ${memberName(group, s.toId)} ${fmtMoney(s.amount)}`, { settlementId });
+  await log(db, actor, group._id, deleted ? "settlement.deleted" : "settlement.updated", `${actor.name} ${deleted ? "deleted" : "restored"} the payment ${memberName(group, s.fromId)} → ${memberName(group, s.toId)} ${fmtMoney(s.amount)}`, { settlementId, subjectTitle: `${memberName(group, s.fromId)} → ${memberName(group, s.toId)}`, amount: s.amount, impact: deleted ? { [s.fromId]: -s.amount, [s.toId]: s.amount } : { [s.fromId]: s.amount, [s.toId]: -s.amount } });
 }
 
 /* ---------------- Summary ---------------- */

@@ -289,3 +289,48 @@ h1 { overflow-wrap: anywhere; }
 }
 @media (max-width: 379px) { .li .pay-flow.sm .pay-arrow, .li .pay-flow.sm .bs-avatar:last-child { display: none; } }
 .pay-text { min-width: 0; } .pay-title { overflow-wrap: anywhere; }
+
+/* ---------- Activity ledger ---------- */
+.ledger-day + .ledger-day { border-top: 1px solid var(--line); }
+.ledger-day-head { font-family: var(--font-body); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding: 16px 20px 4px; margin: 0; }
+.ledger-entry { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 12px; padding: 12px 20px 14px; }
+.ledger .list > li + li { border-top: 1px dashed var(--line); }
+.ledger-body { min-width: 0; }
+.ledger-text { font-size: 15px; line-height: 1.45; color: var(--ink); overflow-wrap: anywhere; }
+.ledger-text b { font-weight: 650; color: var(--ink-strong); }
+.ledger-subject { font-weight: 650; color: var(--green); }
+.ledger-subject:hover { text-decoration: underline; text-underline-offset: 3px; }
+.ledger-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); margin-top: 3px; }
+.ledger-meta .dot { color: var(--faint); }
+.ledger-meta .amt { font-weight: 600; color: var(--ink); }
+.impact { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.impact-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px 3px 3px; border-radius: 999px; font-size: 12px; background: #fff; border: 1px solid var(--line); color: var(--ink); white-space: nowrap; }
+.impact-chip b { font-variant-numeric: tabular-nums; font-weight: 650; }
+.impact-chip.up b { color: var(--green); }
+.impact-chip.down b { color: var(--owes); }
+.impact-more { font-size: 12px; color: var(--muted); align-self: center; }
+.ledger-details { margin-top: 8px; }
+.ledger-details > summary { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--green); cursor: pointer; list-style: none; min-height: 32px; }
+.ledger-details > summary::-webkit-details-marker { display: none; }
+.ledger-details > summary::after { content: "▾"; font-size: 11px; transition: transform .15s; }
+.ledger-details[open] > summary::after { transform: rotate(180deg); }
+.ledger-detail-body { margin-top: 6px; border: 1px solid var(--line); border-radius: 12px; background: var(--cream); padding: 6px 12px 10px; display: grid; gap: 10px; }
+.chg-head { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 6px 0 4px; }
+.chg-group ul { margin: 0; padding-left: 18px; font-size: 13px; color: var(--ink); }
+.chg-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 5px 0; font-size: 13px; border-top: 1px solid var(--line); }
+.chg-row:first-of-type { border-top: 0; }
+.chg-label { color: var(--ink); min-width: 0; overflow-wrap: anywhere; }
+.chg-val { display: inline-flex; align-items: center; gap: 6px; justify-content: flex-end; flex-wrap: wrap; color: var(--ink-strong); font-variant-numeric: tabular-nums; }
+.chg-val s { color: var(--faint); }
+.chg-val .arrow { color: var(--faint); }
+.chg-row.item .chg-label { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.filter-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 0 14px; }
+.filter-bar a { min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line-strong); background: #fff; font-size: 13px; font-weight: 600; color: var(--ink); display: inline-flex; align-items: center; gap: 6px; }
+.filter-bar a.on { background: var(--green); border-color: var(--green); color: #f7faf5; }
+.filter-bar .spacer { flex: 1; }
+.filter-bar a.toggle { border-style: dashed; }
+.filter-bar a.toggle.on { border-style: solid; }
+@media (max-width: 759px) { .ledger-entry { padding: 12px 16px 14px; } .ledger-day-head { padding: 14px 16px 4px; } }
+@media (pointer: coarse) { .filter-bar a { min-height: 40px; } .ledger-details > summary { min-height: 40px; } }
+.impact-label { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); align-self: center; margin-right: 2px; }
+@media (max-width: 759px) { .tabs { gap: 18px; margin-left: -18px; margin-right: -18px; padding: 0 18px; scroll-padding: 0 18px; } }

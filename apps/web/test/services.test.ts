@@ -188,3 +188,29 @@ describe("editing and activity", () => {
     expect(sum.suggestions).toEqual([{ fromId: a, toId: s, amount: 600 }]);
   });
 });
+
+describe("activity ledger impact", () => {
+  it("records exactly how each balance moved, summing to zero", async () => {
+    const { g, s, a, n } = await household();
+    const e = await svc.createManualExpense(db, sanskar, g._id, { title: "Pizza", amount: 3000, payerId: s, split: { method: "equal", shares: [{ memberId: s }, { memberId: a }, { memberId: n }] } });
+    let [act] = await svc.listActivity(db, sanskar, g._id, { expenseId: e._id });
+    expect(act!.impact).toEqual({ [s]: 2000, [a]: -1000, [n]: -1000 });
+    expect(act!.subjectTitle).toBe("Pizza");
+    expect(act!.amount).toBe(3000);
+
+    // Nishant drops out: Ayush now owes half, Sanskar is owed $5 less.
+    await svc.updateExpense(db, ayush, e._id, { split: { method: "equal", shares: [{ memberId: s }, { memberId: a }] } });
+    [act] = await svc.listActivity(db, sanskar, g._id, { expenseId: e._id });
+    expect(act!.impact).toEqual({ [s]: -500, [a]: -500, [n]: 1000 });
+    expect(Object.values(act!.impact!).reduce((x, y) => x + y, 0)).toBe(0);
+
+    await svc.setExpenseDeleted(db, ayush, e._id, true);
+    [act] = await svc.listActivity(db, sanskar, g._id, { expenseId: e._id });
+    expect(act!.impact).toEqual({ [s]: -1500, [a]: 1500 });
+
+    await svc.recordSettlement(db, ayush, g._id, { fromId: a, toId: s, amount: 700 });
+    const feed = await svc.listActivity(db, sanskar, g._id);
+    expect(feed[0]!.impact).toEqual({ [a]: 700, [s]: -700 });
+    expect(feed[0]!.subjectTitle).toBe("Ayush → Sanskar");
+  });
+});
