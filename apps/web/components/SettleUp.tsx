@@ -4,6 +4,7 @@ import { useState } from "react";
 import { fmtMoney } from "@billsplit/core";
 import { Avatar } from "@billsplit/assign-ui";
 import { api, toCents } from "@/lib/client";
+import { Toast } from "./Toast";
 
 interface M { id: string; name: string; colorIndex: number }
 interface Pay { fromId: string; toId: string; amount: number }
@@ -83,8 +84,8 @@ export function SettleUp({ groupId, members, suggestions, meId, settlements }: {
 
   return (
     <div className="settle" id="settle" data-testid="settle-up">
-      {err && <div className="err" role="alert">{err}</div>}
-      {done && <div className="ok" role="status">{done}</div>}
+      {err && <Toast tone="err" onDone={() => setErr(null)}>{err}</Toast>}
+      {done && <Toast onDone={() => setDone(null)}>{done}</Toast>}
 
       <section className="card">
         <div className="card-head"><h2>Your payments</h2><span className="badge">Fewest payments</span></div>

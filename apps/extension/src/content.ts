@@ -1,10 +1,11 @@
-import { BTN_ID, createSplitButton, setButtonBusy } from "./splitButton";
+import { BTN_ID, createSplitButton, setButtonBusy, showButtonError } from "./splitButton";
 import { crossCheck, expandAllSections, orderIdFromPath, parseOrderHtml, visibleItemNames } from "./walmartPage";
 
 async function processCurrentOrder(btn?: HTMLButtonElement) {
   const id = orderIdFromPath(location.pathname);
   if (!id) return { error: "Open a single order's details page on walmart.com first." };
   if (btn) setButtonBusy(btn, true);
+  document.getElementById("billsplit-toast")?.remove();
   try {
     const res = await fetch(`/orders/${id}`, { credentials: "include" });
     const order = parseOrderHtml(await res.text(), location.href);
@@ -17,20 +18,26 @@ async function processCurrentOrder(btn?: HTMLButtonElement) {
     return { ok: true };
   } catch (e) {
     const msg = (e as Error).message;
-    alert(`Bill Split: ${msg}`);
+    const friendly = /__NEXT_DATA__/.test(msg) ? "Walmart didn't send the order details. Make sure you're signed in to walmart.com." : msg;
+    showButtonError("Bill Split couldn't read this order", ` ${friendly} Reload the page and click “Split this order” again.`);
     return { error: msg };
   } finally {
     if (btn) setButtonBusy(btn, false);
   }
 }
 
-function ensureButton() {
+let seenButton: boolean | null = null;
+async function ensureButton() {
   const onOrder = !!orderIdFromPath(location.pathname);
   const existing = document.getElementById(BTN_ID);
   if (!onOrder) { existing?.remove(); return; }
   if (existing) return;
-  const b = createSplitButton((btn) => processCurrentOrder(btn));
+  // The full entrance animation plays once per browser; after that the button simply appears.
+  if (seenButton === null) seenButton = !!(await chrome.storage.local.get("seenButton")).seenButton;
+  if (document.getElementById(BTN_ID)) return;
+  const b = createSplitButton((btn) => processCurrentOrder(btn), { quiet: seenButton });
   document.body.appendChild(b);
+  if (!seenButton) { seenButton = true; chrome.storage.local.set({ seenButton: true }); }
 }
 
 // Walmart is a single-page app: watch for URL changes.

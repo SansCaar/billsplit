@@ -3,36 +3,36 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Avatar } from "@billsplit/assign-ui";
 import { api } from "@/lib/client";
-export function JoinClient({ token, placeholders }: { token: string; groupId: string; placeholders: { id: string; name: string; index?: number }[] }) {
+
+/** Pick who you are before joining. Nothing is preselected: a hurried tap must not create a duplicate member. */
+export function JoinClient({ token, placeholders, suggestedId }: { token: string; placeholders: { id: string; name: string; index?: number }[]; suggestedId?: string }) {
   const r = useRouter();
-  const [claim, setClaim] = useState<string>("");
+  const NEW = "new";
+  const [claim, setClaim] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const opts = [...placeholders.map((p, i) => ({ id: p.id, label: p.name, i: p.index ?? i + 1 })), { id: NEW, label: "I'm not on this list", i: -1 }];
+  const chosen = opts.find((o) => o.id === claim);
   return (
     <div>
-      {placeholders.length > 0 && (
-        <>
-          <div className="auth-label">Which one is you?</div>
-          {/* Hidden select keeps a simple, testable control alongside the tap targets. */}
-          <select className="sr-only" value={claim} onChange={(e) => setClaim(e.target.value)} data-testid="claim" aria-label="Which one is you?">
-            <option value="">I'm someone new</option>
-            {placeholders.map((p) => <option key={p.id} value={p.id}>I'm {p.name}</option>)}
-          </select>
-          {[...placeholders.map((p, i) => ({ id: p.id, label: p.name, i: p.index ?? i + 1 })), { id: "", label: "I'm someone new", i: -1 }].map((o) => (
-            <button key={o.id || "new"} type="button" className={`person ${claim === o.id ? "on" : ""}`} onClick={() => setClaim(o.id)}>
-              <span className="box">{claim === o.id ? "✓" : ""}</span>
-              {o.i >= 0 ? <Avatar name={o.label} index={o.i} size={30} /> : <span className="tile" style={{ width: 30, height: 30, fontSize: 14 }}>+</span>}
-              <span className="grow">{o.label}</span>
-            </button>
-          ))}
-        </>
-      )}
-      {err && <div className="err">{err}</div>}
-      <button className="btn primary block" style={{ marginTop: 12 }} data-testid="join" disabled={busy} onClick={async () => {
+      <div className="auth-label" id="who-label">Which one is you?</div>
+      <div role="radiogroup" aria-labelledby="who-label">
+        {opts.map((o) => (
+          <button key={o.id} type="button" role="radio" aria-checked={claim === o.id} className={`person ${claim === o.id ? "on" : ""}`} onClick={() => setClaim(o.id)} data-testid={`claim-${o.id === NEW ? "new" : o.label}`}>
+            <span className="box radio">{claim === o.id ? "✓" : ""}</span>
+            {o.i >= 0 ? <Avatar name={o.label} index={o.i} size={30} /> : <span className="tile" style={{ width: 30, height: 30, fontSize: 14 }}>+</span>}
+            <span className="grow">{o.label}</span>
+            {o.id === suggestedId && claim === null && <span className="badge">Is this you?</span>}
+          </button>
+        ))}
+      </div>
+      {err && <div className="err" role="alert">{err}</div>}
+      <button className="btn primary block" style={{ marginTop: 12 }} data-testid="join" disabled={busy || !claim} onClick={async () => {
         setBusy(true);
-        try { const j = await api<{ groupId: string }>(`/api/invite/${token}`, "POST", { claimMemberId: claim || undefined }); r.push(`/g/${j.groupId}`); r.refresh(); }
+        try { const j = await api<{ groupId: string }>(`/api/invite/${token}`, "POST", { claimMemberId: claim === NEW ? undefined : claim }); r.push(`/g/${j.groupId}?joined=1`); r.refresh(); }
         catch (e) { setErr((e as Error).message); setBusy(false); }
-      }}>{busy ? "Joining…" : "Join group"}</button>
+      }}>{busy ? "Joining…" : !chosen ? "Pick your name to join" : chosen.id === NEW ? "Join as a new member" : `Join as ${chosen.label}`}</button>
+      <p className="note" style={{ textAlign: "center", marginTop: 10 }}>Picking your name keeps the expenses already added for you.</p>
     </div>
   );
 }

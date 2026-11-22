@@ -1,6 +1,6 @@
 /* Assignment screen — Shared Expenses visual language (cream, deep green, Manrope/DM Sans, hairlines). */
 .bs-flow {
-  --bs-ink: #243b34; --bs-ink-strong: #1d3a30; --bs-mute: #738078; --bs-faint: #9aa59d;
+  --bs-ink: #243b34; --bs-ink-strong: #1d3a30; --bs-mute: #5f6b64; --bs-faint: #66726b;
   --bs-line: #e1e6dd; --bs-line-strong: #d3dccf; --bs-cream: #f7f8f3; --bs-green: #245b47; --bs-green-dark: #1b4536;
   --bs-green-soft: #e3eadb; --bs-green-tint: #f1f5ee; --bs-red: #a43f3d;
   --bs-head: var(--font-manrope, "Manrope"), var(--font-dm-sans, "DM Sans"), system-ui, sans-serif;
@@ -20,7 +20,7 @@
 /* Progress */
 .bs-progress { display: flex; align-items: center; gap: 14px; margin: 0 0 16px; }
 .bs-progress-label { font-size: 13px; font-weight: 600; color: var(--bs-mute); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.bs-progress-track { flex: 1; height: 4px; background: var(--bs-line); border-radius: 4px; overflow: hidden; }
+.bs-progress-track { flex: 1; height: 6px; background: var(--bs-line); border-radius: 4px; overflow: hidden; }
 .bs-progress-bar { height: 100%; background: var(--bs-green); border-radius: 4px; transition: width .3s ease; }
 
 .bs-notice { background: #fbf6ea; border: 1px solid #ecdfbf; border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; font-size: 14px; color: #6b5a2e; }
@@ -97,7 +97,7 @@ button.bs-btn.ghost { background: #fff; border: 1px solid #d3dccf; color: #1d3a3
 .bs-table tr:hover td { background: #fbfcf9; }
 .bs-td-img { width: 44px; }
 .bs-td-img img { width: 34px; height: 34px; object-fit: contain; border-radius: 8px; background: var(--bs-cream); }
-.bs-td-people { white-space: nowrap; color: var(--bs-mute); font-size: 13px; }
+.bs-td-people { color: var(--bs-mute); font-size: 13px; }
 .bs-td-people .bs-avatar { margin-right: -5px; box-shadow: 0 0 0 2px #fff; }
 .bs-td-people .bs-chip { margin-left: 10px; }
 .bs-td-amt { text-align: right; font-variant-numeric: tabular-nums; font-weight: 650; white-space: nowrap; }
@@ -177,3 +177,17 @@ button.bs-btn.ghost { background: #fff; border: 1px solid #d3dccf; color: #1d3a3
   .bs-review-controls { grid-template-columns: minmax(0, 1fr); }
   .bs-review-controls label:first-child { grid-column: auto; }
 }
+
+/* Nav: back is a compact icon button, "Do later" a quiet text action, Next the one obvious button. */
+.bs-flow .bs-btn.bs-back { padding: 0; width: 44px; font-size: 18px; }
+.bs-later { min-height: 44px; padding: 0 10px; color: var(--bs-mute); font-weight: 600; font-size: 14px; background: none; border: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--bs-line-strong); }
+.bs-later:hover { color: var(--bs-ink); }
+.bs-nav-card .bs-later { margin-right: auto; }
+/* Review rows: the item name is the keyboard-reachable control. */
+.bs-row-btn { all: unset; cursor: pointer; display: block; overflow-wrap: anywhere; }
+.bs-row-btn:focus-visible { outline: 2px solid #679c70; outline-offset: 2px; border-radius: 4px; }
+.bs-row-btn:hover { text-decoration: underline; text-underline-offset: 3px; }
+/* Touch targets: at least 40px on every pointer type. */
+.bs-flow .bs-stepper button { width: 40px; height: 40px; }
+.bs-money { min-height: 40px; }
+.bs-shortcuts button { min-height: 40px; }

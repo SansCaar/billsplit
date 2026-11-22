@@ -124,7 +124,7 @@ for (const width of WIDTHS) test(`web app pages @${width}px`, async () => {
     for (const tab of ["balances", "settle", "expenses", "activity", "settings"]) await visit(`group-${tab}`, `/g/${g._id}?tab=${tab}`);
     await visit("group-activity-filtered", `/g/${g._id}?tab=activity&f=payments&mine=1`);
     await visit("new-expense", `/g/${g._id}/new`);
-    current = "new-expense-by-amount"; await page.getByRole("tab", { name: "By amount" }).first().click({ timeout: 5000 }).catch(() => findings.push({ page: current, width, kind: "audit-step-failed", detail: "couldn't click By amount" })); await check(page, current, width);
+    current = "new-expense-by-amount"; await page.getByRole("radio", { name: "By amount" }).first().click({ timeout: 5000 }).catch(() => findings.push({ page: current, width, kind: "audit-step-failed", detail: "couldn't click By amount" })); await check(page, current, width);
     await visit("walmart-expense", o.url);
     await visit("splitter-review", `${o.url}?edit=1`);
     current = "splitter-card"; await page.locator(".bs-table tr").first().click({ timeout: 5000 }).catch(() => findings.push({ page: current, width, kind: "audit-step-failed", detail: "couldn't open the first item card" })); await check(page, current, width, false);
@@ -180,9 +180,9 @@ test("extension screens", async () => {
   await both("ext-first-card");
   await proc.getByTestId("member-Sanskar").click(); await proc.getByTestId("member-Ayush").click();
   await both("ext-card-assigned");
-  await proc.getByRole("tab", { name: "By parts" }).click(); await both("ext-card-parts");
-  await proc.getByRole("tab", { name: "By amount" }).click(); await both("ext-card-amount");
-  await proc.getByRole("tab", { name: "Equal" }).click();
+  await proc.getByRole("radio", { name: "By parts" }).click(); await both("ext-card-parts");
+  await proc.getByRole("radio", { name: "By amount" }).click(); await both("ext-card-amount");
+  await proc.getByRole("radio", { name: "Equally" }).click();
   await proc.getByTestId("next").click();
   for (let i = 1; i < 15; i++) { await proc.getByTestId("all").click(); await proc.getByTestId("next").click(); }
   await expect(proc.getByTestId("review")).toBeVisible();

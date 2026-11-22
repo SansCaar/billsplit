@@ -32,13 +32,22 @@ export interface AssignFlowProps {
   submitLabel?: string;
   /** Open on the Review screen (used when fixing an already-assigned Order). */
   startAtReview?: boolean;
+  /** Open on the first item nobody is assigned to yet (used when assignments were carried over). */
+  resumeAtFirstUnassigned?: boolean;
   busy?: boolean;
   error?: string | null;
   onSubmit: (r: { assignments: Assignments; rules: SplitRules; payerId: MemberId }) => void;
+  /** Called whenever assignments change, so a host can keep them (e.g. when switching groups). */
+  onAssignmentsChange?: (a: Assignments) => void;
 }
 
+const RULE_LABEL = { proportional: "By what each bought", equal: "Equally" } as const;
+const STATUS_LABEL: Record<Item["status"], string> = { ok: "", refunded: "Refunded", unavailable: "Unavailable", substituted: "Substituted" };
+const METHOD_LABEL = { equal: "Equally", parts: "By parts", amount: "By amount" } as const;
+
 // Each person gets their own colour, chosen from their name so it's the same on every screen.
-const COLORS = ["#d9776b", "#5b8fc7", "#4f9e6e", "#d99a2b", "#9b72c4", "#e0844a", "#3a9c93", "#cf6690", "#7381c9", "#8a9a3b"];
+// All pass 4.5:1 with white initials.
+const COLORS = ["#b5554a", "#3f76b0", "#2f7d50", "#9a6610", "#7d55a8", "#ab5a26", "#23786f", "#b04a74", "#5563b0", "#66741f"];
 const hash = (s: string) => { let h = 0; for (const c of s.trim().toLowerCase()) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; };
 /** Colour by position in the group (unique within a group); falls back to the name when no position is known. */
 export const memberColor = (name: string, index?: number) => COLORS[(index !== undefined && index >= 0 ? index : hash(name)) % COLORS.length]!;
@@ -62,10 +71,15 @@ export function AssignFlow(props: AssignFlowProps) {
   const reducer = useMemo(() => flowReducer(assignable), [assignable]);
   const [state, dispatch] = useReducer(reducer, undefined, (): FlowState => ({
     assignments: { ...(props.initialAssignments ?? {}) },
-    step: props.startAtReview ? assignable.length : 0,
+    step: props.startAtReview ? assignable.length
+      : props.resumeAtFirstUnassigned ? (() => { const i = assignable.findIndex((it) => !props.initialAssignments?.[it.key]?.shares.length); return i < 0 ? assignable.length : i; })()
+      : 0,
     lastSplit: null,
   }));
   const { assignments, step, lastSplit } = state;
+  const onChange = useRef(props.onAssignmentsChange);
+  onChange.current = props.onAssignmentsChange;
+  useEffect(() => { onChange.current?.(assignments); }, [assignments]);
   const [rules, setRules] = useState<SplitRules>(props.rules);
   const [payerId, setPayerId] = useState<MemberId | null>(props.payerId);
   const reviewing = step >= assignable.length;
@@ -94,10 +108,13 @@ export function AssignFlow(props: AssignFlowProps) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
-      if (t && (t.tagName === "INPUT" || t.tagName === "SELECT" || t.tagName === "TEXTAREA")) return;
+      if (t && (t.tagName === "INPUT" || t.tagName === "SELECT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      // Enter/Space on a focused button or link should press that control, not move to the next item.
+      if ((e.key === "Enter" || e.key === " ") && t && (t.tagName === "BUTTON" || t.tagName === "A")) return;
       const { members: ms, reviewing: rv } = live.current;
       if (rv) {
-        if (e.key === "ArrowLeft" || e.key === "Backspace") dispatch({ type: "back" });
+        if (e.key === "ArrowLeft") dispatch({ type: "back" });
         return;
       }
       if (/^[1-9]$/.test(e.key)) {
@@ -106,7 +123,7 @@ export function AssignFlow(props: AssignFlowProps) {
       } else if (e.key === "a" || e.key === "A") dispatch({ type: "all", memberIds: ms.map((m) => m.id) });
       else if (e.key === "s" || e.key === "S") dispatch({ type: "sameAsLast" });
       else if (e.key === "Enter" || e.key === "ArrowRight") dispatch({ type: "next" });
-      else if (e.key === "ArrowLeft" || e.key === "Backspace") dispatch({ type: "back" });
+      else if (e.key === "ArrowLeft") dispatch({ type: "back" });
       else return;
       e.preventDefault();
     };
@@ -119,9 +136,9 @@ export function AssignFlow(props: AssignFlowProps) {
 
   return (
     <div className="bs-flow" ref={rootRef}>
-      <div className="bs-progress" title={`${assignedCount}/${assignable.length} assigned`}>
+      <div className="bs-progress">
         <span className="bs-progress-label">{assignedCount}/{assignable.length} assigned</span>
-        <div className="bs-progress-track"><div className="bs-progress-bar" style={{ width: `${progress * 100}%` }} /></div>
+        <div className="bs-progress-track" role="progressbar" aria-label="Items assigned" aria-valuemin={0} aria-valuemax={assignable.length} aria-valuenow={assignedCount}><div className="bs-progress-bar" style={{ width: `${progress * 100}%` }} /></div>
       </div>
       {props.notice}
       {!reviewing && item ? (
@@ -136,6 +153,7 @@ export function AssignFlow(props: AssignFlowProps) {
           error={itemError}
           canNext={canNext}
           hasLast={!!lastSplit}
+          returnToReview={!!state.returnToReview}
           dispatch={dispatch}
         />
       ) : (
@@ -173,6 +191,7 @@ function ItemCard(p: {
   error: string | null;
   canNext: boolean;
   hasLast: boolean;
+  returnToReview: boolean;
   dispatch: React.Dispatch<FlowAction>;
 }) {
   const { item, split } = p;
@@ -217,10 +236,10 @@ function ItemCard(p: {
             <button type="button" onClick={() => p.dispatch({ type: "sameAsLast" })} disabled={!p.hasLast} data-testid="same-as-last">Same as last</button>
           </div>
         </div>
-        <div className="bs-seg" role="tablist" aria-label="Split method">
+        <div className="bs-seg" role="radiogroup" aria-label="Split method">
           {(["equal", "parts", "amount"] as const).map((m) => (
-            <button key={m} type="button" role="tab" aria-selected={split.method === m} className={split.method === m ? "on" : ""} onClick={() => p.dispatch({ type: "method", method: m })}>
-              {m === "equal" ? "Equally" : m === "parts" ? "By parts" : "By amount"}
+            <button key={m} type="button" role="radio" aria-checked={split.method === m} className={split.method === m ? "on" : ""} onClick={() => p.dispatch({ type: "method", method: m })}>
+              {METHOD_LABEL[m]}
             </button>
           ))}
         </div>
@@ -233,7 +252,7 @@ function ItemCard(p: {
                 key={m.id}
                 role="checkbox"
                 aria-checked={on}
-                aria-pressed={on}
+                aria-label={m.name}
                 tabIndex={0}
                 className={`bs-person ${on ? "on bs-share-row" : ""}`}
                 onClick={() => p.dispatch({ type: "toggle", memberId: m.id })}
@@ -265,10 +284,12 @@ function ItemCard(p: {
       </section>
 
       <div className="bs-nav bs-nav-card">
-        <button type="button" className="bs-btn ghost" onClick={() => p.dispatch({ type: "back" })} disabled={p.position === 0}>Back</button>
-        <button type="button" className="bs-btn ghost" onClick={() => p.dispatch({ type: "skip" })} data-testid="skip">Skip</button>
-        <button type="button" className="bs-btn primary" onClick={() => p.dispatch({ type: "next" })} disabled={!p.canNext} data-testid="next">
-          {p.position + 1 === p.total ? "Review" : "Next"}
+        <button type="button" className="bs-btn ghost bs-back" onClick={() => p.dispatch({ type: "back" })} disabled={p.position === 0} aria-label="Previous item">←</button>
+        <button type="button" className="bs-later" onClick={() => p.dispatch({ type: "skip" })} data-testid="skip" title="Leave this item unassigned for now; you can come back to it from Review">
+          {p.returnToReview ? "Cancel" : "Do later"}
+        </button>
+        <button type="button" className="bs-btn primary" onClick={() => p.dispatch({ type: "next" })} disabled={!p.canNext} data-testid={p.returnToReview ? "back-to-review" : "next"}>
+          {p.returnToReview ? "Save & back to review" : p.position + 1 === p.total ? "Review" : "Next"}
         </button>
       </div>
     </div>
@@ -321,15 +342,15 @@ function Review(p: {
         <label>
           Tax
           <select value={p.rules.tax} onChange={(e) => p.onRules({ ...p.rules, tax: e.target.value as SplitRules["tax"] })} data-testid="tax-rule">
-            <option value="proportional">Proportional</option>
-            <option value="equal">Equal</option>
+            <option value="proportional">{RULE_LABEL.proportional}</option>
+            <option value="equal">{RULE_LABEL.equal}</option>
           </select>
         </label>
         <label>
           Fees & tip
           <select value={p.rules.fees} onChange={(e) => p.onRules({ ...p.rules, fees: e.target.value as SplitRules["fees"] })} data-testid="fee-rule">
-            <option value="equal">Equal</option>
-            <option value="proportional">Proportional</option>
+            <option value="equal">{RULE_LABEL.equal}</option>
+            <option value="proportional">{RULE_LABEL.proportional}</option>
           </select>
         </label>
       </div>
@@ -358,10 +379,10 @@ function Review(p: {
             return (
               <tr key={i.key} onClick={() => p.onJump(i.key)} className={s?.shares.length ? "" : "bs-missing"}>
                 <td className="bs-td-img">{i.imageUrl ? <img src={i.imageUrl} alt="" /> : null}</td>
-                <td>{i.name}</td>
+                <td><button type="button" className="bs-row-btn" onClick={(e) => { e.stopPropagation(); p.onJump(i.key); }} aria-label={`Change who shares ${i.name}`}>{i.name}</button></td>
                 <td className="bs-td-people">
                   {s?.shares.length ? s.shares.map((x) => <Avatar key={x.memberId} name={p.name(x.memberId)} index={p.idx(x.memberId)} size={22} />) : <em>needs someone</em>}
-                  {s && s.method !== "equal" ? <span className="bs-chip">{s.method === "parts" ? "parts" : "amount"}</span> : null}
+                  {s && s.method !== "equal" ? <span className="bs-chip">{METHOD_LABEL[s.method]}</span> : null}
                 </td>
                 <td className="bs-td-amt">{fmtMoney(i.amount)}</td>
               </tr>
@@ -371,21 +392,21 @@ function Review(p: {
             <tr key={f.key} className="bs-fee-row">
               <td />
               <td>{f.label}{f.fulfillmentId && p.order.fulfillments.length > 1 ? ` (${p.order.fulfillments.find((x) => x.id === f.fulfillmentId)?.label})` : ""}</td>
-              <td className="bs-td-people">{f.kind === "discount" ? "proportional" : p.rules.fees}</td>
+              <td className="bs-td-people">{f.kind === "discount" ? RULE_LABEL.proportional : RULE_LABEL[p.rules.fees]}</td>
               <td className="bs-td-amt">{fmtMoney(f.amount)}</td>
             </tr>
           ))}
           <tr className="bs-fee-row">
             <td />
             <td>Tax</td>
-            <td className="bs-td-people">{p.rules.tax}</td>
+            <td className="bs-td-people">{RULE_LABEL[p.rules.tax]}</td>
             <td className="bs-td-amt">{fmtMoney(p.order.tax)}</td>
           </tr>
           {p.zeroItems.map((i) => (
             <tr key={i.key} className="bs-zero-row">
               <td className="bs-td-img">{i.imageUrl ? <img src={i.imageUrl} alt="" /> : null}</td>
               <td>{i.name}</td>
-              <td className="bs-td-people">{i.status}</td>
+              <td className="bs-td-people">{STATUS_LABEL[i.status] || "$0"}</td>
               <td className="bs-td-amt">$0.00</td>
             </tr>
           ))}
