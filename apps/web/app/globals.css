@@ -471,3 +471,12 @@ h1 { overflow-wrap: anywhere; }
 .shell:has(.topbar) .auth-page { min-height: calc(100vh - 60px); }
 @media (min-width: 900px) { .shell:has(.topbar) .auth-hero { min-height: calc(100vh - 72px); } }
 .auth-page { align-content: start; } @media (min-width: 900px) { .auth-page { align-content: stretch; } }
+
+/* ---------- Privacy policy ---------- */
+.privacy { max-width: 720px; margin: 0 auto; padding: 32px 20px 64px; line-height: 1.65; }
+.privacy-brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 750; margin-bottom: 28px; }
+.privacy h1 { font-size: 34px; margin: 0 0 4px; }
+.privacy h2 { font-size: 20px; margin: 32px 0 8px; }
+.privacy ul { padding-left: 20px; }
+.privacy li { margin: 8px 0; }
+.privacy a:not(.privacy-brand) { color: var(--green); text-decoration: underline; }

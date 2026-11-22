@@ -97,6 +97,7 @@ export function Landing() {
         <div className="lp-foot-row">
           <span className="lp-brand small"><span className="brand-mark">b</span>Bill Split</span>
           <span>Not affiliated with Walmart.</span>
+          <Link href="/privacy">Privacy</Link>
           <a href={REPO}>GitHub</a>
         </div>
       </footer>
