@@ -1,10 +1,7 @@
 import Link from "next/link";
-import { ExtensionInstall } from "@/components/ExtensionInstall";
+import { AddToChrome } from "@/components/AddToChrome";
 
 export const metadata = { title: "Chrome extension · Bill Split" };
-
-/** Set NEXT_PUBLIC_EXTENSION_STORE_URL once the extension is on the Chrome Web Store: install becomes one click. */
-const STORE = process.env.NEXT_PUBLIC_EXTENSION_STORE_URL;
 
 export default function ExtensionPage() {
   return (
@@ -19,23 +16,10 @@ export default function ExtensionPage() {
       </header>
       <div className="two-col">
         <section className="card">
-          <div className="card-head"><h2>{STORE ? "Install" : "Install in two minutes"}</h2><span className="badge">Chrome on a computer</span></div>
-          {STORE ? (
-            <>
-              <a className="btn primary block" href={STORE} target="_blank" rel="noopener noreferrer" data-testid="store-link">Add to Chrome</a>
-              <p className="note">Free. Updates itself. Only runs on walmart.com, and only reads an order when you click the button.</p>
-            </>
-          ) : (
-            <>
-              <ol className="steps">
-                <li>Copy the command below and paste it into your computer&apos;s terminal.</li>
-                <li>Chrome opens its extensions page. Turn on <b>Developer mode</b> (top right).</li>
-                <li>Drag the <b>Bill Split Extension</b> folder that appears onto that page.</li>
-              </ol>
-              <ExtensionInstall />
-              <p className="note">The script only downloads the extension from this project&apos;s <a className="link small" href="https://github.com/SansCaar/billsplit">public GitHub releases</a> into a folder in your home directory. You can read it first.</p>
-            </>
-          )}
+          <div className="card-head"><h2>Install</h2><span className="badge">Chrome on a computer</span></div>
+          <AddToChrome className="btn primary block" />
+          <p className="note">Free, from the Chrome Web Store. Updates itself. Only runs on walmart.com, and only reads an order when you click the button.</p>
+          <p className="note">Installed it earlier with the terminal command? Remove that copy in <code>chrome://extensions</code> first, so you don&apos;t get two buttons.</p>
         </section>
         <section className="card">
           <div className="card-head"><h2>Then, for each order</h2></div>

@@ -2,11 +2,10 @@ import "./landing.css";
 import Link from "next/link";
 import { Avatar } from "@billsplit/assign-ui";
 import { Story } from "./Story";
-import { CopyCommand } from "./CopyCommand";
+import { AddToChrome } from "@/components/AddToChrome";
 
 const REPO = "https://github.com/SansCaar/billsplit";
 const COFFEE = "https://buymeacoffee.com/sanscar";
-const INSTALL = "curl -fsSL https://raw.githubusercontent.com/SansCaar/billsplit/main/tools/install-extension.sh | zsh";
 
 export function Landing() {
   return (
@@ -68,10 +67,10 @@ export function Landing() {
 
       <section className="lp-install" id="install">
         <div>
-          <span className="lp-kicker">Chrome extension · Mac</span>
-          <h2>Install in one line</h2>
-          <p>Paste this into Terminal. It downloads the extension and opens Chrome with the two clicks left to do.</p>
-          <CopyCommand command={INSTALL} />
+          <span className="lp-kicker">Chrome extension · any computer</span>
+          <h2>Add to Chrome</h2>
+          <p>One click from the Chrome Web Store. It adds a Split this order button to your walmart.com orders and updates itself.</p>
+          <AddToChrome className="lp-btn" />
           <p className="lp-small">Only the person splitting Walmart orders needs it. Open source on <a href={REPO}>GitHub</a>.</p>
         </div>
       </section>

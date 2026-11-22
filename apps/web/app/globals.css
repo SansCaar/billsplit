@@ -75,6 +75,7 @@ p { margin: 6px 0; }
 .btn:active:not(:disabled) { transform: translateY(1px); }
 .btn.primary { background: var(--green); color: #f7faf5; }
 .btn.primary:hover:not(:disabled) { background: var(--green-dark); }
+.btn.is-soon { background: var(--line); color: var(--muted); cursor: default; }
 .btn.secondary { background: #fff; border-color: var(--line-strong); color: var(--ink-strong); }
 .btn.secondary:hover:not(:disabled) { border-color: #b9c6b4; }
 .btn.danger { background: #fff; border-color: #ead1cf; color: var(--red); }

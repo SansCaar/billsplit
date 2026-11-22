@@ -8,7 +8,7 @@ packages/assign-ui   the one-item-at-a-time assignment screen (shared by extensi
 apps/web             Next.js app: groups, invites, expenses, settlements, activity (MongoDB)
 apps/extension       Chrome extension (MV3): "Split this order" on walmart.com order pages
 e2e                  Playwright: extension + web app end to end
-tools                extension installer, fixture anonymizer, demo-video scripts
+tools                fixture anonymizer, demo-video script
 proof                test screenshots. Real order data stays in proof/raw, which is git-ignored
 ```
 
@@ -30,12 +30,16 @@ Sign-in: locally there is a dev sign-in (name + email) at `/signin?dev=1`. For G
 
 ## Extension releases
 
-Publish: bump `version` in `apps/extension/public/manifest.json`, then `git tag ext-v<version> && git push origin ext-v<version>`.
-The GitHub Action builds the extension and attaches `billsplit-extension-<version>.zip` to a release.
+Users install the extension from the Chrome Web Store; the listing URL is `EXTENSION_STORE_URL` in
+`apps/web/lib/extension.ts`, used by the landing page and `/extension` (the README links to `/extension`).
 
-Users install it with `tools/install-extension.sh` (the one-liner in the README). It downloads the latest release into
-`~/Bill Split Extension`; the first time, they load that folder in Chrome themselves. To test an unreleased build, pass
-a zip: `tools/install-extension.sh --zip billsplit-extension-x.y.z.zip`.
+Publish a new version:
+
+1. Bump `version` in `apps/extension/public/manifest.json` and merge.
+2. `git tag -m "Bill Split extension <version>" ext-v<version> && git push origin ext-v<version>`.
+   The GitHub Action builds the extension and attaches `billsplit-extension-<version>.zip` to a release.
+3. In the [Developer Dashboard](https://chrome.google.com/webstore/devconsole), open Bill Split → **Package** →
+   **Upload new package**, pick that zip and submit for review. Listing text and images: `docs/store/LISTING.md`.
 
 ## Deploy (Vercel)
 
