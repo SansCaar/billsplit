@@ -39,6 +39,14 @@ export async function enablePush(): Promise<PushState> {
   return "on";
 }
 
+/** Send this device's subscription to the server again (it may have been dropped). Returns false if there is none. */
+export async function resyncPush(): Promise<boolean> {
+  const sub = Notification.permission === "granted" ? await currentSubscription() : null;
+  if (!sub) return false;
+  await api("/api/push/devices", "POST", sub.toJSON());
+  return true;
+}
+
 export async function disablePush(): Promise<PushState> {
   const sub = await currentSubscription();
   if (sub) {

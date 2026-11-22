@@ -32,9 +32,11 @@ export async function deliverPush(db: Db, out: Outgoing[]): Promise<number> {
             await sendNotification({ endpoint: d.endpoint, keys: d.keys }, JSON.stringify(o.message), { TTL: 60 * 60 * 24, topic: topicFor(o.message.tag) });
             sent++;
           } catch (e) {
-            const status = (e as { statusCode?: number }).statusCode;
-            if (status === 404 || status === 410) await cols(db).pushDevices.deleteOne({ _id: d._id });
-            else console.error("Push failed", status ?? e);
+            const err = e as { statusCode?: number; body?: string; message?: string };
+            if (err.statusCode === 404 || err.statusCode === 410) {
+              console.warn(`Push device gone (${err.statusCode}), removing it: ${err.body ?? ""}`.trim());
+              await cols(db).pushDevices.deleteOne({ _id: d._id });
+            } else console.error("Push failed", err.statusCode ?? "", err.body ?? err.message ?? e);
           }
         }),
     ),

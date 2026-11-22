@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { api } from "@/lib/client";
 import type { NotificationLevel, NotifyPrefs } from "@/lib/model";
-import { disablePush, enablePush, pushState, type PushState } from "@/lib/pushClient";
+import { disablePush, enablePush, pushState, resyncPush, type PushState } from "@/lib/pushClient";
 
 export const LEVEL_LABEL: Record<NotificationLevel, string> = { all: "Everything in the group", involved: "Only what involves me" };
 
@@ -17,7 +17,9 @@ export function DeviceSwitch() {
     try { const s = await fn(); if (s) setState(s); if (ok) setMsg({ ok: true, text: ok }); } catch (e) { setMsg({ ok: false, text: (e as Error).message }); } finally { setBusy(false); }
   };
   const test = async () => {
-    const r = await api<{ sent: number }>("/api/push/test", "POST");
+    let r = await api<{ sent: number }>("/api/push/test", "POST");
+    // The server may have dropped this device: register it again and retry once.
+    if (!r.sent && (await resyncPush())) r = await api<{ sent: number }>("/api/push/test", "POST");
     if (!r.sent) throw new Error("Couldn't reach this device. Try turning notifications off and on again.");
   };
 
@@ -28,11 +30,11 @@ export function DeviceSwitch() {
       {state === "on" && (
         <div className="row" style={{ gap: 10, flexWrap: "wrap" }}>
           <span className="badge">On for this device</span>
-          <button className="btn secondary sm" disabled={busy} onClick={() => run(test, "Sent. It should appear in a few seconds.")}>Send a test</button>
+          <button className="btn secondary sm" disabled={busy} onClick={() => run(test, "Sent. It should appear in a few seconds. Nothing? Check that notifications are allowed for your browser in your computer's settings.")}>{busy ? "Sending…" : "Send a test"}</button>
           <button className="link small" disabled={busy} onClick={() => run(disablePush)}>Turn off</button>
         </div>
       )}
-      {state === "off" && <button className="btn primary" disabled={busy} onClick={() => run(enablePush)} data-testid="notify-on">Turn on notifications</button>}
+      {state === "off" && <button className="btn primary" disabled={busy} onClick={() => run(enablePush)} data-testid="notify-on">{busy ? "Turning on… this can take a few seconds" : "Turn on notifications"}</button>}
       {state === "denied" && <p className="note">Notifications are blocked for this site. Allow them in your browser's site settings, then reload this page.</p>}
       {state === "ios-install" && <IosInstallSteps />}
       {state === "unsupported" && <p className="note">This browser can't show notifications. Try Chrome, Edge, Firefox or Safari.</p>}

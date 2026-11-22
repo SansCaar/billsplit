@@ -55,7 +55,7 @@ test("notifications and nudges arrive through real push", async () => {
     await expect(banner).toBeVisible();
     await a.screenshot({ path: `${OUT}/1-banner.png` });
     await banner.getByRole("button", { name: "Turn on notifications" }).click();
-    await expect(banner).toBeHidden({ timeout: 20_000 });
+    await expect(banner).toBeHidden({ timeout: 45_000 }); // registering with the push service can take a while
     expect(await a.evaluate(async () => !!(await (await navigator.serviceWorker.ready).pushManager.getSubscription()))).toBe(true);
 
     // Sanskar adds an expense that involves Ayush → Ayush gets a Notification that opens the expense.

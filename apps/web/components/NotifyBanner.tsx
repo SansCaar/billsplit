@@ -9,6 +9,7 @@ const DISMISSED = "bs-notify-banner-dismissed";
 export function NotifyBanner() {
   const [state, setState] = useState<PushState | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
   useEffect(() => {
     if (localStorage.getItem(DISMISSED)) return;
     void pushState().then(setState);
@@ -16,8 +17,8 @@ export function NotifyBanner() {
   if (state !== "off" && state !== "ios-install") return null;
   const dismiss = () => { localStorage.setItem(DISMISSED, "1"); setState(null); };
   const turnOn = async () => {
-    setErr(null);
-    try { setState(await enablePush()); } catch (e) { setErr((e as Error).message); }
+    setErr(null); setBusy(true);
+    try { setState(await enablePush()); } catch (e) { setErr((e as Error).message); } finally { setBusy(false); }
   };
   return (
     <section className="card notify-banner" data-testid="notify-banner">
@@ -29,7 +30,7 @@ export function NotifyBanner() {
         </div>
         <button className="link small" onClick={dismiss} aria-label="Dismiss">✕</button>
       </div>
-      {state === "off" && <button className="btn primary sm" style={{ marginTop: 10 }} onClick={turnOn}>Turn on notifications</button>}
+      {state === "off" && <button className="btn primary sm" style={{ marginTop: 10 }} onClick={turnOn} disabled={busy}>{busy ? "Turning on… this can take a few seconds" : "Turn on notifications"}</button>}
     </section>
   );
 }
