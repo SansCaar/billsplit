@@ -471,3 +471,14 @@ h1 { overflow-wrap: anywhere; }
 .shell:has(.topbar) .auth-page { min-height: calc(100vh - 60px); }
 @media (min-width: 900px) { .shell:has(.topbar) .auth-hero { min-height: calc(100vh - 72px); } }
 .auth-page { align-content: start; } @media (min-width: 900px) { .auth-page { align-content: stretch; } }
+
+/* Notifications & Nudges */
+.notify-banner { border-color: #cfe0c9; background: var(--green-soft); }
+.nudge-btn { flex: none; }
+.nudge-dialog { border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; width: min(440px, calc(100vw - 32px)); background: var(--white); color: inherit; }
+.nudge-dialog::backdrop { background: rgba(20, 35, 30, .35); }
+.nudge-dialog h3 { margin: 0 0 4px; }
+.nudge-lines { display: grid; gap: 8px; margin: 12px 0; }
+.nudge-line { text-align: left; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--cream); font-size: 14px; line-height: 1.4; cursor: pointer; }
+.nudge-line:hover:not(:disabled) { border-color: var(--green); }
+.nudged-note { display: block; font-size: 12px; color: var(--muted); font-weight: 400; }

@@ -5,7 +5,7 @@ import { Avatar } from "@billsplit/assign-ui";
 import { getDb } from "@/lib/db";
 import type { Actor, GroupDoc } from "@/lib/model";
 import { currentActor } from "@/lib/session";
-import { groupSummary, listActivity } from "@/lib/services";
+import { getNotifyPrefs, groupSummary, listActivity, nudgeKey } from "@/lib/services";
 import { orNotFound } from "@/lib/notFound";
 import { viewerTz } from "@/lib/time";
 import { plain } from "@/lib/plain";
@@ -15,6 +15,9 @@ import { ExpenseList } from "@/components/ExpenseList";
 import { SettleUp } from "@/components/SettleUp";
 import { GroupSettings } from "@/components/GroupSettings";
 import { ActiveTabIntoView } from "@/components/ActiveTabIntoView";
+import { GroupNotifyLevel } from "@/components/GroupNotifyLevel";
+import { NotifyBanner } from "@/components/NotifyBanner";
+import { NudgeButton } from "@/components/NudgeButton";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +35,9 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
   const myBal = s.balances[s.me.id] ?? 0;
   const mine = s.suggestions.filter((x) => x.fromId === s.me.id || x.toId === s.me.id);
   const allSettled = members.every((m) => (s.balances[m.id] ?? 0) === 0);
+  // The notifications banner appears once this person has added an expense or recorded a payment here.
+  const hasContributed = s.expenses.some((e) => e.createdBy === actor.userId) || s.settlements.some((x) => x.createdBy === actor.userId);
+  const nudged = (fromId: string, toId: string) => s.nudges[nudgeKey(fromId, toId)] ?? 0;
   const tabs = [
     ["balances", "Balances", null],
     ["settle", "Settle up", mine.length || null],
@@ -65,6 +71,7 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
 
       {tab === "balances" && (
         <>
+          {hasContributed && <NotifyBanner />}
           <section className="me-card" data-testid="my-summary">
             <div>
               <span className="eyebrow">{myBal > 0 ? "You're owed" : myBal < 0 ? "You owe" : "Your balance"}</span>
@@ -75,11 +82,19 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
               <ul className="me-pays">
                 {mine.map((x, i) => {
                   const other = x.fromId === s.me.id ? x.toId : x.fromId;
+                  const iOwe = x.fromId === s.me.id;
+                  // Nudges go from the person owed (x.toId) to the person who owes (x.fromId).
+                  const count = nudged(x.toId, x.fromId);
+                  const otherJoined = !!g.members.find((m) => m.id === other)?.userId;
                   return (
                     <li key={i}>
                       <Avatar name={memberName(g, other)} index={memberIndex(g, other)} size={24} />
-                      <span className="grow">{x.fromId === s.me.id ? <>You owe <b>{memberName(g, other)}</b></> : <><b>{memberName(g, other)}</b> owes you</>}</span>
-                      <span className={`amt ${x.fromId === s.me.id ? "neg" : "pos"}`}>{fmtMoney(x.amount)}</span>
+                      <span className="grow">
+                        {iOwe ? <>You owe <b>{memberName(g, other)}</b></> : <><b>{memberName(g, other)}</b> owes you</>}
+                        {count > 0 && <span className="nudged-note">{iOwe ? `${memberName(g, other)} nudged you ${count}× today` : `Nudged ${count}× today`}</span>}
+                      </span>
+                      <span className={`amt ${iOwe ? "neg" : "pos"}`}>{fmtMoney(x.amount)}</span>
+                      {!iOwe && otherJoined && <NudgeButton groupId={groupId} toId={other} toName={memberName(g, other)} myName={s.me.name} amount={x.amount} count={count} />}
                     </li>
                   );
                 })}
@@ -119,8 +134,14 @@ export default async function GroupPage({ params, searchParams }: { params: Prom
       {tab === "activity" && <ActivityTab groupId={groupId} actor={actor} group={g} meId={s.me.id} f={sp.f} mine={sp.mine === "1"} />}
 
       {tab === "settings" && <GroupSettings group={g} isCreator={g.createdBy === actor.userId} meId={s.me.id} />}
+      {tab === "settings" && <GroupNotifySection groupId={groupId} actor={actor} />}
     </main>
   );
+}
+
+async function GroupNotifySection({ groupId, actor }: { groupId: string; actor: Actor }) {
+  const prefs = await getNotifyPrefs(await getDb(), actor);
+  return <GroupNotifyLevel groupId={groupId} level={prefs.groups?.[groupId] ?? null} fallback={prefs.level} />;
 }
 
 async function ActivityTab({ groupId, actor, group, meId, f: rawF, mine }: { groupId: string; actor: Actor; group: GroupDoc; meId: string; f?: string; mine: boolean }) {
