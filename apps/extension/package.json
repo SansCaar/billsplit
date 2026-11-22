@@ -5,6 +5,7 @@
   "scripts": {
     "build": "node build.mjs",
     "build:local": "APP_URL=http://localhost:3000 node build.mjs",
+    "build:dev": "DEV_HOSTS=1 node build.mjs",
     "watch": "node build.mjs --watch",
     "typecheck": "tsc --noEmit"
   },

@@ -5,7 +5,7 @@ Images in this folder are rendered from anonymized fixture data by `e2e/store-sh
 
 ## Package
 
-Upload the release zip as-is: [billsplit-extension-0.1.3.zip](https://github.com/SansCaar/billsplit/releases/download/ext-v0.1.3/billsplit-extension-0.1.3.zip).
+Upload the release zip as-is: [billsplit-extension-0.1.5.zip](https://github.com/SansCaar/billsplit/releases/download/ext-v0.1.5/billsplit-extension-0.1.5.zip).
 Name and summary come from its manifest:
 
 - **Name:** Bill Split — Walmart orders
@@ -63,7 +63,7 @@ Split a Walmart order item by item among the members of a Bill Split group: the 
 |---|---|
 | `storage` | `Keeps the order the user just opened on this computer until it is assigned, and remembers the last Bill Split group the user picked.` |
 | `tabs` | `When the user clicks the toolbar button, the extension reads the current tab's URL to check whether it is a Walmart order page (and opens walmart.com/orders if not). It also opens the splitting page next to the order, and opens and later closes the Bill Split sign-in tab.` |
-| Host permission | `walmart.com: adds the "Split this order" button to order pages and reads the order the user is viewing. *.vercel.app: sends the order to the Bill Split web app (bsplit.vercel.app and its preview deployments) and loads the user's groups. localhost: development builds only.` |
+| Host permission | `walmart.com: adds the "Split this order" button to order pages and reads the order the user is viewing. bsplit.vercel.app: sends the order to the user's Bill Split group and loads the user's groups.` |
 | Remote code | **No, I am not using remote code.** |
 
 **Data usage.** Tick these two:
