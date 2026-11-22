@@ -1,0 +1,61 @@
+/**
+ * Preset Nudge lines. `{name}` is the sender, `{amount}` the payment Settle up shows.
+ * No pronouns: we don't know anyone's. The sender is shown 3 at random and picks one.
+ * Lines are referenced by index once sent, so append new ones; don't reorder or delete.
+ */
+export const NUDGE_LINES: readonly string[] = [
+  "{name} is down to the last packet of ramen. You owe {amount}.",
+  "Breaking: local legend {name} still waiting on {amount} from you.",
+  "{name}'s wallet just filed for bankruptcy. {amount} would help.",
+  "{name} has been eating plain rice for three days. Coincidence? You owe {amount}.",
+  "{name} checked the bank app. It laughed. {amount}, please.",
+  "This is your friendly reminder from {name}. The next one will be less friendly. {amount}.",
+  "{name} would like {amount} back before it becomes a family heirloom.",
+  "{name} is now accepting {amount} in cash, Venmo, Zelle, or guilt.",
+  "Somewhere, {name} is staring at an empty fridge. You owe {amount}.",
+  "{name} lent you {amount}, not a lifetime subscription.",
+  "{name} is selling a kidney. Or you could just send {amount}.",
+  "{name}'s piggy bank called. It wants its {amount} back.",
+  "Roses are red, balances are due, {name} is owed {amount} by you.",
+  "{name} has started a GoFundMe. The goal is {amount}. The donor is you.",
+  "{name} isn't mad. Just disappointed. And owed {amount}.",
+  "Day 47: {name} still believes in you. And in {amount}.",
+  "{name} wants {amount}, and honestly, so does {name}'s landlord.",
+  "Fun fact: {amount} is exactly what you owe {name}. Funner fact: paying it.",
+  "{name} has been practicing a sad face in the mirror. {amount} makes it stop.",
+  "{name} is down to coupons and hope. You owe {amount}.",
+  "{name} says no rush. {name} is lying. {amount}.",
+  "Your {amount} debt to {name} has entered its villain era.",
+  "{name} is drafting a strongly worded text. {amount} cancels it.",
+  "{name}'s savings account is just a screenshot of what you owe: {amount}.",
+  "{name} would settle for {amount}. Literally. That's how settling works.",
+  "Plot twist: {name} actually needs that {amount}.",
+  "{name} has replaced dinner with tap water and optimism. {amount}, please.",
+  "{name} is putting {amount} on the group chat agenda. Unless…",
+  "Legend says if you pay {name} {amount} today, good things happen.",
+  "{name} is counting coins on the floor. You owe {amount}.",
+  "{name}'s budget spreadsheet has one red cell. It's you. {amount}.",
+  "{name} didn't want to make it weird. Now it's weird. {amount}.",
+  "Your account with {name} is overdue by {amount} and several sighs.",
+  "{name} is manifesting {amount}. Help the universe out.",
+  "{name}'s coffee fund is empty. You owe {amount}.",
+  "{name} is one Walmart run away from disaster. {amount}, please.",
+  "{name} heard you're doing great. Great enough for {amount}?",
+  "{name} is not saying you're avoiding this. {name} is just saying {amount}.",
+  "Knock knock. Who's there? {name}. {name} who? {name} who's owed {amount}.",
+  "{name}'s houseplants are thirsty and so is {name}'s bank account. {amount}.",
+  "{name} has drafted your apology. It just says {amount}.",
+  "{name} is learning to live without {amount}. Please don't make that permanent.",
+  "{name} has been very patient. Patience costs {amount}.",
+  "Quick math: you + {amount} → {name} = everyone happy.",
+  "{name}'s rent is due and {amount} of it is in your pocket.",
+  "{name} would like to remind you that friendship is priceless. Groceries are {amount}.",
+  "{name} saw you buy that snack. You owe {amount}.",
+  "{name} is ready to forgive and forget, right after the {amount}.",
+  "This Nudge is brought to you by {name}, and by the {amount} you owe.",
+  "{name} tried meditating. The mantra was {amount}.",
+];
+
+export function fillNudgeLine(index: number, name: string, amount: string): string {
+  return (NUDGE_LINES[index] ?? NUDGE_LINES[0]!).replaceAll("{name}", name).replaceAll("{amount}", amount);
+}

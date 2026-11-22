@@ -1,7 +1,19 @@
 import { MongoClient, type Db } from "mongodb";
-import { ensureIndexes } from "./services";
+import { after } from "next/server";
+import { ensureIndexes, notifier } from "./services";
+import { deliverPush } from "./push";
 
 const g = globalThis as unknown as { _bsMongo?: Promise<Db> };
+
+// Notifications go out after the response is sent, so a slow or failing push never holds up a save.
+notifier.deliver = deliverPush;
+notifier.defer = (task) => {
+  try {
+    after(task);
+  } catch {
+    void task(); // outside a request (scripts)
+  }
+};
 
 export function getDb(): Promise<Db> {
   if (!g._bsMongo) {
