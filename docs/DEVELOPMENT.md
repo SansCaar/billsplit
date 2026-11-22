@@ -19,6 +19,7 @@ pnpm install
 pnpm dev                 # web app on http://localhost:3000 + a local MongoDB in apps/web/.data
 pnpm build:ext           # builds apps/extension/dist, pointed at the hosted app
 pnpm --filter extension build:local   # same, pointed at http://localhost:3000
+pnpm --filter extension build:dev     # hosted app, plus access to localhost and *.vercel.app previews
 ```
 
 Load the extension: `chrome://extensions` → Developer mode → **Load unpacked** → `apps/extension/dist`.
@@ -57,6 +58,8 @@ the **CI** check runs typecheck + unit tests. Test there, then merge; merging to
 
 Deploy from the repo root: `npx vercel deploy --prod` (`.vercelignore` keeps proof data and node_modules out).
 The extension's default address is set at build time (`APP_URL`); it can still be changed in its Processing tab.
+The Store build may only reach walmart.com and bsplit.vercel.app, so to point it at a preview deployment load a
+`build:dev` build (or `APP_URL=https://<preview>.vercel.app pnpm --filter extension build`).
 
 ## Demo video
 
