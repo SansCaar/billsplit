@@ -1,5 +1,2 @@
-/**
- * The extension's Chrome Web Store listing. Paste the listing URL here once it's live
- * (https://chromewebstore.google.com/detail/...). While empty, install buttons say "Coming soon".
- */
-export const EXTENSION_STORE_URL = "";
+/** The extension's Chrome Web Store listing, used by every "Add to Chrome" button. If empty, they say "Coming soon". */
+export const EXTENSION_STORE_URL = "https://chromewebstore.google.com/detail/bill-split-%E2%80%94-walmart-orde/peofoamjcchmjmpilpnnhoolcccabjhk";
