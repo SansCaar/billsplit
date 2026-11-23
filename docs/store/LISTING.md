@@ -1,6 +1,7 @@
 # Chrome Web Store submission
 
 Everything to paste into the [Developer Dashboard](https://chrome.google.com/webstore/devconsole) for the extension.
+Live listing: https://chromewebstore.google.com/detail/bill-split-%E2%80%94-walmart-orde/peofoamjcchmjmpilpnnhoolcccabjhk
 Images in this folder are rendered from anonymized fixture data by `e2e/store-shots.spec.ts` (`STORE=1`).
 
 ## Package

@@ -7,6 +7,7 @@
 .lp-btn.ghost { background: transparent; color: var(--lp-ink); box-shadow: inset 0 0 0 1px var(--line-strong); }
 .lp-btn.ghost:hover { background: #fff; }
 .lp-btn.light { background: #f3f7f0; color: var(--lp-dark); }
+.lp-btn.is-soon, .lp-btn.is-soon:hover { background: #dfe8e1; color: var(--lp-mute); box-shadow: none; transform: none; cursor: default; }
 .lp-btn.sm { min-height: 40px; padding: 0 16px; font-size: 14px; }
 
 /* Nav */
@@ -184,10 +185,7 @@
 .lp-install p { color: var(--lp-mute); font-size: 16px; margin: 12px auto 20px; max-width: 520px; }
 .lp-install .lp-small { font-size: 13px; margin: 16px 0 0; }
 .lp-install a { color: var(--green); font-weight: 600; }
-.lp-cmd { display: flex; align-items: center; gap: 10px; background: #13261f; color: #d7ead9; border-radius: 14px; padding: 10px 10px 10px 16px; text-align: left; }
-.lp-cmd code { flex: 1; min-width: 0; font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
-.lp-cmd button { flex: none; min-height: 40px; padding: 0 16px; border-radius: 10px; background: #2f6b55; color: #fff; font-weight: 700; font-size: 13px; }
-.lp-cmd button:hover { background: #3a7d64; }
+.lp-install a.lp-btn { color: #f5f8f2; margin-top: 4px; }
 .lp-final { margin: 40px 20px 0; border-radius: 28px; padding: 64px 24px; text-align: center; color: #e6f0e8; background: radial-gradient(120% 120% at 0% 0%, #2e6b54, var(--lp-green) 45%, var(--lp-dark)); }
 .lp-final h2 { color: #fff; font-size: clamp(30px, 6vw, 50px); font-weight: 800; }
 .lp-final p { margin: 12px 0 26px; color: #c4d9c9; font-size: 17px; }
