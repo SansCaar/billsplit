@@ -92,7 +92,7 @@ test("notifications and nudges arrive through real push", async () => {
     await a.goto(`${APP}/settings`);
     await expect(a.getByText("On for this device")).toBeVisible();
     await a.screenshot({ path: `${OUT}/4-settings.png`, fullPage: true });
-    await a.goto(`${APP}/g/${g._id}?tab=settings`);
+    await a.goto(`${APP}/g/${g._id}?tab=members`);
     await a.getByTestId("group-notify").scrollIntoViewIfNeeded();
     await a.getByTestId("group-notify").screenshot({ path: `${OUT}/5-group-level.png` });
   } finally {

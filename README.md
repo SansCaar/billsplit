@@ -8,18 +8,11 @@ Split shared costs with the people you live with, and split Walmart orders item 
 
 ## Install the Chrome extension
 
-Only the person splitting Walmart orders needs it (Chrome on a Mac). Everyone else just uses the website.
+Only the person splitting Walmart orders needs it (Chrome on a computer). Everyone else just uses the website.
 
-1. Paste this into **Terminal**:
+**[Add to Chrome →](https://bsplit.vercel.app/extension)** (Chrome Web Store, free, updates itself)
 
-   ```sh
-   curl -fsSL https://raw.githubusercontent.com/SansCaar/billsplit/main/tools/install-extension.sh | zsh
-   ```
-
-2. Press **Enter** when asked. Chrome opens on `chrome://extensions`, next to a Finder window showing the **Bill Split Extension** folder.
-3. Turn on **Developer mode** (top right), then drag the folder onto the page.
-
-To update, run the same command and click ↻ on Bill Split in `chrome://extensions`. [Watch the install video](docs/demo/install-guide.mp4).
+Installed it earlier with the terminal command? Remove that copy in `chrome://extensions` first, so you don't get two buttons.
 
 ## Get started
 

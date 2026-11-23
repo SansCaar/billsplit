@@ -102,7 +102,7 @@ describe("Notifications about Activity", () => {
     await svc.addPlaceholderMember(db, sanskar, g._id, "Priya");
     await flush();
     expect(sent.map((o) => o.userId).sort()).toEqual([ayush.userId, mallory.userId].sort());
-    expect(sent[0]!.message.url).toBe(`/g/${g._id}?tab=settings`);
+    expect(sent[0]!.message.url).toBe(`/g/${g._id}?tab=members`);
   });
 
   it("nothing is sent when no transport is configured", async () => {

@@ -30,7 +30,7 @@ export function levelFor(prefs: NotifyPrefs | null | undefined, groupId: string)
 export function activityUrl(a: Pick<ActivityDoc, "groupId" | "expenseId" | "settlementId">): string {
   if (a.expenseId) return `/e/${a.expenseId}`;
   if (a.settlementId) return `/g/${a.groupId}?tab=expenses`;
-  return `/g/${a.groupId}?tab=settings`;
+  return `/g/${a.groupId}?tab=members`;
 }
 
 function activityTag(a: Pick<ActivityDoc, "_id" | "expenseId" | "settlementId">): string {

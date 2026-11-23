@@ -10,7 +10,7 @@
 - { name: "area: extension", color: 2e7d5b, description: "Chrome extension and the splitter" }
 - { name: "area: walmart orders", color: 4f9a6e, description: "Reading and parsing Walmart orders" }
 - { name: "area: sign-in", color: 7bb48f, description: "Signing in, invites and joining groups" }
-- { name: "area: installer", color: a8cfb4, description: "tools/install-extension.sh and releases" }
+- { name: "area: installer", color: a8cfb4, description: "Chrome Web Store listing and extension releases" }
 # Status: one at a time
 - { name: "status: needs triage", color: fbca04, description: "New; not looked at yet" }
 - { name: "status: confirmed", color: f9d0c4, description: "Reproduced or agreed; ready to pick up" }

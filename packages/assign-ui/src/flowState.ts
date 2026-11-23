@@ -9,6 +9,8 @@ export interface FlowState {
   /** 0..items.length-1 = item cards; items.length = review. */
   step: number;
   lastSplit: Split | null;
+  /** Set when the user jumped to an item from Review: Next/Do later go straight back to Review. */
+  returnToReview?: boolean;
 }
 
 export type FlowAction =
@@ -76,14 +78,16 @@ export function flowReducer(items: Item[]) {
       case "patchShare":
         return item ? set({ ...cur, shares: cur.shares.map((x) => (x.memberId === a.memberId ? { ...x, ...a.patch } : x)) }) : s;
       case "next":
-        return canAdvance(items, s) ? { ...s, step: s.step + 1, lastSplit: cur } : s;
+        if (!canAdvance(items, s)) return s;
+        return { ...s, step: s.returnToReview ? items.length : s.step + 1, lastSplit: cur, returnToReview: false };
       case "skip":
-        return s.step < items.length ? { ...s, step: s.step + 1 } : s;
+        if (s.step >= items.length) return s;
+        return { ...s, step: s.returnToReview ? items.length : s.step + 1, returnToReview: false };
       case "back":
-        return { ...s, step: Math.max(0, Math.min(s.step, items.length) - 1) };
+        return { ...s, step: Math.max(0, Math.min(s.step, items.length) - 1), returnToReview: false };
       case "jump": {
         const i = items.findIndex((x) => x.key === a.key);
-        return i >= 0 ? { ...s, step: i } : s;
+        return i >= 0 ? { ...s, step: i, returnToReview: true } : s;
       }
     }
   };
