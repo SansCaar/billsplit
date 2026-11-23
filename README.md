@@ -26,6 +26,8 @@ Then, day to day:
 - **Balances:** what you owe or are owed, and where everyone stands.
 - **Settle up:** record payments made outside the app (Venmo, Zelle, cash). It suggests the fewest payments to get everyone to $0.
 - **Activity:** every change, who made it, and how it moved each balance.
+- **Notifications:** turn them on from the banner or **Settings** to hear when housemates add or change something that involves you. On iPhone, add Bill Split to your Home Screen first.
+- **Nudge:** when someone owes you, tap **Nudge** next to their name to send them a (funny) reminder. Up to 3 a day.
 
 ## Split a Walmart order
 

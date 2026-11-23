@@ -25,6 +25,11 @@ pnpm --filter extension build:dev     # hosted app, plus access to localhost and
 Load the extension: `chrome://extensions` → Developer mode → **Load unpacked** → `apps/extension/dist`.
 Open any order at walmart.com/orders → click **🧾 Split this order**.
 
+Notifications: put VAPID keys in `apps/web/.env.local` (git-ignored) to send real pushes locally. Generate them with
+`node --input-type=module -e 'import {generateVAPIDKeys} from "web-push"; console.log(generateVAPIDKeys())'` from `apps/web`,
+and set `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` and `VAPID_SUBJECT=https://bsplit.vercel.app`. Without them the app
+works normally and simply sends nothing. Push works on `http://localhost` without HTTPS.
+
 Sign-in: locally there is a dev sign-in (name + email) at `/signin?dev=1`. For Google, set `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET`
 (redirect URI `http://localhost:3000/api/auth/callback/google`). Set `MONGODB_URI` to use a real MongoDB.
 
@@ -46,7 +51,8 @@ Publish a new version:
 Hosted at https://bsplit.vercel.app, with the older https://billsplit-indol.vercel.app still working (Vercel project `billsplit`, root directory `apps/web`, MongoDB Atlas).
 
 Env vars (production + preview): `MONGODB_URI`, `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`,
-`AUTH_TRUST_HOST=true`. Leave `DEV_LOGIN` unset so only Google sign-in exists. The Google OAuth client needs the
+`AUTH_TRUST_HOST=true`, plus `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` and `VAPID_SUBJECT` for notifications
+(keep the same keys forever: changing them silently breaks every device that turned notifications on). Leave `DEV_LOGIN` unset so only Google sign-in exists. The Google OAuth client needs the
 redirect URIs `https://bsplit.vercel.app/api/auth/callback/google` and `https://billsplit-indol.vercel.app/api/auth/callback/google`.
 
 ### Pull request previews
@@ -109,9 +115,18 @@ Triage: set a priority, then swap `status: needs triage` for `status: confirmed`
 ## Tests
 
 ```sh
-pnpm -r test                         # core (37) + web services (12)
+pnpm -r test                         # core (37) + assign-ui (4) + web services and notifications (24)
 cd e2e && npx playwright test        # extension end-to-end (needs `pnpm dev` and `build:local`)
+cd e2e && npx playwright test push-notifications   # real Web Push through Google Chrome (needs VAPID keys + Chrome)
 ```
+
+## How notifications work
+
+Every Activity records its Involved Members (see GLOSSARY.md). After the response is sent (`after()` in `lib/db.ts`),
+`lib/notify.ts` picks who to tell from each person's Notification Level, leaving out whoever made the change, and
+`lib/push.ts` sends a Web Push message to each of their devices. `public/sw.js` shows it and opens the related page when
+tapped. Nudges are Notifications only, never Activities ([ADR 0003](adr/0003-nudges-are-not-activities.md)); the preset
+lines live in `lib/nudgeLines.ts` (append only: sent Nudges refer to lines by index).
 
 ## How Walmart orders are read
 

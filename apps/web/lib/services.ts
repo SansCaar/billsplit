@@ -1,4 +1,4 @@
-import { randomBytes, randomUUID } from "node:crypto";
+import { createHash, randomBytes, randomUUID } from "node:crypto";
 import type { Db } from "mongodb";
 import {
   carryAssignments,
@@ -26,10 +26,16 @@ import type {
   ExpenseDoc,
   GroupDoc,
   MemberDoc,
+  NotificationLevel,
+  NotifyPrefs,
+  NudgeDoc,
+  PushDeviceDoc,
   SettlementDoc,
   SnapshotDoc,
   UserDoc,
 } from "./model";
+import { activityNotifications, DEFAULT_LEVEL, nudgeMessage, type Outgoing } from "./notify";
+import { NUDGE_LINES } from "./nudgeLines";
 
 export class ServiceError extends Error {
   constructor(message: string, public status = 400) {
@@ -47,6 +53,8 @@ export const cols = (db: Db) => ({
   settlements: db.collection<SettlementDoc>("settlements"),
   snapshots: db.collection<SnapshotDoc>("snapshots"),
   activity: db.collection<ActivityDoc>("activity"),
+  pushDevices: db.collection<PushDeviceDoc>("pushDevices"),
+  nudges: db.collection<NudgeDoc>("nudges"),
 });
 
 export async function ensureIndexes(db: Db) {
@@ -64,6 +72,10 @@ export async function ensureIndexes(db: Db) {
     c.snapshots.createIndex({ expenseId: 1, at: -1 }),
     c.activity.createIndex({ groupId: 1, at: -1 }),
     c.activity.createIndex({ expenseId: 1, at: -1 }),
+    c.pushDevices.createIndex({ userId: 1 }),
+    c.nudges.createIndex({ groupId: 1, at: -1 }),
+    // Nudges only matter for the rate limit; drop them after 30 days.
+    c.nudges.createIndex({ at: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 }),
   ]);
 }
 
@@ -79,6 +91,81 @@ export async function upsertUser(db: Db, u: { email: string; name: string; image
   return res!;
 }
 
+/* ---------------- Notifications ---------------- */
+
+/**
+ * How Notifications leave the app. Unset (tests, scripts) = nothing is sent.
+ * The web app sets `deliver` to Web Push and `defer` to run after the response (see lib/db.ts).
+ */
+export const notifier: {
+  deliver: ((db: Db, out: Outgoing[]) => Promise<number>) | null;
+  defer: (task: () => Promise<void>) => void;
+} = { deliver: null, defer: (task) => void task() };
+
+function queueNotifications(db: Db, build: () => Promise<Outgoing[]>) {
+  const deliver = notifier.deliver;
+  if (!deliver) return;
+  notifier.defer(async () => {
+    try {
+      const out = await build();
+      if (out.length) await deliver(db, out);
+    } catch (e) {
+      console.error("Notification failed", e);
+    }
+  });
+}
+
+async function prefsFor(db: Db, userIds: string[]): Promise<Map<string, NotifyPrefs | undefined>> {
+  const users = await cols(db).users.find({ _id: { $in: userIds } }, { projection: { notify: 1 } }).toArray();
+  return new Map(users.map((u) => [u._id, u.notify]));
+}
+
+export async function getNotifyPrefs(db: Db, actor: Actor): Promise<NotifyPrefs> {
+  const u = await cols(db).users.findOne({ _id: actor.userId }, { projection: { notify: 1 } });
+  return { level: u?.notify?.level ?? DEFAULT_LEVEL, groups: u?.notify?.groups ?? {} };
+}
+
+const LEVELS: NotificationLevel[] = ["all", "involved"];
+
+export async function setDefaultNotifyLevel(db: Db, actor: Actor, level: NotificationLevel) {
+  if (!LEVELS.includes(level)) throw new ServiceError("Invalid notification level");
+  await cols(db).users.updateOne({ _id: actor.userId }, { $set: { "notify.level": level } });
+  return getNotifyPrefs(db, actor);
+}
+
+/** `null` = use my default for this Group. */
+export async function setGroupNotifyLevel(db: Db, actor: Actor, groupId: string, level: NotificationLevel | null) {
+  await requireGroup(db, actor, groupId);
+  if (level !== null && !LEVELS.includes(level)) throw new ServiceError("Invalid notification level");
+  const field = `notify.groups.${groupId}`;
+  await cols(db).users.updateOne({ _id: actor.userId }, level === null ? { $unset: { [field]: "" } } : { $set: { [field]: level } });
+  return getNotifyPrefs(db, actor);
+}
+
+const deviceId = (endpoint: string) => createHash("sha256").update(endpoint).digest("base64url");
+
+/** A device turned notifications on. If someone else used this browser before, it becomes this person's. */
+export async function savePushDevice(db: Db, actor: Actor, sub: { endpoint: string; keys: { p256dh: string; auth: string } }, userAgent: string | null) {
+  if (!/^https:\/\//.test(sub.endpoint)) throw new ServiceError("Invalid push subscription");
+  const now = new Date();
+  await cols(db).pushDevices.updateOne(
+    { _id: deviceId(sub.endpoint) },
+    { $set: { userId: actor.userId, endpoint: sub.endpoint, keys: sub.keys, userAgent, lastSeenAt: now }, $setOnInsert: { createdAt: now } },
+    { upsert: true },
+  );
+}
+
+export async function removePushDevice(db: Db, actor: Actor, endpoint: string) {
+  await cols(db).pushDevices.deleteOne({ _id: deviceId(endpoint), userId: actor.userId });
+}
+
+/** Sent straight away (not deferred) so the Settings page can say whether it worked. */
+export async function sendTestNotification(db: Db, actor: Actor) {
+  if (!notifier.deliver) throw new ServiceError("Notifications aren't set up on this server yet", 503);
+  const sent = await notifier.deliver(db, [{ userId: actor.userId, message: { title: "Bill Split", body: "Notifications are on for this device.", url: "/settings", tag: "test" } }]);
+  return { sent };
+}
+
 /* ---------------- Activity ---------------- */
 
 async function log(
@@ -87,9 +174,12 @@ async function log(
   groupId: string,
   action: ActivityAction,
   summary: string,
-  extra: { expenseId?: string; settlementId?: string; changes?: FieldChange[]; subjectTitle?: string; amount?: number; impact?: Record<string, number> } = {},
+  extra: { expenseId?: string; settlementId?: string; changes?: FieldChange[]; subjectTitle?: string; amount?: number; impact?: Record<string, number>; involved?: MemberId[] } = {},
 ) {
-  await cols(db).activity.insertOne({
+  const group = await cols(db).groups.findOne({ _id: groupId });
+  // Changes to the Group or its Members involve everyone in it.
+  const involved = [...new Set(extra.involved ?? (group ? activeMembers(group).map((m) => m.id) : []))];
+  const doc: ActivityDoc = {
     _id: id(),
     groupId,
     expenseId: extra.expenseId ?? null,
@@ -102,8 +192,21 @@ async function log(
     ...(extra.subjectTitle !== undefined ? { subjectTitle: extra.subjectTitle } : {}),
     ...(extra.amount !== undefined ? { amount: extra.amount } : {}),
     ...(extra.impact && Object.keys(extra.impact).length ? { impact: extra.impact } : {}),
+    involved,
     at: new Date(),
-  });
+  };
+  await cols(db).activity.insertOne(doc);
+  if (group) {
+    queueNotifications(db, async () => {
+      const userIds = group.members.flatMap((m) => (m.userId && m.userId !== actor.userId ? [m.userId] : []));
+      return userIds.length ? activityNotifications(doc, group, await prefsFor(db, userIds)) : [];
+    });
+  }
+}
+
+/** Involved Members of an Expense change: the Payer and everyone with a share, before or after. */
+function expenseInvolved(...states: (Pick<ExpenseDoc, "payerId" | "shares"> | null)[]): MemberId[] {
+  return [...new Set(states.flatMap((e) => (e ? [e.payerId, ...Object.keys(e.shares)] : [])))];
 }
 
 /** Each Member's balance contribution from one Expense (payer credited the sum of shares). */
@@ -345,7 +448,7 @@ export async function createManualExpense(db: Db, actor: Actor, groupId: string,
     deleted: false, createdBy: actor.userId, createdAt: now, updatedAt: now,
   };
   await cols(db).expenses.insertOne(e);
-  await log(db, actor, groupId, "expense.created", `${actor.name} added "${e.title}" (${fmtMoney(e.amount)}), paid by ${memberName(group, e.payerId)}`, { expenseId: e._id, subjectTitle: e.title, amount: e.amount, impact: balanceImpact(null, e) });
+  await log(db, actor, groupId, "expense.created", `${actor.name} added "${e.title}" (${fmtMoney(e.amount)}), paid by ${memberName(group, e.payerId)}`, { expenseId: e._id, subjectTitle: e.title, amount: e.amount, impact: balanceImpact(null, e), involved: expenseInvolved(e) });
   return e;
 }
 
@@ -404,7 +507,7 @@ export async function updateExpense(db: Db, actor: Actor, expenseId: string, pat
   if (!changes.length) return before;
   after.updatedAt = new Date();
   await cols(db).expenses.replaceOne({ _id: expenseId }, after);
-  await log(db, actor, group._id, "expense.updated", `${actor.name} edited "${after.title}"`, { expenseId, changes, subjectTitle: after.title, amount: after.amount, impact: balanceImpact(before, after) });
+  await log(db, actor, group._id, "expense.updated", `${actor.name} edited "${after.title}"`, { expenseId, changes, subjectTitle: after.title, amount: after.amount, impact: balanceImpact(before, after), involved: expenseInvolved(before, after) });
   return after;
 }
 
@@ -412,7 +515,7 @@ export async function setExpenseDeleted(db: Db, actor: Actor, expenseId: string,
   const { expense, group } = await getExpense(db, actor, expenseId);
   if (expense.deleted === deleted) return;
   await cols(db).expenses.updateOne({ _id: expenseId }, { $set: { deleted, updatedAt: new Date() } });
-  await log(db, actor, group._id, deleted ? "expense.deleted" : "expense.restored", `${actor.name} ${deleted ? "deleted" : "restored"} "${expense.title}"`, { expenseId, subjectTitle: expense.title, amount: expense.amount, impact: deleted ? balanceImpact(expense, null) : balanceImpact(null, { ...expense, deleted: false }) });
+  await log(db, actor, group._id, deleted ? "expense.deleted" : "expense.restored", `${actor.name} ${deleted ? "deleted" : "restored"} "${expense.title}"`, { expenseId, subjectTitle: expense.title, amount: expense.amount, impact: deleted ? balanceImpact(expense, null) : balanceImpact(null, { ...expense, deleted: false }), involved: expenseInvolved(expense) });
 }
 
 /* ---------------- Walmart Orders ---------------- */
@@ -470,7 +573,7 @@ export async function processOrder(db: Db, actor: Actor, groupId: string, input:
     const orderChanges = diffOrders(existing.walmart!.order, order).map((c): FieldChange => ({ path: `order.${c.type}`, label: "Walmart", before: null, after: describeChange(c) }));
     const changes = [...orderChanges, ...describeExpenseChanges(group, existing, expense)];
     await cols(db).expenses.replaceOne({ _id: existing._id }, expense);
-    await log(db, actor, groupId, "order.reprocessed", `${actor.name} re-processed Walmart order #${order.orderNumber}`, { expenseId: expense._id, changes, subjectTitle: expense.title, amount, impact: balanceImpact(existing, expense) });
+    await log(db, actor, groupId, "order.reprocessed", `${actor.name} re-processed Walmart order #${order.orderNumber}`, { expenseId: expense._id, changes, subjectTitle: expense.title, amount, impact: balanceImpact(existing, expense), involved: expenseInvolved(existing, expense) });
   } else {
     expense = {
       _id: id(), groupId, kind: "walmart", title: input.title?.trim() || `Walmart #${order.orderNumber}`,
@@ -478,7 +581,7 @@ export async function processOrder(db: Db, actor: Actor, groupId: string, input:
       deleted: false, createdBy: actor.userId, createdAt: now, updatedAt: now,
     };
     await cols(db).expenses.insertOne(expense);
-    await log(db, actor, groupId, "order.processed", `${actor.name} processed Walmart order #${order.orderNumber} (${fmtMoney(amount)}), paid by ${memberName(group, input.payerId)}`, { expenseId: expense._id, subjectTitle: expense.title, amount, impact: balanceImpact(null, expense) });
+    await log(db, actor, groupId, "order.processed", `${actor.name} processed Walmart order #${order.orderNumber} (${fmtMoney(amount)}), paid by ${memberName(group, input.payerId)}`, { expenseId: expense._id, subjectTitle: expense.title, amount, impact: balanceImpact(null, expense), involved: expenseInvolved(expense) });
   }
   await cols(db).snapshots.insertOne({ _id: id(), groupId, expenseId: expense._id, orderNumber: order.orderNumber, parsed: order, processedBy: actor.userId, at: now });
   return { expense, created: !existing };
@@ -502,7 +605,7 @@ export async function recordSettlement(db: Db, actor: Actor, groupId: string, in
     deleted: false, createdBy: actor.userId, createdAt: new Date(),
   };
   await cols(db).settlements.insertOne(s);
-  await log(db, actor, groupId, "settlement.created", `${actor.name} recorded: ${memberName(group, s.fromId)} paid ${memberName(group, s.toId)} ${fmtMoney(s.amount)}`, { settlementId: s._id, subjectTitle: `${memberName(group, s.fromId)} → ${memberName(group, s.toId)}`, amount: s.amount, impact: { [s.fromId]: s.amount, [s.toId]: -s.amount } });
+  await log(db, actor, groupId, "settlement.created", `${actor.name} recorded: ${memberName(group, s.fromId)} paid ${memberName(group, s.toId)} ${fmtMoney(s.amount)}`, { settlementId: s._id, subjectTitle: `${memberName(group, s.fromId)} → ${memberName(group, s.toId)}`, amount: s.amount, impact: { [s.fromId]: s.amount, [s.toId]: -s.amount }, involved: [s.fromId, s.toId] });
   return s;
 }
 
@@ -511,7 +614,7 @@ export async function setSettlementDeleted(db: Db, actor: Actor, settlementId: s
   if (!s) throw new ServiceError("Settlement not found", 404);
   const { group } = await requireGroup(db, actor, s.groupId);
   await cols(db).settlements.updateOne({ _id: settlementId }, { $set: { deleted } });
-  await log(db, actor, group._id, deleted ? "settlement.deleted" : "settlement.updated", `${actor.name} ${deleted ? "deleted" : "restored"} the payment ${memberName(group, s.fromId)} → ${memberName(group, s.toId)} ${fmtMoney(s.amount)}`, { settlementId, subjectTitle: `${memberName(group, s.fromId)} → ${memberName(group, s.toId)}`, amount: s.amount, impact: deleted ? { [s.fromId]: -s.amount, [s.toId]: s.amount } : { [s.fromId]: s.amount, [s.toId]: -s.amount } });
+  await log(db, actor, group._id, deleted ? "settlement.deleted" : "settlement.updated", `${actor.name} ${deleted ? "deleted" : "restored"} the payment ${memberName(group, s.fromId)} → ${memberName(group, s.toId)} ${fmtMoney(s.amount)}`, { settlementId, subjectTitle: `${memberName(group, s.fromId)} → ${memberName(group, s.toId)}`, amount: s.amount, impact: deleted ? { [s.fromId]: -s.amount, [s.toId]: s.amount } : { [s.fromId]: s.amount, [s.toId]: -s.amount }, involved: [s.fromId, s.toId] });
 }
 
 /* ---------------- Summary ---------------- */
@@ -536,5 +639,39 @@ export async function groupSummary(db: Db, actor: Actor, groupId: string) {
     balances,
     suggestions: suggestSettlements(balances),
     activity: await cols(db).activity.find({ groupId }).sort({ at: -1 }).limit(50).toArray(),
+    nudges: await nudgeCounts(db, groupId),
   };
+}
+
+/* ---------------- Nudges (ADR 0003: Notifications, not Activities) ---------------- */
+
+export const NUDGES_PER_DAY = 3;
+const DAY_MS = 24 * 60 * 60 * 1000;
+export const nudgeKey = (fromId: MemberId, toId: MemberId) => `${fromId}>${toId}`;
+
+/** Nudges sent in the last 24 hours, keyed by nudgeKey(sender, receiver). */
+export async function nudgeCounts(db: Db, groupId: string, now = new Date()): Promise<Record<string, number>> {
+  const recent = await cols(db).nudges.find({ groupId, at: { $gt: new Date(now.getTime() - DAY_MS) } }, { projection: { fromId: 1, toId: 1 } }).toArray();
+  const out: Record<string, number> = {};
+  for (const n of recent) out[nudgeKey(n.fromId, n.toId)] = (out[nudgeKey(n.fromId, n.toId)] ?? 0) + 1;
+  return out;
+}
+
+/** Ask a Member to make the payment Settle up shows they owe me. The amount always comes from Settle up, never the client. */
+export async function sendNudge(db: Db, actor: Actor, groupId: string, input: { toId: MemberId; line: number }, now = new Date()) {
+  const { group, me } = await requireGroup(db, actor, groupId);
+  const to = activeMembers(group).find((m) => m.id === input.toId);
+  if (!to) throw new ServiceError("Member not found", 404);
+  if (!to.userId) throw new ServiceError(`${to.name} hasn't joined yet, so they can't get a Nudge`);
+  if (!Number.isInteger(input.line) || input.line < 0 || input.line >= NUDGE_LINES.length) throw new ServiceError("Pick one of the lines");
+  const { balances } = await computeGroupBalances(db, group);
+  const payment = suggestSettlements(balances).find((p) => p.fromId === to.id && p.toId === me.id);
+  if (!payment) throw new ServiceError(`${to.name} doesn't owe you anything right now`);
+  const sentToday = (await nudgeCounts(db, groupId, now))[nudgeKey(me.id, to.id)] ?? 0;
+  if (sentToday >= NUDGES_PER_DAY) throw new ServiceError(`You've nudged ${to.name} ${NUDGES_PER_DAY} times today. Give them a break.`, 429);
+  const nudge: NudgeDoc = { _id: id(), groupId, fromId: me.id, toId: to.id, amount: payment.amount, line: input.line, at: now };
+  await cols(db).nudges.insertOne(nudge);
+  const receiver = to.userId;
+  queueNotifications(db, async () => [{ userId: receiver, message: nudgeMessage(nudge, me.name, group.name) }]);
+  return { amount: payment.amount, count: sentToday + 1 };
 }

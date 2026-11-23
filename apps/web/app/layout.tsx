@@ -13,7 +13,7 @@ import { TzCookie } from "@/components/TzCookie";
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans", display: "swap" });
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope", display: "swap" });
 
-export const metadata = { title: "Bill Split", description: "Split Walmart orders item by item" };
+export const metadata = { title: "Bill Split", description: "Split Walmart orders item by item", appleWebApp: { capable: true, title: "Bill Split", statusBarStyle: "default" as const } };
 export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover", themeColor: "#f7f8f3" };
 
 function Brand() {

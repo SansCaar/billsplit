@@ -11,6 +11,7 @@ export function AccountMenu({ name }: { name: string }) {
       <div className="menu-pop">
         <div className="who">{name}</div>
         <a href="/">Your groups</a>
+        <a href="/settings">Settings</a>
         <button onClick={() => signOut({ callbackUrl: "/signin" })}>Sign out</button>
       </div>
     </details>

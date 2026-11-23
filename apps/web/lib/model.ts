@@ -6,6 +6,37 @@ export interface UserDoc {
   name: string;
   image?: string | null;
   createdAt: Date;
+  /** Notification Level: a default, plus optional per-Group levels. Missing = "involved". */
+  notify?: NotifyPrefs;
+}
+
+export type NotificationLevel = "all" | "involved";
+export interface NotifyPrefs {
+  level: NotificationLevel;
+  groups?: Record<string, NotificationLevel>;
+}
+
+/** One browser/device that has turned notifications on. _id = sha256(endpoint). */
+export interface PushDeviceDoc {
+  _id: string;
+  userId: string;
+  endpoint: string;
+  keys: { p256dh: string; auth: string };
+  userAgent: string | null;
+  createdAt: Date;
+  lastSeenAt: Date;
+}
+
+/** A sent Nudge. Not an Activity (ADR 0003); kept only to rate-limit and to show "Nudged N times today". */
+export interface NudgeDoc {
+  _id: string;
+  groupId: string;
+  /** Member who is owed (sender) and Member who owes (receiver). */
+  fromId: MemberId;
+  toId: MemberId;
+  amount: Cents;
+  line: number;
+  at: Date;
 }
 
 export interface MemberDoc {
@@ -114,6 +145,8 @@ export interface ActivityDoc {
   amount?: number;
   /** How much each Member's balance moved because of this change, in cents (+ = owed more). */
   impact?: Record<string, number>;
+  /** Involved Members (GLOSSARY). Newer entries only. */
+  involved?: MemberId[];
   at: Date;
 }
 
